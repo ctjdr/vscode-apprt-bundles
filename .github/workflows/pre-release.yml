@@ -26,7 +26,7 @@ jobs:
     - run: |
         npx vsce package
     - run: |
-        echo "::set-env name RELEASE_VERSION::$(npm run get-version --silent)"
+        echo "::set-env name=RELEASE_VERSION::$(npm run get-version --silent)"
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
