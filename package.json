@@ -29,12 +29,12 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./ --resolveJsonModule",
+        "compile": "tsc -p ./",
         "lint": "eslint src --ext ts",
         "watch": "tsc -watch -p ./",
         "copy-json": "copyfiles -u 1 src/schemas/* src/test/suite/files/* out/",
         "pretest": "npm run copy-json && npm run compile && npm run lint",
-        "test": "mocha out/test/suite",
+        "test": "mocha out/test/suite/index.js",
         "test-manifest-path": "npm run compile && mocha out/test/suite/manifestPathTest.js"
     },
     "devDependencies": {

@@ -18,6 +18,6 @@ describe("External manifests", function () {
 
         assert.equal(invalidManifests.length, 0, invalidManifests.length + 
             " invalid manifest(s) found: \n" + 
-            invalidManifests.reduce((prev, curr, index, manifests) => prev + "\n" + curr + (index === manifests.length-1?"\n":"")));
+            invalidManifests.reduce((prev, curr, index, manifests) => prev + "\n" + curr + (index === manifests.length-1?"\n":"")), "");
     });
 });
