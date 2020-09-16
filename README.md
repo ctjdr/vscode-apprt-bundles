@@ -1,3 +1,5 @@
+
+![Node.js CI](https://github.com/ctjdr/vscode-apprt-bundles/workflows/Node.js%20CI/badge.svg?branch=master)
 # Visual Studio Code extension for apprt bundles
 
 Adds syntactic validation, auto-completion and code-suggest to _manifest.json_ files, used to define apprt bundles.
