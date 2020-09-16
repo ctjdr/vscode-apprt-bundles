@@ -22,9 +22,9 @@ jobs:
     - name: Install the vsce npm package
       run: |
         npm install
-        npm install -g vsce
+        npm install vsce --save-dev
     - run: |
-        vsce package
+        npx vsce package
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
