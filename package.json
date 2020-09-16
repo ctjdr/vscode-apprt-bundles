@@ -2,7 +2,7 @@
     "name": "vscode-apprt-bundles",
     "displayName": "vscode-apprt-bundles",
     "description": "VS Code extension that supports working with a bundle manifest.json",
-    "version": "0.0.2-test05",
+    "version": "0.0.2-test07",
     "author": {
         "name": "ctjdr"
     },
@@ -35,7 +35,8 @@
         "copy-json": "copyfiles -u 1 src/schemas/* src/test/suite/files/* out/",
         "pretest": "npm run copy-json && npm run compile && npm run lint",
         "test": "mocha out/test/suite/index.js",
-        "test-manifest-path": "npm run compile && mocha out/test/suite/manifestPathTest.js"
+        "test-manifest-path": "npm run compile && mocha out/test/suite/manifestPathTest.js",
+        "get-version": "echo $npm_package_version"
     },
     "devDependencies": {
         "@types/glob": "^7.1.3",
