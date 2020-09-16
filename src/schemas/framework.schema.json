@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://www.conterra.de/schemas/framework.schema.json",
+    "definitions": {
+        "Framework-Startlevel-Beginning": {
+            "type": "integer",
+            "description": "Specifies the beginning start level of the framework."
+        },
+        "Framework-Startlevel-Running": {
+            "type": "integer",
+            "description": "Specifies the start level of the framework if it is running."
+        },
+        "Components-Create-On-Starting": {
+            "type": "boolean",
+            "default": false
+        },
+        "Application-Root": {
+            "type": "string"
+        },
+        "Application-Config": {
+            "type": "object"
+        }
+    }
+}

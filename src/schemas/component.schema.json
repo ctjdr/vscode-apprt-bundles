@@ -1,0 +1,304 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://www.conterra.de/schemas/component.schema.json",
+    "definitions": {
+        "reference-type": {
+            "type": "object",
+            "required": [
+                "name",
+                "providing"
+            ],
+            "additionalProperties": false,
+            "properties": {
+                "name": {
+                    "type": "string",
+                    "examples": [
+                        "",
+                        "log"
+                    ]
+                },
+                "providing": {
+                    "type": "string",
+                    "examples": [
+                        "",
+                        "ct.framework.api.LogService"
+                    ]
+                },
+                "filter": {
+                    "type": "string",
+                    "default": "",
+                    "examples": [
+                        "",
+                        "log"
+                    ]
+                },
+                "policy": {
+                    "enum": [
+                        "dynamic",
+                        "static"
+                    ],
+                    "default": "dynamic"
+                },
+                "cardinality": {
+                    "enum": [
+                        "0..1",
+                        "1..1",
+                        "0..n",
+                        "1..n"
+                    ],
+                    "default": "1..1"
+                },
+                "bind": {
+                    "type": "string"
+                },
+                "unbind": {
+                    "type": "string"
+                },
+                "noInjection": {
+                    "type": "boolean",
+                    "default": "false"
+                },
+                "connect": {
+                    "type": "object",
+                    "default": {},
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "examples": [
+                        {},
+                        {
+                            "onClick": "_handleClick"
+                        }
+                    ]
+                },
+                "on": {
+                    "type": "object",
+                    "default": {},
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "examples": [
+                        {},
+                        {
+                            "Click": "_handleOnClick"
+                        }
+                    ]
+                },
+                "watch": {
+                    "type": "object",
+                    "default": {},
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "examples": [
+                        {},
+                        {
+                            "selectedItem": "_handleSelectedItemChange"
+                        }
+                    ]
+                }
+            },
+            "examples": [
+                {},
+                {
+                    "name": "refname",
+                    "providing": "ct.framework.X"
+                }
+            ]
+        },
+        "property-type": {
+            "type": "object",
+            "default": {},
+            "propertyNames": {
+                "type": "string",
+                "pattern": ".*"
+            },
+            "additionalProperties": false,
+            "patternProperties": {
+                "^-|_.+": {
+                    "examples": [
+                        "",
+                        {},
+                        "privateProperty"
+                    ],
+                    "description": "A private property that is NOT part of the component interface and NOT registered as service property."
+                },
+                "^\\+.+": {
+                    "examples": [
+                        "",
+                        {},
+                        "publicProperty"
+                    ],
+                    "description": "A property that is private if there are explicitly declared public properties (using the '+' prefix or being enumerated in 'publicProperties')."
+                },
+                "^[^-+].+": {
+                    "examples": [
+                        "",
+                        {},
+                        "publicProperty"
+                    ],
+                    "description": "A public property that is part of the component interface and registered as service property."
+                }
+            }
+        }
+    },
+    "examples": [
+        {
+            "name": "",
+            "provides": [
+                ""
+            ],
+            "references": [
+                {
+                    "name": "",
+                    "providing": ""
+                }
+            ]
+        },
+        {
+            "name": "MyComponentName",
+            "provides": [
+                "my.provided.interface"
+            ],
+            "properties": {
+                "prop1": ""
+            },
+            "references": [
+                {
+                    "name": "_windowManager",
+                    "providing": "ct.framework.api.WindowManager",
+                    "cardinality": "0..1"
+                }
+            ]
+        }
+    ],
+    "type": "object",
+    "required": [
+        "name"
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "name": {
+            "type": "string",
+            "examples": [
+                "",
+                "myService"
+            ],
+            "description": "The name of the component. Used as \"impl\" value if \"impl\" is not declared. Must be unique inside a bundle."
+        },
+        "impl": {
+            "type": "string",
+            "examples": [
+                "",
+                "myService"
+            ],
+            "description": "The implementation class. An instance of this class is created if the component has to create a new service."
+        },
+        "enabled": {
+            "type": "boolean",
+            "default": true
+        },
+        "componentFactory": {
+            "type": "boolean",
+            "default": "false"
+        },
+        "serviceFactory": {
+            "type": "boolean",
+            "default": false
+        },
+        "configPolicy": {
+            "enum": [
+                "optional",
+                "ignore"
+            ],
+            "default": "optional"
+        },
+        "immediate": {
+            "oneOf": [
+                {
+                    "type": "boolean",
+                    "default": false
+                },
+                {
+                    "type": "string",
+                    "default": "false",
+                    "examples": [
+                        "true",
+                        "false"
+                    ],
+                    "description": "DEPRECATED. Use boolean value."
+                }
+            ]
+        },
+        "activate": {
+            "type": "string",
+            "default": "activate"
+        },
+        "deactivate": {
+            "type": "string",
+            "default": "deactivate"
+        },
+        "modified": {
+            "type": "string",
+            "default": "modified"
+        },
+        "instanceFactory": {
+            "type": "boolean",
+            "default": false,
+            "description": "Defines that this component is not registered itself as a service but creates service instances that are registered."
+        },
+        "createInstance": {
+            "type": "string",
+            "default": "createInstance",
+            "description": "Method of the instance factory, which created the \"real\" service instance."
+        },
+        "destroyInstance": {
+            "type": "string",
+            "default": "destroyInstance"
+        },
+        "provides": {
+            "oneOf": [
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string",
+                        "uniqueItems": true
+                    },
+                    "default": []
+                },
+                {
+                    "type": "string",
+                    "default": ""
+                }
+            ]
+        },
+        "propertiesConstructor": {
+            "type": "boolean",
+            "default": false
+        },
+        "properties": {
+            "$ref": "#/definitions/property-type"
+        },
+        "publicProperties": {
+            "type": "array",
+            "items": {
+                "uniqueItems": true
+            },
+            "description": "Names of 'properties' entries that are public. If used, all other properties become private."
+        },
+        "privateProperties": {
+            "type": "array",
+            "items": {
+                "uniqueItems": true
+            },
+            "description": "Names of 'properties' entries that are private."
+        },
+        "references": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/reference-type"
+            },
+            "additionalItems": false
+        }
+    }
+}

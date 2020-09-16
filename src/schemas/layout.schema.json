@@ -1,0 +1,77 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://www.conterra.de/schemas/layout.schema.json",
+    "definitions": {
+        "layout-widgets": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/layout-widget"
+            },
+            "description": "Layout widgets, buddy."
+        },
+        "layout-widget" : {
+            "type": "object",
+            "required": [],
+            "additionalProperties": false,
+            "properties": {
+                "widgetRole": {
+                    "type": "string"
+                },
+                "window": {
+                    "type": "object"
+                },
+                "windowevents": {
+                    "type": "object"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "attachTo": {
+                    "type": "string"
+                },
+                "template": {
+                    "type": "string"
+                },
+                "cssClass": {
+                    "type": "string"
+                },
+                "nomerge": {
+                    "type": "boolean"
+                },
+                "priority": {
+                    "type": "integer"
+                },
+                "sublayout": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "props": {
+                    "type": "object"
+                }
+            },
+            "examples": [
+            ]        
+        },
+        "layout-templates": {
+            "type": "array",
+            "items": {
+                "type": "object"
+            }
+        },
+        "CSS-Themes": {
+            "type": "array",
+            "items": {
+                "type": "object"
+            }
+        },
+        "CSS-Themes-Extension": {
+            "type": "array",
+            "items": {
+                "type": "object"
+            }
+        }
+
+    }
+}

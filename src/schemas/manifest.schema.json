@@ -1,0 +1,429 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://www.conterra.de/schemas/manifest.schema.json",
+    "definitions": {
+        "dependencies-type": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "string",
+                "uniqueItems": true
+            },
+            "default": {},
+            "examples": [
+                {},
+                {"dependency-bundle": "~4.9.1-SNAPSHOT"}
+            ]
+        },
+        "icon-type": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "url": {
+                    "type": "string"
+                },
+                "width": {
+                    "type": "integer"
+                },
+                "height": {
+                    "type": "integer"
+                }
+            },
+            "default": {},
+            "examples": [
+                {
+                    "url": "https://abc/image.png",
+                    "width": 64,
+                    "height": 64
+                }
+            ]
+        },
+        "license-type": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "examples": [
+                        "GPL",
+                        "Apache"
+                    ]
+                },
+                "version": {
+                    "type": "string",
+                    "examples": [
+                        "",
+                        "2.0"
+                    ]
+                },
+                "url": {
+                    "type": "string",
+                    "examples": [
+                        "",
+                        "https://"
+                    ]
+                }
+            }
+        }
+    },
+    "allOf": [
+        {
+            "oneOf": [
+                {
+                    "required": ["name"]
+                },
+                {
+                    "required": ["Bundle-SymbolicName"]
+                }
+
+            ]
+        },
+        {
+            "oneOf": [
+                {
+                    "required": ["version"]
+                },
+                {
+                    "required": ["Bundle-Version"]
+                }
+
+            ]
+        }
+    ],
+    "additionalProperties": false,
+    "properties": {
+        "$schema":true,
+        "name": {
+            "type": "string",
+            "examples": [
+                "",
+                "my-bundlename"
+            ],
+            "description": "The symbolic name of this bundle."
+        },
+        "namespace": {
+            "type": "string",
+            "examples": [
+                "",
+                "my-bundlename"
+            ],
+            "description": "The symbolic name of this bundle."
+        },
+        "version": {
+            "type": "string",
+            "examples": [
+                "",
+                "1.0.0"
+            ],
+            "description": "The version of this bundle."
+        },
+        "title": {
+            "type": "string",
+            "default": "same_as_name",
+            "description": "The display name of this bundle."
+        },
+        "description": {
+            "type": "string",
+            "default": "",
+            "description": "A description of this bundle. Displayed in the Live Configuration bundle details."
+        },
+        "keywords": {
+            "type": "array",
+            "items": {
+                "type":"string"
+            },
+            "default": [],
+            "description": "A list of categories (application specific use, tags for the bundle). Displayed in the Live Configuration bundle details."
+        },
+        "i18n": {
+            "type": "array",
+            "items": {
+                "type":"string"
+            },
+            "default": ["bundle"],
+            "description": "Specifies if the bundle provides i18n, see https://docs.conterra.de/en/mapapps/latest/developersguide/osgi-runtime/module-layer.html#i18n."
+        },
+        "vendor": {
+            "type": "string",
+            "default": ""
+        },
+        "author": {
+            "type": "string",
+            "default": ""
+        },
+        "contactAddress": {
+            "type": "string",
+            "default": "",
+            "description": "A description of this bundle. Displayed in the Live Configuration bundle details."
+        },
+        "layer": {
+            "type": "string",
+            "default": "module",
+            "description": "Specifies the name of the source file, which is loaded during the resolve phase of the bundle. This file is very important for bundle loading and source/component name resolution."
+        },
+        "startLevel": {
+            "type": "integer",
+            "default": 50,
+            "description": "Defines the StartLevel of this bundle. This provides a way to modify or optimize the start order of bundles."
+        },
+        "bundle": {
+            "type": "boolean",
+            "default": true,
+            "description": "nn"
+        },
+        "productName": {
+            "type": "string",
+            "default": "map.apps",
+            "description": "nn"
+        },
+        "main": {
+            "type": "string",
+            "default": "",
+            "description": "nn"
+        },
+        "configBundleLocation": {
+            "type": "string",
+            "default": "/config",
+            "description": "Points to the sub bundle or external bundle."
+        },
+        "licenses": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/license-type"
+            },
+            "default": [],
+            "description": "Metadata about the license of this bundle. Displayed in the Live Configuration bundle details."
+        },
+        "icon": {
+            "$ref": "#/definitions/icon-type",
+            "description": "Metadata about the icon of this bundle. Used in the Live Configuration bundle list."
+        },
+        "copyright": {
+            "type": "string",
+            "description": "nn"
+        },
+        "url": {
+            "type": "string",
+            "description": "nn"
+        },
+        "autoStartPolicy": {
+            "enum": ["yes", "no"],
+            "default": "yes",
+            "description": "Defines that this bundle shall be started or not."
+        },
+        "activator": {
+            "type": "string",
+            "default": "",
+            "description": "Specifies a bundle activator class. This activator is informed about the start and stop of the bundle."
+        },
+        "requiredExecutionEnvironment": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "uniqueItems": true
+            },
+            "default": [],
+            "examples": [
+                ["IE:[7,]","FF:[3,]"]
+            ],
+            "description": "Specifies client environment requirements. If this requirements are not fulfilled, the bundle is not started."
+        },
+        "excludedExecutionEnvironment": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "uniqueItems": true
+            },
+            "default": [],
+            "examples": [
+                ["iPhone"]
+            ],
+            "description": "Excludes a execution environment, works like \"requiredExecutionEnvironment\", but excluding and not including."
+        },
+        "dependencies": {
+            "$ref": "#/definitions/dependencies-type",
+            "description": "Declares the dependencies of this bundle to other bundles."
+        },
+        "optionalDependencies": {
+            "$ref": "#/definitions/dependencies-type",
+            "description": "Declares the dependencies of this bundle to other bundles."
+        },
+        "components": {
+            "type": "array",
+            "items": {
+                "$ref": "component.schema.json"
+            },
+            "description": "This is the entry point for component declarations.\nSee Declarative services: https://docs.conterra.de/en/mapapps/latest/developersguide/osgi-runtime/declarative-components.html"
+        },
+        "Config-Bundle-Location": {
+            "type": "string",
+            "description": "DEPRECATED. Use 'configBundleLocation'."
+        },
+        "Bundle-SymbolicName": {
+            "type": "string",
+            "description": "DEPRECATED. Use 'name'."
+        },
+        "Bundle-Version": {
+            "type": "string",
+            "description": "DEPRECATED. Use 'version'."
+        },
+        "Bundle-Name": {
+            "type": "string",
+            "description": "DEPRECATED. Use 'title'."
+        },
+        "Bundle-Description": {
+            "type": "string",
+            "description": "DEPRECATED. Use 'description'."
+        },
+        "Bundle-Vendor": {
+            "type": "string",
+            "description": "DEPRECATED. Use 'vendor'."
+        },
+        "Bundle-Category": {
+            "type": "array",
+            "description": "DEPRECATED. Use 'keywords'."
+        },
+        "Bundle-ContactAddress": {
+            "type": "string",
+            "description": "DEPRECATED. Use 'contactAddress'."
+        },
+        "Bundle-Copyright": {
+            "type": "string",
+            "description": "DEPRECATED. Use 'copyright'."
+        },
+        "Bundle-DocURL": {
+            "type": "string",
+            "description": "DEPRECATED. Use 'url'."
+        },
+        "Bundle-Main": {
+            "type": "string",
+            "description": "DEPRECATED. Use 'main'."
+        },
+        "Bundle-Icon": {
+            "type": "object",
+            "description": "DEPRECATED. Use 'icon'."
+        },
+        "Bundle-Namespace": {
+            "type": "string",
+            "description": "DEPRECATED. Use 'namespace'."
+        },
+        "Bundle-Layer": {
+            "type": "string",
+            "description": "DEPRECATED. Use 'layer'."
+        },
+        "Bundle-StartLevel": {
+            "type": "integer",
+            "description": "DEPRECATED. Use 'startLevel'."
+        },
+        "Bundle-AutoStartPolicy": {
+            "type": "string",
+            "description": "DEPRECATED. Use 'autoStartPolicy'."
+        },
+        "Bundle-Activator": {
+            "type": "string",
+            "description": "DEPRECATED. Use 'activator'."
+        },
+        "Bundle-Localization": {
+            "type": "array",
+            "description": "DEPRECATED. Use 'i18n'."
+        },
+        "Bundle-RequiredExecutionEnvironment": {
+            "type": "array",
+            "description": "DEPRECATED. Use 'requiredExecutionEnvironment'."
+        },
+        "Bundle-ExcludedExecutionEnvironment": {
+            "type": "array",
+            "description": "DEPRECATED. Use 'excludedExecutionEnvironment'."
+        },
+        "Components": {
+            "type": "array",
+            "description": "DEPRECATED. Use 'components'."
+        },
+        "Product-Name": {
+            "type": "string",
+            "description": "DEPRECATED. Use 'productName'."
+        },
+        "Bundle-License": {
+            "type": "string",
+            "description": "DEPRECATED. Use 'licenses'."
+        },
+        "Require-Bundle": {
+            "type": "array",
+            "description": "DEPRECATED. Use 'dependencies'."
+        },
+        "i18n-extension": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "description": "This is an dynamic manifest property used to transport. Additional to load i18n. It is usually added by a ConfigLocator and not defined by the bundle."
+        },
+
+
+
+        "Framework-Startlevel-Beginning": {
+            "$ref": "framework.schema.json#/definitions/Framework-Startlevel-Beginning"
+        },
+        "Framework-Startlevel-Running": {
+            "$ref": "framework.schema.json#/definitions/Framework-Startlevel-Running"
+        },
+        "Components-Create-On-Starting": {
+            "$ref": "framework.schema.json#/definitions/Components-Create-On-Starting"
+        },
+        "Application-Root": {
+            "$ref": "framework.schema.json#/definitions/Application-Root"
+        },
+        "Application-Config": {
+            "$ref": "framework.schema.json#/definitions/Application-Config"
+        },
+
+
+
+        "layout-widgets": {
+            "$ref": "layout.schema.json#/definitions/layout-widgets"
+        },
+        "layout-templates": {
+            "$ref": "layout.schema.json#/definitions/layout-templates"
+        },
+        "CSS-Themes": {
+            "$ref": "layout.schema.json#/definitions/CSS-Themes"
+        },
+        "CSS-Themes-Extension": {
+            "$ref": "layout.schema.json#/definitions/CSS-Themes-Extension"
+        },
+        
+        
+        "domain-config": {
+            "$ref": "support.schema.json#/definitions/domain-config"
+        },
+        "ACE-VERSION": {
+            "$ref": "support.schema.json#/definitions/ACE-VERSION"
+        },
+        "d3-version": {
+            "$ref": "support.schema.json#/definitions/d3-version"
+        }
+
+    },
+    "examples": [
+        {
+            "name": "",
+            "version": ""
+        },
+        {
+            "name": "",
+            "version": "",
+            "title": "",
+            "description": "",
+            "vendor": "con terra GmbH",
+            "productName": "map.apps",
+            "keywords": [
+                "mapping"
+            ],
+            "main": "main",
+            "layer": "module",
+            "dependencies": {
+            },
+            "components": []
+        }
+    ]
+
+}

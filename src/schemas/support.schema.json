@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://www.conterra.de/schemas/support.schema.json",
+    "definitions": {
+        "domain-config": {
+            "type": "object"
+        },
+        "ACE-VERSION": {
+            "type": "string"
+        },
+        "d3-version": {
+            "type": "string"
+        }
+    }
+}
