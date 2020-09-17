@@ -9,16 +9,19 @@ on:
         default: '0.0.1'
         
 jobs:
-  env:
-    releaseVersion: ${{ github.event.inputs.releaseVersion }}
-    v_releaseVersion: "v${{ github.event.inputs.releaseVersion }}"
   printInputs:
+    env:
+      releaseVersion: ${{ github.event.inputs.releaseVersion }}
+      v_releaseVersion: "v${{ github.event.inputs.releaseVersion }}"
     runs-on: ubuntu-latest
     steps:
     - run: |
         echo "Release version: $releaseVersion"
         echo "vRelease version: $v_releaseVersion"
   build:
+    env:
+      releaseVersion: ${{ github.event.inputs.releaseVersion }}
+      v_releaseVersion: "v${{ github.event.inputs.releaseVersion }}"
     name: Build release
     runs-on: ubuntu-latest
     steps:
