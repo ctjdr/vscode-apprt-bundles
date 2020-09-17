@@ -33,7 +33,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - run: |
+    - name: Commit new version
+      run: |
         git config user.name github-actions
         git config user.email github-actions@github.com
         npm version $releaseVersion --allow-same-version
@@ -43,7 +44,6 @@ jobs:
         git config user.name github-actions
         git config user.email github-actions@github.com
         git add .
-        git commit -m "Tag release $releaseVersion"
         git push
 
     - run: npm ci
