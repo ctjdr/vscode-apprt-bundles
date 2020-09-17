@@ -1,0 +1,87 @@
+on: 
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: 'Version'     
+        required: true
+        default: '0.0.1'
+        
+jobs:
+  env:
+    releaseVersion: ${{ github.event.inputs.releaseVersion }}
+    v_releaseVersion: "v${{ github.event.inputs.releaseVersion }}"
+  printInputs:
+    runs-on: ubuntu-latest
+    steps:
+    - run: |
+        echo "Release version: $releaseVersion"
+        echo "vRelease version: $v_releaseVersion"
+  build:
+    name: Build release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Use Node.js ${{ matrix.node-version }}
+
+    - vname: Use v_Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - run: npm version $releaseVersion --allow-same-version
+
+    - name: Push changes
+      uses: actions/checkout@v2
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add .
+        git commit -m "Tag release $releaseVersion"
+        git push
+
+    - run: npm ci
+
+    - run: npm test
+
+    - name: Install the vsce npm package
+      run: |
+        npm install
+        npm install vsce --save-dev
+     
+    - name: Create vsix package
+      run: |
+        npx vsce package
+
+    - name: Create GitHub release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: "v${{ github.event.inputs.releaseVersion }}"
+        release_name: Release "v${{ github.event.inputs.releaseVersion }}"
+        draft: false
+        prerelease: true
+
+    - name: Upload Release Asset
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: ./vscode-apprt-bundles-${{ github.event.inputs.releaseVersion }}.vsix
+        asset_name: vscode-apprt-bundles-${{ github.event.inputs.releaseVersion }}.vsix
+        asset_content_type: application/octet-stream
+
+
+    - name: Publish to marketplace
+      env:
+        token: ${{ secrets.MARKETPLACE_TOKEN }}
+      run: |
+        npx vsce publish -p "$token"
+      
+
+    
