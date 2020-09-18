@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.0.3
+- Added missing description for manifest.json elements.
+
 ## 0.0.2
 - Allow to build release based on GitHub Actions
 
