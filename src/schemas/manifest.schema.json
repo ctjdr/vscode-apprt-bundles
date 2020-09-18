@@ -4,9 +4,13 @@
     "definitions": {
         "dependencies-type": {
             "type": "object",
+            "propertyNames": {
+                "description": "Name of dependent bundle"
+            },
             "additionalProperties": {
                 "type": "string",
-                "uniqueItems": true
+                "uniqueItems": true,
+                "description": "Version range accepted for this dependency. Examples:\n\"~1.2.3\": later or 1.2.3-x and earlier then 1.3.0-0 (\"until next minor\")\n\"^1.2.3\": later or 1.2.3-x and earlier then 2.0.0-0 (\"until next major\")\n\"1.2.3\": 1.2.3-x (\"This version, including prereleases\")\nSee https://docs.conterra.de/en/mapapps/latest/developersguide/osgi-runtime/module-layer.html#_advanced_syntax"
             },
             "default": {},
             "examples": [
@@ -19,7 +23,8 @@
             "additionalProperties": false,
             "properties": {
                 "url": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "A relative path to an image stored with the bundle or a network resource image."
                 },
                 "width": {
                     "type": "integer"
@@ -31,7 +36,7 @@
             "default": {},
             "examples": [
                 {
-                    "url": "https://abc/image.png",
+                    "url": "/icons/bundle.png",
                     "width": 64,
                     "height": 64
                 }
@@ -98,7 +103,7 @@
                 "",
                 "my-bundlename"
             ],
-            "description": "The symbolic name of this bundle."
+            "description": "Unique name of this bundle. Used as an identifier by the runtime. Should match the folder name of this bundle."
         },
         "namespace": {
             "type": "string",
@@ -106,7 +111,7 @@
                 "",
                 "my-bundlename"
             ],
-            "description": "The symbolic name of this bundle."
+            "description": "The namespace of this bundle. Defaults to the \"name\" of this bundle."
         },
         "version": {
             "type": "string",
@@ -114,12 +119,12 @@
                 "",
                 "1.0.0"
             ],
-            "description": "The version of this bundle."
+            "description": "The version of this bundle.\nHas to follow the rules of semantic versioning as defined by https://semver.org/"
         },
         "title": {
             "type": "string",
             "default": "same_as_name",
-            "description": "The display name of this bundle."
+            "description": "The human-friendly display name of this bundle. Defaults to the \"name\" of this bundle."
         },
         "description": {
             "type": "string",
@@ -140,25 +145,34 @@
                 "type":"string"
             },
             "default": ["bundle"],
-            "description": "Specifies if the bundle provides i18n, see https://docs.conterra.de/en/mapapps/latest/developersguide/osgi-runtime/module-layer.html#i18n."
+            "description": "Names of the i18n files. Defaults to ['bundle'] if 'bundle':'true' is set.\nMust be set to [] (empty array) if no i18n files are provided (i.e. to disable i18n).\n For details, see https://docs.conterra.de/en/mapapps/latest/developersguide/osgi-runtime/module-layer.html#i18n.",
+            "examples": [
+                [],
+                ["bundle"]
+            ]
         },
         "vendor": {
             "type": "string",
-            "default": ""
+            "default": "",
+            "description": "Name of the bundle vendor. Displayed in the Live Configuration bundle details."
         },
         "author": {
             "type": "string",
-            "default": ""
+            "default": "Name of the bundle author. Used for package.json compatibility."
         },
         "contactAddress": {
             "type": "string",
             "default": "",
-            "description": "A description of this bundle. Displayed in the Live Configuration bundle details."
+            "description": "Address where problems with the bundle may be reported, for example an email address. Displayed in the Live Configuration bundle details."
         },
         "layer": {
             "type": "string",
-            "default": "module",
-            "description": "Specifies the name of the source file, which is loaded during the resolve phase of the bundle. This file is very important for bundle loading and source/component name resolution."
+            "default": "",
+            "description": "Name of a .js file, which is loaded during the resolve phase of the bundle. This file should load all resources required for bundle loading and component resolving, like the implementation class of a component.\nDefaults to 'module' if 'bundle': 'true' is set.\nSet to '' to disable loading a file in any case",
+            "examples": [
+                "",
+                "module"
+            ]
         },
         "startLevel": {
             "type": "integer",
@@ -167,18 +181,22 @@
         },
         "bundle": {
             "type": "boolean",
-            "default": true,
-            "description": "nn"
+            "default": false,
+            "description": "If set to 'true' consuming entities (like the runtime) will treat this as a 'real' bundle, applying the following defaults, if not specified:\n 'layer': 'module'\n'main':'main'\n'i18n':'['bundle']'\nIf requested from the JS Registry, 'bundle':'true' is automatically set.\nIt is recommended to set this to 'true'."
         },
         "productName": {
             "type": "string",
             "default": "map.apps",
-            "description": "nn"
+            "description": "Name of product this bundle belongs to. Used to group bundles in some UI element of map.apps.",
+            "examples": [
+                "",
+                "map.apps"
+            ]
         },
         "main": {
             "type": "string",
             "default": "",
-            "description": "nn"
+            "description": "AMD package main file, normally used to trigger i18n loading.\nDefaults to 'main' if 'bundle': 'true' is set.\nSet to '' to disable loading a file in any case."
         },
         "configBundleLocation": {
             "type": "string",
@@ -199,21 +217,21 @@
         },
         "copyright": {
             "type": "string",
-            "description": "nn"
+            "description": "Copyright informatione. Displayed in the Live Configuration bundle details."
         },
         "url": {
             "type": "string",
-            "description": "nn"
+            "description": "URL, from whichfurther information about the bundle may be obtained. Displayed in the Live Configuration bundle details."
         },
         "autoStartPolicy": {
             "enum": ["yes", "no"],
             "default": "yes",
-            "description": "Defines that this bundle shall be started or not."
+            "description": "Defines that this bundle shall be started by the runtime. Set to 'no' if bundle startup should be controlled manually."
         },
         "activator": {
             "type": "string",
             "default": "",
-            "description": "Specifies a bundle activator class. This activator is informed about the start and stop of the bundle."
+            "description": "Specifies a bundle activator class that implements the 'BundleActivator' interface. Its 'start' and 'stop' methods are called by the runtime when the bundle is started and stopped, respectively."
         },
         "requiredExecutionEnvironment": {
             "type": "array",
@@ -241,11 +259,11 @@
         },
         "dependencies": {
             "$ref": "#/definitions/dependencies-type",
-            "description": "Declares the dependencies of this bundle to other bundles."
+            "description": "A map of bundle names to their accepted versions this bundle depends on.\nIf this bundle has an implementation class dependency to another bundle (i.e. it needs a class of another bundle), declare this dependency here.\nIf a bundle requires another bundle to be installed in the application to work correctly, this requirement should explicitly be expressed here. The runtime ensures that theses bundles are started before this bundle."
         },
         "optionalDependencies": {
             "$ref": "#/definitions/dependencies-type",
-            "description": "Declares the dependencies of this bundle to other bundles."
+            "description": "A map of bundle names to their accepted versions this bundle depends on, but can still work without.\nIn contrast to dependencies declared under \"dependencies\" this bundle is started, even if a dependency declared here fails to load."
         },
         "components": {
             "type": "array",
@@ -403,10 +421,13 @@
         }
 
     },
+    "description": "The manifest.json file provides some meta information and defines the functionality provided by the bundle.",
     "examples": [
+        {},
         {
             "name": "",
-            "version": ""
+            "version": "",
+            "bundle": true
         },
         {
             "name": "",
