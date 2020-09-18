@@ -4,6 +4,9 @@ All notable changes to the "vscode-apprt-bundles" extension will be documented i
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## 0.0.2
+- Allow to build release based on GitHub Actions
+
 ## 0.0.1
 - Initial release
 - Implement basic manifest.json editing support through JSON Schema file.
