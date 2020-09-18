@@ -15,3 +15,18 @@ The feature is implemented based on a JSON Schema file, defining the cornerstone
 3. Open a `manifest.json` file
 
 Then press CTRL+Space to get code-suggest and auto-complete or hover over a property to get documention hints.
+
+## Further ideas
+
+These are some ideads for additional functions for this extension:
+
+* CodeLense - Every component reference (`"providing"`) gets a CodeLense marker:
+    * "Preview": On click, a peek preview of the referenced component is displayed (if available in workspace).
+    * "Jump to": On click, the manifest.json file defining the component is opened (if available in workspace)
+* Diagnostics - For a component with missing implementation file:
+    * Report _problem_ on missing `impl` 
+    * ? Possible to identify impl file?
+* Code action - For a component with missing impl:
+    * provide action "Create implementation"
+* Find references - For a component providing an interface, find all references (provides, providing) to it in workspace
+* 
