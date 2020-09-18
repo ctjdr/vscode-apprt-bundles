@@ -10,11 +10,9 @@ The feature is implemented based on a JSON Schema file, defining the cornerstone
 
 ## Using the extension
 
-1. Install the extionson
-2. Reload VS Code
-3. Open a `manifest.json` file
-
-Then press CTRL+Space to get code-suggest and auto-complete or hover over a property to get documention hints.
+1. Install the extension, either via Marketplace or downloading the `vsix` extension file release from this site.
+2. Open a `manifest.json` file
+3. press CTRL+Space to get code-suggest and auto-complete or hover over a property to get documention hints.
 
 ## Further ideas
 
@@ -29,4 +27,3 @@ These are some ideads for additional functions for this extension:
 * Code action - For a component with missing impl:
     * provide action "Create implementation"
 * Find references - For a component providing an interface, find all references (provides, providing) to it in workspace
-* 
