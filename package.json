@@ -45,7 +45,9 @@
         "watch-json": "copy-and-watch --watch src/schemas/**/*.json out/schemas/",
         "copy-json": "copyfiles -u 1 src/schemas/* src/test/suite/files/* out/",
         "pretest": "npm run copy-json && npm run compile && npm run lint",
-        "test": "mocha out/test/suite/index.js",
+        "test": "node ./out/test/runTest",
+        "testIt": "node ./out/test/runIntegrationTest",
+        "testIt2": "mocha out/test/suite/index.js",
         "test-manifest-path": "npm run compile && mocha out/test/suite/manifestPathTest.js",
         "get-version": "echo $npm_package_version"
     },
