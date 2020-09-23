@@ -39,11 +39,17 @@ suite("JSON Tree", function () {
     test("Component provides with offset", function () {
         const manifest = ManifestDocument.fromString(jsonFile);
         assert.deepEqual(manifest.getComponents()[0].provides("A1"), { value: "A1", offset: 123});
+        assert.deepEqual(manifest.getComponents()[0].provides("A2"), { value: "A2", offset: 129});
     });
 
     test("Reference providing with offset", function () {
         const manifest = ManifestDocument.fromString(jsonFile);
-        // assert.deepEqual(manifest.getComponents()[3].getReferences().length, 1);
+        assert.equal(manifest.getComponents()[2].referencesAskProviding("A2").length, 1);
+    });
+
+    test("All component with provides for a certain service interface", function () {
+        const manifest = ManifestDocument.fromString(jsonFile);
+        assert.equal(manifest.getAllProvides("A1").size, 1);
     });
 
 });
