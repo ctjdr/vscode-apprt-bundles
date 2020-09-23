@@ -3,8 +3,6 @@ import { resolve } from 'path';
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from "vscode";
 import ManifestDocument, { DocumentElement } from "./ManifestDocument";
-// import * as fs from "fs/promises";
-const fs = require("fs").promises;
 
 const manifestFilesSelector: vscode.DocumentSelector = {
     language: "json",

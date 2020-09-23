@@ -1,15 +1,5 @@
 import * as json from 'jsonc-parser';
 
-
-
-function parseJson(jsonDoc: string) {
-    const node = json.parseTree(jsonDoc);
-    const componentsNode = json.findNodeAtLocation(node, ["components"]);
-
-    const refNode = json.findNodeAtLocation(componentsNode!, [0, "ref"]);
-    console.info(refNode?.offset);
-}
-
 export type DocumentElement = {
     value: any,
     offset: number,
