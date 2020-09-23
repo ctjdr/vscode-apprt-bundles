@@ -10,12 +10,13 @@ function parseJson(jsonDoc: string) {
     console.info(refNode?.offset);
 }
 
-type DocumentElement = {
+export type DocumentElement = {
     value: any,
-    offset: number
+    offset: number,
+    length?: number
 };
 
-class ReferenceFragment {
+export class ReferenceFragment {
 
     #providing: DocumentElement | null = null;
 
@@ -34,6 +35,10 @@ class ReferenceFragment {
         return this.isAsksProviding() && this.#providing!.value === serviceInterfaceName;
     }
 
+    getAskProviding() {
+        return this.#providing;
+    }
+
     isAsksProviding() {
         return this.#providing !== null;
     }
@@ -41,7 +46,7 @@ class ReferenceFragment {
 }
 
 
-class ComponentFragment {
+export class ComponentFragment {
 
     #provides: DocumentElement[] = [];
     #references: ReferenceFragment[] = [];
@@ -169,7 +174,8 @@ export default class ManifestDocument {
             }
             const providing = {
                 value: providingNode.value,
-                offset: providingNode.offset
+                offset: providingNode.offset,
+                length: providingNode.length
             };
 
             referenceFragment.setAskProviding(providing);
