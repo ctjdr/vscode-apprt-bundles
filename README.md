@@ -14,16 +14,19 @@ The feature is implemented based on a JSON Schema file, defining the cornerstone
 2. Open a `manifest.json` file
 3. press CTRL+Space to get code-suggest and auto-complete or hover over a property to get documention hints.
 
+## Features
+
+* _Validation_ of manifest.json file
+* _Documentation hints_ on manifest.json editing
+* _Auto-complete_ and _code suggest_ for JSON structure
+ 
+
+## Upcoming
+
+* Find component references: When hitting Shift-F12 (**> Find reference**), or Alt-Shift-F12 (**> Find all references**) while over a `"provides"` value, display all locations where it is referenced in a `"providing"` property.
+* Go to component definition: When Ctrl-Click'ing or F12'ing (**> Goto definition**) on a `"providing"` value, jump to the component that provides that service.
+
+
 ## Further ideas
 
-These are some ideads for additional functions for this extension:
-
-* CodeLense - Every component reference (`"providing"`) gets a CodeLense marker:
-    * "Preview": On click, a peek preview of the referenced component is displayed (if available in workspace).
-    * "Jump to": On click, the manifest.json file defining the component is opened (if available in workspace)
-* Diagnostics - For a component with missing implementation file:
-    * Report _problem_ on missing `impl` 
-    * ? Possible to identify impl file?
-* Code action - For a component with missing impl:
-    * provide action "Create implementation"
-* Find references - For a component providing an interface, find all references (provides, providing) to it in workspace
+See the [Developer Wiki](https://github.com/ctjdr/vscode-apprt-bundles/wiki#developer-pages) for a list of implementation ideas.
