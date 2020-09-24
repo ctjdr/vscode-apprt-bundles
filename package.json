@@ -29,12 +29,6 @@
                 "fileMatch": "manifest.json",
                 "url": "./out/schemas/manifest.schema.json"
             }
-        ],
-        "commands": [
-            {
-                "command": "vscode-manifest-navigation.helloWorld",
-                "title": "Hello World"
-            }
         ]
     },
     "scripts": {
