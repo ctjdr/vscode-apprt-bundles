@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import ManifestDocument, { ReferenceFragment } from "../../ManifestDocument";
+import ManifestDocument, { ReferenceFragment } from "../../../bundles/ManifestDocument";
 
 const jsonFile = `{
     "name": "abc",
