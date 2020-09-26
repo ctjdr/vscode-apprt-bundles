@@ -1,5 +1,6 @@
 import { assert } from "chai";
-import ManifestDocument, { ReferenceFragment } from "../../../bundles/ManifestDocument";
+import { Selection } from "vscode";
+import ManifestDocument, { ReferenceFragment, Section } from "../../../bundles/ManifestDocument";
 
 const jsonFile = `{
     "name": "abc",
@@ -26,16 +27,18 @@ const jsonFile = `{
 }`;
 
 suite("JSON Tree", function () {
-  test("Components names with offset", function () {
+  test("Component names with offset", function () {
     const manifest = ManifestDocument.fromString(jsonFile);
     assert.equal(manifest.getComponents().length, 3);
     assert.deepEqual(manifest.getComponents()[0].getName(), {
       value: "A",
-      offset: 93,
+      key: "name",
+      section: new Section(93 ,3)
     });
     assert.deepEqual(manifest.getComponents()[1].getName(), {
       value: "B",
-      offset: 176,
+      key: "name",
+      section: new Section(176, 3)
     });
   });
 
@@ -43,11 +46,13 @@ suite("JSON Tree", function () {
     const manifest = ManifestDocument.fromString(jsonFile);
     assert.deepEqual(manifest.getComponents()[0].provides("A1"), {
       value: "A1",
-      offset: 123,
+      key: "provides",
+      section: new Section(123, 4)
     });
     assert.deepEqual(manifest.getComponents()[0].provides("A2"), {
       value: "A2",
-      offset: 129,
+      key: "provides",
+      section: new Section(129, 4)
     });
   });
 
@@ -72,12 +77,16 @@ suite("JSON Tree", function () {
     assert.equal(manifest.getAllProviding("A1").size, 0);
   });
 
+
+
+
+
   test("Reference can be located", function () {
     const manifest = ManifestDocument.fromString(jsonFile);
     const reference = manifest.getAllProviding("A2").values().next();
     const ref: ReferenceFragment = reference.value;
-    const startIndex = ref.getAskProviding()?.offset || 0;
-    const length = ref.getAskProviding()?.length || 0;
+    const startIndex = ref.getProviding()?.section.offset || 0;
+    const length = ref.getProviding()?.section.length || 0;
     const onlineJson = jsonFile.replace(/\n/g, " ");
     console.info(onlineJson.substring(startIndex, startIndex + length));
   });
