@@ -23,9 +23,7 @@ The feature is implemented based on a JSON Schema file, defining the cornerstone
 
 ## Upcoming
 
-* Find component references: When hitting Shift-F12 (**> Find reference**), or Alt-Shift-F12 (**> Find all references**) while over a `"provides"` value, display all locations where it is referenced in a `"providing"` property.
-* Go to component definition: When Ctrl-Click'ing or F12'ing (**> Goto definition**) on a `"providing"` value, jump to the component that provides that service.
-
+* Find service name references: When hitting Shift-F12 (**> Find reference**), or Alt-Shift-F12 (**> Find all references**) while over a `"provides"` or`"providing"` value, display links to all references to the same service name.
 
 ## Further ideas
 
