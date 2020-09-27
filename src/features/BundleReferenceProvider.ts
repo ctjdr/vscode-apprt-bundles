@@ -35,7 +35,7 @@ export class BundleReferenceProvider implements vscode.ReferenceProvider {
         let locations = fileUris.reduce(async (locations, uri) => {
             const manifestDoc = await vscode.workspace.openTextDocument(uri);
             const jsonDoc = manifestDoc.getText();
-            const doc = ManifestDocument.fromString(jsonDoc);
+            const doc = await ManifestDocument.fromString(jsonDoc);
             let references = doc.getAllProviding(lookupRef);
             const accu = await locations;
             references.forEach(ref => {

@@ -27,8 +27,8 @@ const jsonFile = `{
 }`;
 
 suite("JSON Tree", function () {
-  test("Component names with offset", function () {
-    const manifest = ManifestDocument.fromString(jsonFile);
+  test("Component names with offset", async function () {
+    const manifest = await ManifestDocument.fromString(jsonFile);
     assert.equal(manifest.getComponents().length, 3);
     assert.deepEqual(manifest.getComponents()[0].getName(), {
       value: "A",
@@ -42,8 +42,8 @@ suite("JSON Tree", function () {
     });
   });
 
-  test("Component provides with offset", function () {
-    const manifest = ManifestDocument.fromString(jsonFile);
+  test("Component provides with offset", async function () {
+    const manifest = await ManifestDocument.fromString(jsonFile);
     assert.deepEqual(manifest.getComponents()[0].provides("A1"), {
       value: "A1",
       key: "provides",
@@ -56,23 +56,23 @@ suite("JSON Tree", function () {
     });
   });
 
-  test("Reference providing with offset", function () {
-    const manifest = ManifestDocument.fromString(jsonFile);
+  test("Reference providing with offset", async function () {
+    const manifest = await ManifestDocument.fromString(jsonFile);
     assert.equal(
       manifest.getComponents()[2].referencesAskProviding("A2").length,
       1
     );
   });
 
-  test("All component with provides for a certain service interface", function () {
-    const manifest = ManifestDocument.fromString(jsonFile);
+  test("All component with provides for a certain service interface", async function () {
+    const manifest = await ManifestDocument.fromString(jsonFile);
     assert.equal(manifest.getAllProvides("A1").size, 1);
     assert.equal(manifest.getAllProvides("A2").size, 1);
     assert.equal(manifest.getAllProvides("A3").size, 0);
   });
 
-  test("All references with providing for a certain service interface", function () {
-    const manifest = ManifestDocument.fromString(jsonFile);
+  test("All references with providing for a certain service interface", async function () {
+    const manifest = await ManifestDocument.fromString(jsonFile);
     assert.equal(manifest.getAllProviding("A2").size, 1);
     assert.equal(manifest.getAllProviding("A1").size, 0);
   });
@@ -81,8 +81,8 @@ suite("JSON Tree", function () {
 
 
 
-  test("Reference can be located", function () {
-    const manifest = ManifestDocument.fromString(jsonFile);
+  test("Reference can be located", async function () {
+    const manifest = await ManifestDocument.fromString(jsonFile);
     const reference = manifest.getAllProviding("A2").values().next();
     const ref: ReferenceFragment = reference.value;
     const startIndex = ref.getProviding()?.section.offset || 0;

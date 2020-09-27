@@ -111,14 +111,15 @@ export default class ManifestDocument {
     #manifestNode: json.Node;
     #allProvides: Map<string, Set<ComponentFragment>> = new Map();
     #allProviding: Map<string, Set<ReferenceFragment>> = new Map();
+    #allServiceNames: Set<string> = new Set();
 
     private constructor(private documentContent: string) {
         this.#manifestNode = json.parseTree(documentContent);
         this.#components = this.parseComponents(this.#manifestNode);
     }
 
-    static fromString(content: string): ManifestDocument {
-        return new ManifestDocument(content);
+    static fromString(content: string): Promise<ManifestDocument> {
+        return Promise.resolve(new ManifestDocument(content));
     }
 
     getAllProvides(serviceInterfaceName: string): Set<ComponentFragment> {
@@ -129,23 +130,33 @@ export default class ManifestDocument {
         return this.#allProviding.get(serviceInterfaceName) || new Set();
     }
 
+    getAllServiceNames(): Set<string> {
+        return this.#allServiceNames;
+    }
+
+
     private registerProvides(provides: StringFragment[], component: ComponentFragment) {
         provides.forEach((providesItem) => {
-            let allComponents = this.#allProvides.get(providesItem.value);
+            const serviceName = providesItem.value;
+            let allComponents = this.#allProvides.get(serviceName);
             if (!allComponents) {
                 allComponents = new Set();
-                this.#allProvides.set(providesItem.value, allComponents);
+                this.#allProvides.set(serviceName, allComponents);
             }
             allComponents.add(component);
+            this.#allServiceNames.add(serviceName);
         });
     }
+
     private registerProviding(providing: StringFragment, reference: ReferenceFragment) {
-        let allReferences = this.#allProviding.get(providing.value);
+        const serviceName = providing.value;
+        let allReferences = this.#allProviding.get(serviceName);
         if (!allReferences) {
             allReferences = new Set();
-            this.#allProviding.set(providing.value, allReferences);
+            this.#allProviding.set(serviceName, allReferences);
         }
         allReferences.add(reference);
+        this.#allServiceNames.add(serviceName);
     }
 
     private parseComponents(manifestNode: json.Node): ComponentFragment[] {

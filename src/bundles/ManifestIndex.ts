@@ -1,12 +1,12 @@
 import * as vscode from "vscode";
+import * as fs from "fs/promises";
 import ManifestDocument from "./ManifestDocument";
 
 
 export default class ManifestIndex {
 
-
-
-    private manifestDocIndex: Map<vscode.Uri, ManifestDocument> = new Map();
+    private uriIndex: Map<vscode.Uri, ManifestDocument> = new Map();
+    private serviceNameIndex: Map<string, Set<vscode.Uri>> = new Map();
 
     constructor() {
         this.update();
@@ -16,36 +16,34 @@ export default class ManifestIndex {
         return new ManifestIndex();
     }
 
-
-
-
-
-
     async update() {
+
         const fileUris = await vscode.workspace.findFiles("**/manifest.json", "**/target/**/manifest.json");
 
-        fileUris.forEach(uri => {
-            
+        fileUris.forEach(async uri => {
+            const manifestContent = await fs.readFile(uri.fsPath, "utf-8");
+            const manifestDoc = await ManifestDocument.fromString(manifestContent);
+            this.indexManifestDoc(uri, manifestDoc);
         });
-
-
-
-
-        let locations = fileUris.reduce(async (locations, uri) => {
-            const manifestDoc = await vscode.workspace.openTextDocument(uri);
-            const jsonDoc = manifestDoc.getText();
-            const doc = ManifestDocument.fromString(jsonDoc);
-            let references = doc.getAllProviding("");
-            const accu = await locations;
-            references.forEach(ref => {
-                const providingElement = ref.getProviding();
-                accu.push(new vscode.Location(uri, this.rangeOf(providingElement, manifestDoc)));
-            });
-
-
-            return accu;
-        }, Promise.resolve(new Array<vscode.Location>()));
-
     }
 
+    private indexManifestDoc(uri: vscode.Uri, doc: ManifestDocument):void {
+        this.indexUri(uri, doc);
+        this.indexServiceNames(uri, doc);
+    }
+    
+    private indexUri(uri: vscode.Uri, doc: ManifestDocument) {
+        this.uriIndex.set(uri, doc);
+    }
+
+    private indexServiceNames(uri: vscode.Uri, doc: ManifestDocument) {
+        doc.getAllServiceNames().forEach(serviceName => {
+            let indexedUris = this.serviceNameIndex.get(serviceName);
+            if (indexedUris === undefined) {
+                indexedUris = new Set();
+            }
+            indexedUris.add(uri);
+            this.serviceNameIndex.set(serviceName, indexedUris);
+        });
+    }
 }
