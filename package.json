@@ -2,7 +2,7 @@
     "name": "vscode-apprt-bundles",
     "displayName": "vscode-apprt-bundles",
     "description": "VS Code extension that supports working with a bundle manifest.json",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "author": {
         "name": "ctjdr"
     },

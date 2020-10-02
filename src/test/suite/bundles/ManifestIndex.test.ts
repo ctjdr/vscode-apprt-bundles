@@ -1,6 +1,7 @@
+import { fail } from "assert";
 import { assert } from "chai";
-import { Selection } from "vscode";
-import ManifestDocument, { ReferenceFragment, Section } from "../../../bundles/ManifestDocument";
+
+import { ManifestIndex, ManifestResolver } from "../../../bundles/ManifestIndex";
 
 const jsonFile = `{
     "name": "abc",
@@ -26,7 +27,49 @@ const jsonFile = `{
     ]
 }`;
 
-suite("JSON Tree", function () {
-  test("Index built", function () {
+suite("Manifest Index", function () {
+  test("Bundle IDs found by service name", async function () {
+
+    let provider: ManifestResolver = {
+        getAllIds: () =>  Promise.resolve(["a", "b"]),
+        resolve: (id) => id === "a" ? Promise.resolve(jsonFile): Promise.resolve("")
+    };
+
+     let index = ManifestIndex.create(provider);
+     
+     await index.update();
+     assert.isTrue(index.findBundleIdsByServiceName("A1").has("a"));
+  });
+  test("Bundle docs found by bundle ID", async function () {
+
+    let provider: ManifestResolver = {
+        getAllIds: () =>  Promise.resolve(["a", "b"]),
+        resolve: (id) => id === "a" ? Promise.resolve(jsonFile): Promise.resolve("")
+    };
+
+     let index = ManifestIndex.create(provider);
+     
+     await index.update();
+     assert.equal(index.findBundleById("a")?.name, "abc");
+  });
+
+  test("line breaks", function() {
+    const numLinesExpected = 6;
+    const text = "0123\n456\r\n789\n\n\n";
+
+    const lbOffsets:number[] = [];
+
+    let nextLb = 0;
+    while (nextLb !== -1) {
+        let lbOffset = text.indexOf("\n", nextLb);
+        if (lbOffset !== -1) {
+            lbOffsets.push(lbOffset);
+            nextLb = lbOffset + 1;
+        } else {
+            nextLb = lbOffset;
+        }
+        // Math.min(text.indexOf("\r\n", nextLb), text.indexOf("\n", nextLb));
+    }
+    console.log(lbOffsets);
   });
 });

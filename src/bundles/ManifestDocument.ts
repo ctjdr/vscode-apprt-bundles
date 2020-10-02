@@ -1,5 +1,6 @@
 import * as json from 'jsonc-parser';
 
+
 export class StringFragment implements Fragment {
 
     constructor(
@@ -8,13 +9,13 @@ export class StringFragment implements Fragment {
         readonly section: Section) {
         }
 
-    static fromNode(node: json.Node, key: string):StringFragment {
-        return new StringFragment(key, node.value.toString(), sectionFor(node));
-    }
+    // static fromNode(node: json.Node, key: string):StringFragment {
+    //     return new StringFragment(key, node.value.toString(), sectionFor(node));
+    // }
 
-    static fromNodeWithDefault(node: json.Node, key: string, defaultValue: string):StringFragment {
-        return new StringFragment(key, node.value? node.value.toString():defaultValue, sectionFor(node));
-    }
+    // static fromNodeWithDefault(node: json.Node, key: string, defaultValue: string):StringFragment {
+    //     return new StringFragment(key, node.value? node.value.toString():defaultValue, sectionFor(node));
+    // }
 
 }
 
@@ -30,9 +31,9 @@ export interface Fragment {
  * 
  */
 export class Section {
-    constructor(readonly offset = 0, readonly length = 0) {
-    }
-    
+    // constructor(readonly offset = 0, readonly length = 0, readonly span: Span) {
+    // }
+    constructor(readonly start: LinePos, readonly end: LinePos){}
 }
 
 export class ReferenceFragment implements Fragment{
@@ -105,21 +106,76 @@ export class ComponentFragment implements Fragment {
 
 };
 
+function* unknownName(): Generator<string> {
+    let i: number = 0;
+    while (true) {
+        yield "unknown-name-" + (i++);
+    }
+  }
+
+type LinePos = {
+    line: number,
+    col: number
+};
+
+type Span = {
+    start: LinePos,
+    end: LinePos
+};
+
 export default class ManifestDocument {
 
+    
     #components: ComponentFragment[] = [];
-    #manifestNode: json.Node;
     #allProvides: Map<string, Set<ComponentFragment>> = new Map();
     #allProviding: Map<string, Set<ReferenceFragment>> = new Map();
     #allServiceNames: Set<string> = new Set();
+    #linebreakOffsets: number[];
+    readonly name: string;
 
-    private constructor(private documentContent: string) {
-        this.#manifestNode = json.parseTree(documentContent);
-        this.#components = this.parseComponents(this.#manifestNode);
+    private constructor(documentContent: string) {
+        this.#linebreakOffsets = this.getLineBreakOffsets(documentContent);
+        const manifestNode = json.parseTree(documentContent);
+        this.#components = this.parseComponents(manifestNode);
+        this.name = this.parseName(manifestNode) || unknownName().next().value;
     }
 
     static fromString(content: string): Promise<ManifestDocument> {
         return Promise.resolve(new ManifestDocument(content));
+    }
+
+    getLinePos(offset: number): LinePos {
+        for (let index = 0; index < this.#linebreakOffsets.length; index++) {
+            const element = this.#linebreakOffsets[index];
+            if (offset <= element) {
+                return {
+                    line: index,
+                    col: (index === 0) ? offset : offset - this.#linebreakOffsets[index - 1] - 1
+                };
+            }
+        }
+
+        return {
+            line: this.#linebreakOffsets.length,
+            col: offset - this.#linebreakOffsets[this.#linebreakOffsets.length - 1] - 1
+        };
+    }
+
+    getLineBreakOffsets(text: string): number[] {
+        const lbOffsets:number[] = [];
+
+        let nextLb = 0;
+        while (nextLb !== -1) {
+            let lbOffset = text.indexOf("\n", nextLb);
+            // Math.min(text.indexOf("\r\n", nextLb), text.indexOf("\n", nextLb));
+            if (lbOffset !== -1) {
+                lbOffsets.push(lbOffset);
+                nextLb = lbOffset + 1;
+            } else {
+                nextLb = lbOffset;
+            }
+        }
+        return lbOffsets;
     }
 
     getAllProvides(serviceInterfaceName: string): Set<ComponentFragment> {
@@ -159,6 +215,10 @@ export default class ManifestDocument {
         this.#allServiceNames.add(serviceName);
     }
 
+    private parseName(manifestNode: json.Node): string | undefined {
+        return json.findNodeAtLocation(manifestNode, ["name"])?.value?.toString();
+    }
+
     private parseComponents(manifestNode: json.Node): ComponentFragment[] {
         const componentsNode = json.findNodeAtLocation(manifestNode, ["components"]);
         if (!componentsNode?.children) {
@@ -169,7 +229,7 @@ export default class ManifestDocument {
             // if (!nameNode) {
             //     return new ComponentFragment(undefined, sectionFor(componentNode));
             // }
-            const component = new ComponentFragment(stringFragmentFor(nameNode, "name"), sectionFor(componentNode));
+            const component = new ComponentFragment(this.stringFragmentFor(nameNode, "name"), this.sectionFor(componentNode));
             const provides = this.parseProvides(componentNode);
             component.addProvides(...provides);
             component.addReferences(...this.parseReferences(componentNode));
@@ -186,13 +246,13 @@ export default class ManifestDocument {
         }
         if (providesNode.type === "string") {
             return [
-                new StringFragment("provides", providesNode.value, sectionFor(providesNode))
+                new StringFragment("provides", providesNode.value, this.sectionFor(providesNode))
             ];
         }
 
         //this must be an array
         return providesNode.children!.map((node) => {
-            return new StringFragment("provides", node.value, sectionFor(node));
+            return new StringFragment("provides", node.value, this.sectionFor(node));
         });
     }
 
@@ -203,16 +263,16 @@ export default class ManifestDocument {
         }
         return referencesNode.children.map((referenceNode) => {
             const nameNode = json.findNodeAtLocation(referenceNode, ["name"]);
-            const nameElement = stringFragmentFor(nameNode, "name");
+            const nameElement = this.stringFragmentFor(nameNode, "name");
 
-            const referenceFragment = new ReferenceFragment(nameElement, sectionFor(referenceNode));
+            const referenceFragment = new ReferenceFragment(nameElement, this.sectionFor(referenceNode));
 
             const providingNode = json.findNodeAtLocation(referenceNode, ["providing"]);
 
             if (!providingNode) {
                 return referenceFragment;
             }
-            const providingProp = new StringFragment("providing", providingNode.value, sectionFor(providingNode));
+            const providingProp = new StringFragment("providing", providingNode.value, this.sectionFor(providingNode));
             referenceFragment.setProviding(providingProp);
             this.registerProviding(providingProp, referenceFragment);
 
@@ -225,16 +285,22 @@ export default class ManifestDocument {
         return this.#components;
     }
 
-}
-
-function sectionFor(node: json.Node) {
-    return new Section(node.offset, node.length);
-}
-
-function stringFragmentFor(node: json.Node | undefined, key: string): StringFragment | undefined {
-    if (!node || !node.value) {
-        return undefined;
+    private sectionFor(node: json.Node) {
+        // const section = new Section(node.offset, node.length, this.getLine(node.offset), this.getLine(node.offset + node.length));
+        const section = new Section(this.getLinePos(node.offset), this.getLinePos(node.offset + node.length));
+        // section.startLine = this.getLine(node.offset);
+        // section.endLine = this.getLine(node.offset + node.length);
+        return section;
+    }
+    
+    private stringFragmentFor(node: json.Node | undefined, key: string): StringFragment | undefined {
+        if (!node || !node.value) {
+            return undefined;
+        }
+    
+        return new StringFragment(key, node.value, this.sectionFor(node));
     }
 
-    return new StringFragment(key, node.value, sectionFor(node));
 }
+
+

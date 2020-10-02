@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
-import { BundleReferenceProvider } from "./features/BundleReferenceProvider";
+import { ManifestIndex } from "./bundles/ManifestIndex";
+import { ServiceNameReferenceProvider } from "./features/ServiceNameReferenceProvider";
 
 const manifestFilesSelector: vscode.DocumentSelector = {
     language: "json",
@@ -7,14 +8,23 @@ const manifestFilesSelector: vscode.DocumentSelector = {
     pattern: "**/manifest.json"
 };
 
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
 
+
+
+    const manifestIndex = ManifestIndex.createDefault();
   
+    console.info("Indexing bundles...");
+    let message = await manifestIndex.update();
+
+    console.info("Indexing bundles finished. " + message);
+    
     context.subscriptions.push(
         vscode.languages.registerReferenceProvider(
-            manifestFilesSelector, new BundleReferenceProvider()));
+            manifestFilesSelector, new ServiceNameReferenceProvider(manifestIndex)));
 
 
+    return Promise.resolve();
 }
 
 
