@@ -13,11 +13,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
     const manifestIndex = ManifestIndex.createDefault();
-  
-    console.info("Indexing bundles...");
+    console.debug("Indexing bundles...");
     let message = await manifestIndex.update();
-
-    console.info("Indexing bundles finished. " + message);
+    
+    console.debug("Indexing bundles finished. " + message);
     
     context.subscriptions.push(
         vscode.languages.registerReferenceProvider(
