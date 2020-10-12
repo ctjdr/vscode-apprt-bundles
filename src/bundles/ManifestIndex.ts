@@ -45,23 +45,23 @@ export class ManifestIndex {
         this.dirtyIds.delete(id);
     }
 
-    public findBundleIdsByServiceName(serviceName: string): Set<string> {
-        return this.serviceName2manifestIdIdx.get(serviceName) || new Set();
-    }
-
-    public findBundleById(bundleId: string): ManifestDocument | undefined {
-        return this.manifestId2docIdx.get(bundleId);
-    }
-
     public markDirty(bundleId: string):void {
         this.dirtyIds.add(bundleId);
-        // console.debug(`${bundleId} marked dirty. Now ${this.dirtyIds.size} marked dirty.`);
+        console.debug(`${bundleId} marked dirty. Now ${this.dirtyIds.size} marked dirty.`);
     }
 
     public async updateDirty(): Promise<void> {
         for (let id of this.dirtyIds) {
             await this.updateSingle(id);
         }
+    }
+
+    public findBundleIdsByServiceName(serviceName: string): Set<string> {
+        return this.serviceName2manifestIdIdx.get(serviceName) || new Set();
+    }
+
+    public findBundleById(bundleId: string): ManifestDocument | undefined {
+        return this.manifestId2docIdx.get(bundleId);
     }
 
     private indexManifestDoc(id: string, doc: ManifestDocument):void {

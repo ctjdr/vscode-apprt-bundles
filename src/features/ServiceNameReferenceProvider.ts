@@ -4,16 +4,9 @@ import { ManifestIndex } from "../bundles/ManifestIndex";
 
 export class ServiceNameReferenceProvider implements vscode.ReferenceProvider {
 
-    changes = 0;
-
     private static nullRange = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 0));
 
     constructor(private manifestIndex: ManifestIndex) {
-        vscode.workspace.onDidChangeTextDocument(this.updateIndexOnDocChange, this);
-    }
-
-    updateIndexOnDocChange(evt: vscode.TextDocumentChangeEvent): void {
-        this.manifestIndex.markDirty(evt.document.uri.toString());
     }
 
     rangeOfSection(section: Section | undefined): vscode.Range {
@@ -33,7 +26,10 @@ export class ServiceNameReferenceProvider implements vscode.ReferenceProvider {
             //TODO: Handle "includeDeclaration" flag
 
         const locations = this.getLocations(document, position);
-        return Promise.resolve(locations);
+        return Promise.resolve(locations).catch(e => {
+            console.error();
+            return [];
+        });
     }
 
 
@@ -67,24 +63,6 @@ export class ServiceNameReferenceProvider implements vscode.ReferenceProvider {
             });
 
         });
-
-
-        // const fileUris = await vscode.workspace.findFiles("**/manifest.json", "**/target/**/manifest.json");
-
-        // let locations = fileUris.reduce(async (locations, uri) => {
-        //     const manifestDoc = await vscode.workspace.openTextDocument(uri);
-        //     const jsonDoc = manifestDoc.getText();
-        //     const doc = await ManifestDocument.fromString(jsonDoc);
-        //     let references = doc.getAllProviding(lookupRef);
-        //     const accu = await locations;
-        //     references.forEach(ref => {
-        //         const providingElement = ref.getProviding();
-        //         accu.push(new vscode.Location(uri, this.rangeOfSection(providingElement?.section)));
-        //     });
-
-
-        //     return accu;
-        // }, Promise.resolve(new Array<vscode.Location>()));
 
         return locations;
 
