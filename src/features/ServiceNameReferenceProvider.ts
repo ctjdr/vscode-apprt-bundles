@@ -1,12 +1,12 @@
 import * as vscode from "vscode";
-import ManifestDocument, { Section } from "../bundles/ManifestDocument";
-import { ManifestIndex } from "../bundles/ManifestIndex";
+import { Section } from "../bundles/ManifestDocument";
+import { BundleIndex } from "../bundles/BundleIndex";
 
 export class ServiceNameReferenceProvider implements vscode.ReferenceProvider {
 
     private static nullRange = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 0));
 
-    constructor(private manifestIndex: ManifestIndex) {
+    constructor(private bundleIndex: BundleIndex) {
     }
 
     rangeOfSection(section: Section | undefined): vscode.Range {
@@ -35,18 +35,18 @@ export class ServiceNameReferenceProvider implements vscode.ReferenceProvider {
 
     private async getLocations(document: vscode.TextDocument, position: vscode.Position) {
 
-        await this.manifestIndex.updateDirty();
+        await this.bundleIndex.updateDirty();
 
         const quotedLookupRef = document.getText(document.getWordRangeAtPosition(position));
         const lookupRef = quotedLookupRef.substring(1, quotedLookupRef.length - 1);
 
-        const bundlesIds = this.manifestIndex.findBundleIdsByServiceName(lookupRef);
+        const bundlesIds = this.bundleIndex.findBundleIdsByServiceName(lookupRef);
 
         const locations:vscode.Location[] = [];
 
         bundlesIds.forEach(id => {
             //Lookup manifest doc
-            const bundleDoc = this.manifestIndex.findBundleById(id);
+            const bundleDoc = this.bundleIndex.findBundleById(id);
             if (!bundleDoc) {
                 return;
             }

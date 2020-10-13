@@ -5,10 +5,10 @@ export interface ManifestResolver {
     resolve(id: string): Promise<string>;
 }
 
-export class ManifestIndex {
+export class BundleIndex {
     
-    private manifestId2docIdx: Map<string, ManifestDocument> = new Map();
-    private serviceName2manifestIdIdx: Map<string, Set<string>> = new Map();
+    private bundleId2manifestIdx: Map<string, ManifestDocument> = new Map();
+    private serviceName2bundleIdIdx: Map<string, Set<string>> = new Map();
     private manifestProvider: ManifestResolver;
 
     private dirtyIds: Set<string> = new Set();
@@ -17,13 +17,13 @@ export class ManifestIndex {
         this.manifestProvider = manifestProvider;
     }
     
-    static createDefault(): ManifestIndex {
+    static createDefault(): BundleIndex {
         const workspaceManifestProvider = require("./WorkspaceManifestResolver");
-        return new ManifestIndex(new workspaceManifestProvider.WorkspaceManifestProvider());
+        return new BundleIndex(new workspaceManifestProvider.WorkspaceManifestProvider());
     }
 
-    static create(manifestProvider: ManifestResolver): ManifestIndex {
-        return new ManifestIndex(manifestProvider);
+    static create(manifestProvider: ManifestResolver): BundleIndex {
+        return new BundleIndex(manifestProvider);
     }
 
     public async update():Promise<string> {
@@ -37,12 +37,12 @@ export class ManifestIndex {
 
     }
 
-    public async updateSingle(id: string) {
-        let doc = await this.manifestProvider.resolve(id);
+    public async updateSingle(bundleId: string) {
+        let doc = await this.manifestProvider.resolve(bundleId);
         const manifestDoc = await ManifestDocument.fromString(doc);
-        console.debug(`Indexing bundle manifest <${id}>`);
-        this.indexManifestDoc(id, manifestDoc);
-        this.dirtyIds.delete(id);
+        console.debug(`Indexing bundle manifest <${bundleId}>`);
+        this.indexManifestDoc(bundleId, manifestDoc);
+        this.dirtyIds.delete(bundleId);
     }
 
     public markDirty(bundleId: string):void {
@@ -57,30 +57,34 @@ export class ManifestIndex {
     }
 
     public findBundleIdsByServiceName(serviceName: string): Set<string> {
-        return this.serviceName2manifestIdIdx.get(serviceName) || new Set();
+        return this.serviceName2bundleIdIdx.get(serviceName) || new Set();
     }
 
     public findBundleById(bundleId: string): ManifestDocument | undefined {
-        return this.manifestId2docIdx.get(bundleId);
+        return this.bundleId2manifestIdx.get(bundleId);
     }
 
-    private indexManifestDoc(id: string, doc: ManifestDocument):void {
-        this.indexDocById(id, doc);
-        this.indexIdByServiceName(id, doc);
+    public getServiceNames(): IterableIterator<string>{
+        return this.serviceName2bundleIdIdx.keys();
+    }
+
+    private indexManifestDoc(bundleId: string, doc: ManifestDocument):void {
+        this.indexDocById(bundleId, doc);
+        this.indexIdByServiceName(bundleId, doc);
     }
     
-    private indexDocById(id: string, doc: ManifestDocument) {
-        this.manifestId2docIdx.set(id, doc);
+    private indexDocById(budleId: string, doc: ManifestDocument) {
+        this.bundleId2manifestIdx.set(budleId, doc);
     }
 
-    private indexIdByServiceName(id: string, doc: ManifestDocument) {
+    private indexIdByServiceName(bundleId: string, doc: ManifestDocument) {
         doc.getAllServiceNames().forEach(serviceName => {
-            let indexedUris = this.serviceName2manifestIdIdx.get(serviceName);
+            let indexedUris = this.serviceName2bundleIdIdx.get(serviceName);
             if (indexedUris === undefined) {
                 indexedUris = new Set();
             }
-            indexedUris.add(id);
-            this.serviceName2manifestIdIdx.set(serviceName, indexedUris);
+            indexedUris.add(bundleId);
+            this.serviceName2bundleIdIdx.set(serviceName, indexedUris);
         });
     }
 }

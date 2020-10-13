@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import ManifestDocument, { ReferenceFragment, Section } from "../../../bundles/ManifestDocument";
+import ManifestDocument, { ReferenceFragment, ValueType } from "../../../bundles/ManifestDocument";
 
 const jsonFile = `{
     "name": "abc",
@@ -51,7 +51,8 @@ suite("ManifestDocument", function () {
       section: {
         start: {line: 5, col: 20},
         end: {line: 5, col: 23}
-      }
+      },
+      type: ValueType.unknown
     });
     assert.deepEqual(manifest.getComponents()[1].getName(), {
       value: "B",
@@ -60,7 +61,8 @@ suite("ManifestDocument", function () {
       section: {
         start: {line: 9, col: 20},
         end: {line: 9, col: 23}
-      }
+      },
+      type: ValueType.unknown
     });
   });
 
@@ -73,7 +75,8 @@ suite("ManifestDocument", function () {
       section: {
         start: {line: 6, col: 25},
         end: {line: 6, col: 29}
-      }
+      },
+      type: ValueType.provides
     });
     assert.deepEqual(manifest.getComponents()[0].provides("A2"), {
       value: "A2",
@@ -82,8 +85,8 @@ suite("ManifestDocument", function () {
       section: {
         start: {line: 6, col: 31},
         end: {line: 6, col: 35}
-      }
-
+      },
+      type: ValueType.provides
     });
   });
 
@@ -100,8 +103,8 @@ suite("ManifestDocument", function () {
       section: {
         start: {line: 17, col: 33},
         end: {line: 17, col: 37}
-      }
-
+      },
+      type: ValueType.referenceProviding
     });
 
   });
@@ -131,5 +134,11 @@ suite("ManifestDocument", function () {
     // const length = ref.getProviding()?.section.length || 0;
     // const onlineJson = jsonFile.replace(/\n/g, " ");
     // assert.equal(onlineJson.substring(startIndex, startIndex + length), `"A2"`);
+  });
+
+  test("StringFragments found for line number", async function () {
+    const manifest = await ManifestDocument.fromString(jsonFile);
+    assert.equal(manifest.getStringFragmentsOnLine(6)?.size, 2);
+    assert.equal(manifest.getStringFragmentsOnLine(17)?.size, 1);
   });
 });

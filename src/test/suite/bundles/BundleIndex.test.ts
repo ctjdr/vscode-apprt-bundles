@@ -1,7 +1,7 @@
 import { fail } from "assert";
 import { assert } from "chai";
 
-import { ManifestIndex, ManifestResolver } from "../../../bundles/ManifestIndex";
+import { BundleIndex, ManifestResolver } from "../../../bundles/BundleIndex";
 
 const jsonFile = `{
     "name": "abc",
@@ -35,7 +35,7 @@ suite("Manifest Index", function () {
         resolve: (id) => id === "a" ? Promise.resolve(jsonFile): Promise.resolve("")
     };
 
-     let index = ManifestIndex.create(provider);
+     let index = BundleIndex.create(provider);
      
      await index.update();
      assert.isTrue(index.findBundleIdsByServiceName("A1").has("a"));
@@ -47,7 +47,7 @@ suite("Manifest Index", function () {
         resolve: (id) => id === "a" ? Promise.resolve(jsonFile): Promise.resolve("")
     };
 
-     let index = ManifestIndex.create(provider);
+     let index = BundleIndex.create(provider);
      
      await index.update();
      assert.equal(index.findBundleById("a")?.name, "abc");

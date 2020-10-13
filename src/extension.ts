@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
-import ManifestDocument from "./bundles/ManifestDocument";
-import { ManifestIndex } from "./bundles/ManifestIndex";
+import { BundleIndex } from "./bundles/BundleIndex";
 import { ServiceNameCompletionProvider } from "./features/ServiceNameCompletionProvider";
 import { ServiceNameReferenceProvider } from "./features/ServiceNameReferenceProvider";
 
@@ -14,9 +13,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
 
-    const manifestIndex = ManifestIndex.createDefault();
+    const bundleIndex = BundleIndex.createDefault();
     console.debug("Indexing bundles...");
-    let message = await manifestIndex.update();
+    let message = await bundleIndex.update();
     
     console.debug("Indexing bundles finished. " + message);
     
@@ -25,18 +24,19 @@ export async function activate(context: vscode.ExtensionContext) {
         if (vscode.languages.match(manifestFilesSelector, doc) === 0) {
             return;
         }
-        manifestIndex.markDirty(evt.document.uri.toString());
+        bundleIndex.markDirty(evt.document.uri.toString());
     });
 
+    context.subscriptions.push(
+        vscode.commands.registerCommand("zim", () => vscode.window.showInformationMessage("Zoola")));
 
 
     context.subscriptions.push(
         vscode.languages.registerReferenceProvider(
-            manifestFilesSelector, new ServiceNameReferenceProvider(manifestIndex)));
+            manifestFilesSelector, new ServiceNameReferenceProvider(bundleIndex)));
     context.subscriptions.push(
         vscode.languages.registerCompletionItemProvider(
-            manifestFilesSelector, new ServiceNameCompletionProvider(manifestIndex), "\""));
-
+            manifestFilesSelector, new ServiceNameCompletionProvider(bundleIndex), "\"", ":"));        
 
     return Promise.resolve();
 }
