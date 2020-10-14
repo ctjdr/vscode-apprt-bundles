@@ -33,6 +33,22 @@ export interface Fragment {
 
 export class Section {
     constructor(readonly start: LinePos, readonly end: LinePos){}
+
+    contains(line: number, col: number) {
+        if (line < this.start.line || line > this.end.line) {
+            return false;
+        }
+
+        if (line === this.start.line && col < this.start.col) {
+            return false;
+        }
+
+        if (line === this.end.line && col > this.end.col) {
+            return false;
+        }
+        
+        return true;
+    }
 }
 
 type LinePos = {

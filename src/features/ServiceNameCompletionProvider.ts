@@ -15,6 +15,15 @@ export class ServiceNameCompletionProvider implements vscode.CompletionItemProvi
             if (!fragments || fragments?.size === 0) {
                 return Promise.resolve([]);
             }
+            
+            const cursorCol = position.character;
+            
+            const cursorOverFragment = [...fragments].some( fragment => fragment.section.contains(position.line, position.character));
+            
+            if (!cursorOverFragment) {
+                return Promise.resolve([]);
+            }
+
             const serviceNames = this.bundleIndex.getServiceNames();
             const items: vscode.CompletionItem[] = [];
             for (const serviceName of serviceNames) {
