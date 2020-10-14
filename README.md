@@ -29,7 +29,7 @@ Finds all occurences in other manifest.json files.
 
 The search can be triggered by the following commands:
 
-* \> Find all References_ (Alt-Shift-F12)
+* \> _Find all References_ (Alt-Shift-F12)
 * \> _Go to References_ (Shift-F12)
 * \> _Peek References_
 
