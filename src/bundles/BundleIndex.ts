@@ -1,4 +1,5 @@
-import ManifestDocument from "./ManifestDocument";
+import ManifestDocument, { Fragment, StringFragment } from "./ManifestDocument";
+import MultiValueIndex from "./MultiValueIndex";
 
 export interface ManifestResolver {
     getAllIds(): Promise<string[]>;
@@ -8,8 +9,10 @@ export interface ManifestResolver {
 export class BundleIndex {
     
     private bundleId2manifestIdx: Map<string, ManifestDocument> = new Map();
-    private serviceName2bundleIdIdx: Map<string, Set<string>> = new Map();
+    private servicename2bundleIdIdx: MultiValueIndex<string, string> = new MultiValueIndex();
     private manifestProvider: ManifestResolver;
+    private servicename2provides: MultiValueIndex<string, StringFragment> = new MultiValueIndex();
+    private servicename2providing: MultiValueIndex<string, StringFragment> = new MultiValueIndex();
 
     private dirtyIds: Set<string> = new Set();
 
@@ -28,6 +31,8 @@ export class BundleIndex {
 
     public async update():Promise<string> {
 
+        // Should be called "rebuild" and clear index maps before rebuilding
+
         let ids = await this.manifestProvider.getAllIds();
 
         for (const id of ids) {
@@ -41,6 +46,8 @@ export class BundleIndex {
         let doc = await this.manifestProvider.resolve(bundleId);
         const manifestDoc = await ManifestDocument.fromString(doc);
         console.debug(`Indexing bundle manifest <${bundleId}>`);
+        // TODO: This doesn't clean index servicenames->bundleIds correctly: 
+        // What if a bundle does not reference a service name any more? The entry is kept although it should be deleted.
         this.indexManifestDoc(bundleId, manifestDoc);
         this.dirtyIds.delete(bundleId);
     }
@@ -57,7 +64,7 @@ export class BundleIndex {
     }
 
     public findBundleIdsByServiceName(serviceName: string): Set<string> {
-        return this.serviceName2bundleIdIdx.get(serviceName) || new Set();
+        return this.servicename2bundleIdIdx.getValues(serviceName);
     }
 
     public findBundleById(bundleId: string): ManifestDocument | undefined {
@@ -65,26 +72,42 @@ export class BundleIndex {
     }
 
     public getServiceNames(): IterableIterator<string>{
-        return this.serviceName2bundleIdIdx.keys();
+        return this.servicename2bundleIdIdx.getKeys();
+    }
+
+    public findProvidesFor(servicename: string) {
+        return this.servicename2provides.getValues(servicename);
+    }
+
+    public findProvidingFor(servicename: string) {
+        return this.servicename2providing.getValues(servicename);
     }
 
     private indexManifestDoc(bundleId: string, doc: ManifestDocument):void {
         this.indexDocById(bundleId, doc);
         this.indexIdByServiceName(bundleId, doc);
+        this.indexProvidesByServiceName(bundleId, doc);
+        this.indexProvidingByServiceName(bundleId, doc);
     }
     
-    private indexDocById(budleId: string, doc: ManifestDocument) {
-        this.bundleId2manifestIdx.set(budleId, doc);
+    private indexDocById(bundleId: string, doc: ManifestDocument) {
+        this.bundleId2manifestIdx.set(bundleId, doc);
     }
 
     private indexIdByServiceName(bundleId: string, doc: ManifestDocument) {
-        doc.getAllServiceNames().forEach(serviceName => {
-            let indexedUris = this.serviceName2bundleIdIdx.get(serviceName);
-            if (indexedUris === undefined) {
-                indexedUris = new Set();
-            }
-            indexedUris.add(bundleId);
-            this.serviceName2bundleIdIdx.set(serviceName, indexedUris);
+        doc.getServiceNames().forEach(serviceName => {
+            this.servicename2bundleIdIdx.index(serviceName, bundleId);
+        });
+    }
+    private indexProvidesByServiceName(bundleId: string, doc: ManifestDocument) {
+
+        doc.getProvides().forEach(provides => {
+            this.servicename2provides.index(provides.value, provides);
+        });
+    }
+    private indexProvidingByServiceName(bundleId: string, doc: ManifestDocument) {
+        doc.getProviding().forEach(providing => {
+            this.servicename2providing.index(providing.value, providing);
         });
     }
 }

@@ -1,22 +1,10 @@
 import * as vscode from "vscode";
-import { Section } from "../bundles/ManifestDocument";
 import { BundleIndex } from "../bundles/BundleIndex";
+import { rangeOfSection } from "./Range";
 
 export class ServiceNameReferenceProvider implements vscode.ReferenceProvider {
 
-    private static nullRange = new vscode.Range(new vscode.Position(0, 0), new vscode.Position(0, 0));
-
-    constructor(private bundleIndex: BundleIndex) {
-    }
-
-    rangeOfSection(section: Section | undefined): vscode.Range {
-        if (!section) {
-            return ServiceNameReferenceProvider.nullRange;
-        }
-        return new vscode.Range(
-            new vscode.Position(section.start.line, section.start.col),
-            new vscode.Position(section.end.line, section.end.col)
-        );
+    constructor(private bundleIndex: BundleIndex, private context: vscode.ExtensionContext) {
     }
 
     public provideReferences(
@@ -27,7 +15,7 @@ export class ServiceNameReferenceProvider implements vscode.ReferenceProvider {
 
         const locations = this.getLocations(document, position);
         return Promise.resolve(locations).catch(e => {
-            console.error();
+            console.error(e);
             return [];
         });
     }
@@ -43,6 +31,7 @@ export class ServiceNameReferenceProvider implements vscode.ReferenceProvider {
         const bundlesIds = this.bundleIndex.findBundleIdsByServiceName(lookupRef);
 
         const locations:vscode.Location[] = [];
+        const mode = this.context.workspaceState.get("findReference", { mode: "all" }).mode;
 
         bundlesIds.forEach(id => {
             //Lookup manifest doc
@@ -50,20 +39,35 @@ export class ServiceNameReferenceProvider implements vscode.ReferenceProvider {
             if (!bundleDoc) {
                 return;
             }
-            const allProvides = bundleDoc.getAllProvides(lookupRef);
-            const allProviding = bundleDoc.getAllProviding(lookupRef);
+            const allProvides = bundleDoc.getComponentsFor(lookupRef);
+            const allProviding = bundleDoc.getReferencesFor(lookupRef);
 
             const uri = vscode.Uri.parse(id);
 
-            allProvides.forEach(component => {
-                locations.push(new vscode.Location(uri, this.rangeOfSection(component.provides(lookupRef)?.section)));
-            });
-            allProviding.forEach(reference => {
-                locations.push(new vscode.Location(uri, this.rangeOfSection(reference.getProviding()?.section)));
-            });
+
+            if (mode === "all" || mode === "provides") {
+                allProvides.forEach(component => {
+                    const providesElem = component.provides(lookupRef);
+                    if (!providesElem) {
+                        return;
+                    }
+                    locations.push(new vscode.Location(uri, rangeOfSection(providesElem.section)));
+                });
+            }
+
+            if (mode === "all" || mode === "providing") {
+                
+                allProviding.forEach(reference => {
+                    const providingElem = reference.getProviding();
+                    if (!providingElem) {
+                        return;
+                    }
+                    locations.push(new vscode.Location(uri, rangeOfSection(providingElem.section)));
+                });
+            }
 
         });
-
+        this.context.workspaceState.update("findReference", { mode: "all" });
         return locations;
 
     }

@@ -40,6 +40,7 @@ suite("Manifest Index", function () {
      await index.update();
      assert.isTrue(index.findBundleIdsByServiceName("A1").has("a"));
   });
+
   test("Bundle docs found by bundle ID", async function () {
 
     let provider: ManifestResolver = {
@@ -51,6 +52,34 @@ suite("Manifest Index", function () {
      
      await index.update();
      assert.equal(index.findBundleById("a")?.name, "abc");
+  });
+
+  test("'provides' by service name found", async function () {
+
+    let provider: ManifestResolver = {
+        getAllIds: () =>  Promise.resolve(["a", "b"]),
+        resolve: (id) => id === "a" ? Promise.resolve(jsonFile): Promise.resolve("")
+    };
+
+     let index = BundleIndex.create(provider);
+     
+     await index.update();
+     assert.equal(index.findProvidesFor("A1").size, 1);
+     assert.equal(index.findProvidesFor("xyz").size, 0);
+  });
+  
+  test("'providing' by service name found", async function () {
+
+    let provider: ManifestResolver = {
+        getAllIds: () =>  Promise.resolve(["a", "b"]),
+        resolve: (id) => id === "a" ? Promise.resolve(jsonFile): Promise.resolve("")
+    };
+
+     let index = BundleIndex.create(provider);
+     
+     await index.update();
+     assert.equal(index.findProvidingFor("A2").size, 1);
+     assert.equal(index.findProvidingFor("xyz").size, 0);
   });
 
   test("line breaks", function() {

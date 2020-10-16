@@ -1,4 +1,5 @@
 import * as json from 'jsonc-parser';
+import MultiValueIndex from './MultiValueIndex';
 
 
 export enum ValueType {
@@ -10,15 +11,13 @@ export enum ValueType {
 }
 
 export class StringFragment implements Fragment {
-    
-    readonly type: ValueType;
 
     constructor(
         readonly key: string,
         readonly value: string,
         readonly section: Section,
-        type?: ValueType) {
-            this.type = type ?? ValueType.unknown;
+        readonly type: ValueType) {
+            
         }
 }
 
@@ -127,11 +126,14 @@ function* unknownName(): Generator<string> {
 
 export default class ManifestDocument {
 
-    #line2StringValue: Map<number, Set<StringFragment>> = new Map();
+    #line2StringValue: MultiValueIndex<number, StringFragment> = new MultiValueIndex();
     
     #components: ComponentFragment[] = [];
-    #allProvides: Map<string, Set<ComponentFragment>> = new Map();
-    #allProviding: Map<string, Set<ReferenceFragment>> = new Map();
+    #servicename2components: MultiValueIndex<string, ComponentFragment> = new MultiValueIndex();
+    #servicename2references: MultiValueIndex<string, ReferenceFragment> = new MultiValueIndex();
+    #provides: Set<StringFragment> = new Set();
+    #providing: Set<StringFragment> = new Set();
+
     #allServiceNames: Set<string> = new Set();
     #linebreakOffsets: number[];
     readonly name: string;
@@ -147,7 +149,7 @@ export default class ManifestDocument {
         return Promise.resolve(new ManifestDocument(content));
     }
 
-    getLinePos(offset: number): LinePos {
+    private getLinePos(offset: number): LinePos {
         for (let index = 0; index < this.#linebreakOffsets.length; index++) {
             const element = this.#linebreakOffsets[index];
             if (offset <= element) {
@@ -181,16 +183,28 @@ export default class ManifestDocument {
         return lbOffsets;
     }
 
-    getAllProvides(serviceInterfaceName: string): Set<ComponentFragment> {
-        return this.#allProvides.get(serviceInterfaceName) || new Set();
+    getComponentsFor(serviceInterfaceName: string): Set<ComponentFragment> {
+        return this.#servicename2components.getValues(serviceInterfaceName);
     }
 
-    getAllProviding(serviceInterfaceName: string): Set<ReferenceFragment> {
-        return this.#allProviding.get(serviceInterfaceName) || new Set();
+    getReferencesFor(serviceInterfaceName: string): Set<ReferenceFragment> {
+        return this.#servicename2references.getValues(serviceInterfaceName);
     }
 
-    getAllServiceNames(): Set<string> {
+    getProvides(): Set<StringFragment> {
+        return this.#provides;
+    }
+
+    getProviding(): Set<StringFragment> {
+        return this.#providing;
+    }
+
+    getServiceNames(): Set<string> {
         return this.#allServiceNames;
+    }
+
+    getComponents(): ComponentFragment[] {
+        return this.#components;
     }
 
     /**
@@ -198,41 +212,25 @@ export default class ManifestDocument {
      * @param line zero-based line number
      */
     getStringFragmentsOnLine(line: number) {
-        return this.#line2StringValue.get(line);
+        return this.#line2StringValue.getValues(line);
+    }
+
+    getStringFragmentLines() {
+        return [...this.#line2StringValue.getKeys()];
     }
 
 
-    registerStringFragment(fragment: StringFragment) {
-        const line = fragment.section.start.line;
-        let lineFragments = this.#line2StringValue.get(line);
-        if (!lineFragments) {
-            lineFragments = new Set<StringFragment>(); 
-            this.#line2StringValue.set(line, lineFragments);
-        }
-        lineFragments.add(fragment);
-    }
-
-    private registerProvides(provides: StringFragment[], component: ComponentFragment) {
+    private registerComponent(provides: StringFragment[], component: ComponentFragment) {
         provides.forEach((providesItem) => {
             const serviceName = providesItem.value;
-            let allComponents = this.#allProvides.get(serviceName);
-            if (!allComponents) {
-                allComponents = new Set();
-                this.#allProvides.set(serviceName, allComponents);
-            }
-            allComponents.add(component);
+            this.#servicename2components.index(serviceName, component);
             this.#allServiceNames.add(serviceName);
         });
     }
 
     private registerProviding(providing: StringFragment, reference: ReferenceFragment) {
         const serviceName = providing.value;
-        let allReferences = this.#allProviding.get(serviceName);
-        if (!allReferences) {
-            allReferences = new Set();
-            this.#allProviding.set(serviceName, allReferences);
-        }
-        allReferences.add(reference);
+        this.#servicename2references.index(serviceName, reference);
         this.#allServiceNames.add(serviceName);
     }
 
@@ -250,12 +248,12 @@ export default class ManifestDocument {
             if (!nameNode) {
                 return [];
             }
-            const component = new ComponentFragment(new StringFragment("name", nameNode.value, this.sectionFor(nameNode)),this.sectionFor(componentNode));
+            const component = new ComponentFragment(new StringFragment("name", nameNode.value, this.sectionFor(nameNode), ValueType.unknown),this.sectionFor(componentNode));
             const provides = this.parseProvides(componentNode);
             component.addProvides(...provides);
             component.addReferences(...this.parseReferences(componentNode));
 
-            this.registerProvides(provides, component);
+            this.registerComponent(provides, component);
             return [component];
         });
     }
@@ -279,8 +277,21 @@ export default class ManifestDocument {
 
     private buildAndRegisterStringFragment(key: string, node: json.Node, type: ValueType): StringFragment {
         const fragment = new StringFragment(key, node.value, this.sectionFor(node), type);
+        if (type === ValueType.provides) {
+            // this.#servicename2provides.index(node.value, fragment);
+            this.#provides.add(fragment);
+        }
+        if (type === ValueType.referenceProviding) {
+            // this.#servicename2providing.index(node.value, fragment);
+            this.#providing.add(fragment);
+        }
         this.registerStringFragment(fragment);
         return fragment;
+    }
+
+    private registerStringFragment(fragment: StringFragment) {
+        const line = fragment.section.start.line;
+        this.#line2StringValue.index(line, fragment);
     }
 
     private parseReferences(componentNode: json.Node): ReferenceFragment[] {
@@ -299,7 +310,7 @@ export default class ManifestDocument {
             if (!providingNode) {
                 return [];
             }
-            const nameElement = new StringFragment("name", nameNode.value, this.sectionFor(nameNode));
+            const nameElement = new StringFragment("name", nameNode.value, this.sectionFor(nameNode), ValueType.unknown);
             const providingProp = this.buildAndRegisterStringFragment("providing", providingNode, ValueType.referenceProviding);
             const referenceFragment = new ReferenceFragment(nameElement, this.sectionFor(referenceNode), providingProp);
             this.registerProviding(providingProp, referenceFragment);
@@ -307,10 +318,6 @@ export default class ManifestDocument {
             return [referenceFragment];
         });
 
-    }
-
-    getComponents(): ComponentFragment[] {
-        return this.#components;
     }
 
     private sectionFor(node: json.Node) {

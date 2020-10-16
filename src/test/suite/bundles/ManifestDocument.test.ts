@@ -93,7 +93,7 @@ suite("ManifestDocument", function () {
       1
     );
 
-    assert.deepEqual(manifest.getAllProviding("A2").values().next().value.getProviding(), {
+    assert.deepEqual(manifest.getReferencesFor("A2").values().next().value.getProviding(), {
       value: "A2",
       key: "providing",
       section: {
@@ -105,18 +105,42 @@ suite("ManifestDocument", function () {
 
   });
 
-  test("All 'provides' elements are returned if requested by correct service name", async function () {
+  test("All components are returned if requested by correct service name", async function () {
     const manifest = await ManifestDocument.fromString(jsonFile);
-    assert.equal(manifest.getAllProvides("A1").size, 1);
-    assert.equal(manifest.getAllProvides("A2").size, 1);
-    assert.equal(manifest.getAllProvides("A3").size, 0);
+    assert.equal(manifest.getComponentsFor("A1").size, 1);
+    assert.equal(manifest.getComponentsFor("A2").size, 1);
+    assert.equal(manifest.getComponentsFor("B1").size, 1);
+    assert.equal(manifest.getComponentsFor("A3").size, 0);
   });
 
-  test("All 'providing' elements are returned if requested by correct service name", async function () {
+  test("All references are returned if requested by correct service name", async function () {
     const manifest = await ManifestDocument.fromString(jsonFile);
-    assert.equal(manifest.getAllProviding("A2").size, 1);
-    assert.equal(manifest.getAllProviding("A1").size, 0);
+    assert.equal(manifest.getReferencesFor("A2").size, 1);
+    assert.equal(manifest.getReferencesFor("A1").size, 0);
   });
+
+  test("All 'provides' elements are returned", async function () {
+    const manifest = await ManifestDocument.fromString(jsonFile);
+    assert.equal(manifest.getProvides().size, 3);
+  });
+
+  test("All 'providing' elements are returned", async function () {
+    const manifest = await ManifestDocument.fromString(jsonFile);
+    assert.equal(manifest.getProviding().size, 1);
+  });
+  // test("All 'provides' elements are returned if requested by correct service name", async function () {
+  //   const manifest = await ManifestDocument.fromString(jsonFile);
+  //   assert.equal(manifest.getProvidesFor("A1").size, 1);
+  //   assert.equal(manifest.getProvidesFor("A2").size, 1);
+  //   assert.equal(manifest.getProvidesFor("B1").size, 1);
+  //   assert.equal(manifest.getProvidesFor("A3").size, 0);
+  // });
+
+  // test("All 'providing' elements are returned if requested by correct service name", async function () {
+  //   const manifest = await ManifestDocument.fromString(jsonFile);
+  //   assert.equal(manifest.getProvidingFor("A2").size, 1);
+  //   assert.equal(manifest.getProvidingFor("A1").size, 0);
+  // });
 
 
   test("StringFragment found for line number", async function () {
@@ -124,9 +148,6 @@ suite("ManifestDocument", function () {
     assert.equal(manifest.getStringFragmentsOnLine(6)?.size, 2);
     assert.equal(manifest.getStringFragmentsOnLine(17)?.size, 1);
   });
-
-  
-  
   
   
 });
