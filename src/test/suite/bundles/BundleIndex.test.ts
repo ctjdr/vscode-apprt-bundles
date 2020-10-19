@@ -31,7 +31,7 @@ suite("Manifest Index", function () {
   test("Bundle IDs found by service name", async function () {
 
     let provider: ManifestResolver = {
-        getAllIds: () =>  Promise.resolve(["a", "b"]),
+        getAllUris: () =>  Promise.resolve(["a", "b"]),
         resolve: (id) => id === "a" ? Promise.resolve(jsonFile): Promise.resolve("")
     };
 
@@ -44,20 +44,20 @@ suite("Manifest Index", function () {
   test("Bundle docs found by bundle ID", async function () {
 
     let provider: ManifestResolver = {
-        getAllIds: () =>  Promise.resolve(["a", "b"]),
+        getAllUris: () =>  Promise.resolve(["a", "b"]),
         resolve: (id) => id === "a" ? Promise.resolve(jsonFile): Promise.resolve("")
     };
 
      let index = BundleIndex.create(provider);
      
      await index.update();
-     assert.equal(index.findBundleById("a")?.name, "abc");
+     assert.equal(index.findBundleByUri("a")?.name, "abc");
   });
 
   test("'provides' by service name found", async function () {
 
     let provider: ManifestResolver = {
-        getAllIds: () =>  Promise.resolve(["a", "b"]),
+        getAllUris: () =>  Promise.resolve(["a", "b"]),
         resolve: (id) => id === "a" ? Promise.resolve(jsonFile): Promise.resolve("")
     };
 
@@ -71,7 +71,7 @@ suite("Manifest Index", function () {
   test("'providing' by service name found", async function () {
 
     let provider: ManifestResolver = {
-        getAllIds: () =>  Promise.resolve(["a", "b"]),
+        getAllUris: () =>  Promise.resolve(["a", "b"]),
         resolve: (id) => id === "a" ? Promise.resolve(jsonFile): Promise.resolve("")
     };
 

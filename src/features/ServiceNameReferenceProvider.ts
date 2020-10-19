@@ -35,7 +35,7 @@ export class ServiceNameReferenceProvider implements vscode.ReferenceProvider {
 
         bundlesIds.forEach(id => {
             //Lookup manifest doc
-            const bundleDoc = this.bundleIndex.findBundleById(id);
+            const bundleDoc = this.bundleIndex.findBundleByUri(id);
             if (!bundleDoc) {
                 return;
             }

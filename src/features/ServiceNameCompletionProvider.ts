@@ -10,7 +10,7 @@ export class ServiceNameCompletionProvider implements vscode.CompletionItemProvi
         
         return (async () => {
             await this.bundleIndex.updateDirty();
-            const manifestDoc = this.bundleIndex.findBundleById(document.uri.toString());
+            const manifestDoc = this.bundleIndex.findBundleByUri(document.uri.toString());
             const fragments = manifestDoc?.getStringFragmentsOnLine(position.line);
             if (!fragments || fragments?.size === 0) {
                 return Promise.resolve([]);

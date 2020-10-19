@@ -20,7 +20,7 @@ export class ServiceNameCodeLenseProvider implements vscode.CodeLensProvider {
             const lenses: vscode.CodeLens[] = [];
 
             await this.bundleIndex.updateDirty();
-            const manifestDoc = this.bundleIndex.findBundleById(document.uri.toString());
+            const manifestDoc = this.bundleIndex.findBundleByUri(document.uri.toString());
             if (!manifestDoc) {
                 return Promise.resolve([]);
             }

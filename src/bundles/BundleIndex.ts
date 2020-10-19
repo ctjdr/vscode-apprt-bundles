@@ -1,14 +1,22 @@
-import ManifestDocument, { Fragment, StringFragment } from "./ManifestDocument";
+import ManifestDocument, { StringFragment } from "./ManifestDocument";
 import MultiValueIndex from "./MultiValueIndex";
 
 export interface ManifestResolver {
-    getAllIds(): Promise<string[]>;
-    resolve(id: string): Promise<string>;
+    /**
+     * @returns a list of URIs pointing to manifest.json documents.
+     */
+    getAllUris(): Promise<string[]>;
+
+    /**
+     * 
+     * @param uri URI of a manifest document whose content shall be returned.
+     */
+    resolve(uri: string): Promise<string>;
 }
 
 export class BundleIndex {
     
-    private bundleId2manifestIdx: Map<string, ManifestDocument> = new Map();
+    private uri2manifestIdx: Map<string, ManifestDocument> = new Map();
     private servicename2bundleIdIdx: MultiValueIndex<string, string> = new MultiValueIndex();
     private manifestProvider: ManifestResolver;
     private servicename2provides: MultiValueIndex<string, StringFragment> = new MultiValueIndex();
@@ -33,7 +41,7 @@ export class BundleIndex {
 
         // Should be called "rebuild" and clear index maps before rebuilding
 
-        let ids = await this.manifestProvider.getAllIds();
+        let ids = await this.manifestProvider.getAllUris();
 
         for (const id of ids) {
             await this.updateSingle(id);
@@ -42,13 +50,13 @@ export class BundleIndex {
 
     }
 
-    public async updateSingle(bundleId: string) {
-        let doc = await this.manifestProvider.resolve(bundleId);
+    private async updateSingle(bundleId: string) {
+        let doc = await this.manifestProvider.resolve(bundleId.toString());
         const manifestDoc = await ManifestDocument.fromString(doc);
         console.debug(`Indexing bundle manifest <${bundleId}>`);
         // TODO: This doesn't clean index servicenames->bundleIds correctly: 
         // What if a bundle does not reference a service name any more? The entry is kept although it should be deleted.
-        this.indexManifestDoc(bundleId, manifestDoc);
+        this.indexManifestDoc(bundleId.toString(), manifestDoc);
         this.dirtyIds.delete(bundleId);
     }
 
@@ -67,8 +75,8 @@ export class BundleIndex {
         return this.servicename2bundleIdIdx.getValues(serviceName);
     }
 
-    public findBundleById(bundleId: string): ManifestDocument | undefined {
-        return this.bundleId2manifestIdx.get(bundleId);
+    public findBundleByUri(uri: string): ManifestDocument | undefined {
+        return this.uri2manifestIdx.get(uri);
     }
 
     public getServiceNames(): IterableIterator<string>{
@@ -91,7 +99,7 @@ export class BundleIndex {
     }
     
     private indexDocById(bundleId: string, doc: ManifestDocument) {
-        this.bundleId2manifestIdx.set(bundleId, doc);
+        this.uri2manifestIdx.set(bundleId, doc);
     }
 
     private indexIdByServiceName(bundleId: string, doc: ManifestDocument) {

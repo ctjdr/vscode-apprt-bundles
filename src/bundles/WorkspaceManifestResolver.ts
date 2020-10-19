@@ -1,23 +1,23 @@
-import * as vscode from "vscode";
+import { workspace, Uri } from "vscode";
 import { promises as fs} from "fs";
 import { ManifestResolver } from "./BundleIndex";
 
 export class WorkspaceManifestProvider implements ManifestResolver {
 
 
-    async getAllIds(): Promise<string[]> {
-        return (await vscode.workspace.findFiles("**/manifest.json", "**/target/**/manifest.json")).map(uri => uri.toString());
+    async getAllUris(): Promise<string[]> {
+        return (await workspace.findFiles("**/manifest.json", "**/target/**/manifest.json")).map(uri => uri.toString());
 
     }
     
-    async resolve(id: string): Promise<string> {
-        const openDocs = vscode.workspace.textDocuments;
+    async resolve(uri: string): Promise<string> {
+        const openDocs = workspace.textDocuments;
         for (let doc of openDocs) {
-            if (doc.isDirty && doc.uri.toString() === id) {
+            if (doc.isDirty && doc.uri.toString() === uri) {
                 return doc.getText();
             }
         }
-        const uri = vscode.Uri.parse(id);
-        return await fs.readFile(uri.fsPath, "utf-8");
+        const vscodeUri = Uri.parse(uri);
+        return await fs.readFile(vscodeUri.fsPath, "utf-8");
     }
 }
