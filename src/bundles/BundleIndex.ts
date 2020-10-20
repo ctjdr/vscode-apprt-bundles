@@ -16,11 +16,10 @@ export interface ManifestResolver {
 
 export class BundleIndex {
     
-    private uri2manifestIdx: Map<string, ManifestDocument> = new Map();
-    private servicename2bundleIdIdx: MultiValueIndex<string, string> = new MultiValueIndex();
     private manifestProvider: ManifestResolver;
-    private servicename2provides: MultiValueIndex<string, StringFragment> = new MultiValueIndex();
-    private servicename2providing: MultiValueIndex<string, StringFragment> = new MultiValueIndex();
+    
+    private uri2manifestIdx: Map<string, ManifestDocument> = new Map();
+    private servicename2uriIdx: MultiValueIndex<string, string> = new MultiValueIndex();
 
     private dirtyIds: Set<string> = new Set();
 
@@ -72,7 +71,7 @@ export class BundleIndex {
     }
 
     public findBundleIdsByServiceName(serviceName: string): Set<string> {
-        return this.servicename2bundleIdIdx.getValues(serviceName);
+        return this.servicename2uriIdx.getValues(serviceName);
     }
 
     public findBundleByUri(uri: string): ManifestDocument | undefined {
@@ -80,22 +79,38 @@ export class BundleIndex {
     }
 
     public getServiceNames(): IterableIterator<string>{
-        return this.servicename2bundleIdIdx.getKeys();
+        return this.servicename2uriIdx.getKeys();
     }
 
     public findProvidesFor(servicename: string) {
-        return this.servicename2provides.getValues(servicename);
+        const providesItems: StringFragment[] = [];
+        const manifestCandidateUris = this.servicename2uriIdx.getValues(servicename);
+        for (let manifestUri of manifestCandidateUris) {
+            const manifest = this.uri2manifestIdx.get(manifestUri);
+            if (!manifest) {
+                continue;
+            }
+            providesItems.push(...manifest.getProvidesFor(servicename));
+        }
+        return providesItems;
     }
-
+    
     public findProvidingFor(servicename: string) {
-        return this.servicename2providing.getValues(servicename);
+        const providingItems: StringFragment[] = [];
+        const manifestCandidateUris = this.servicename2uriIdx.getValues(servicename);
+        for (let manifestUri of manifestCandidateUris) {
+            const manifest = this.uri2manifestIdx.get(manifestUri);
+            if (!manifest) {
+                continue;
+            }
+            providingItems.push(...manifest.getProvidingFor(servicename));
+        }
+        return providingItems;
     }
 
     private indexManifestDoc(bundleId: string, doc: ManifestDocument):void {
         this.indexDocById(bundleId, doc);
         this.indexIdByServiceName(bundleId, doc);
-        this.indexProvidesByServiceName(bundleId, doc);
-        this.indexProvidingByServiceName(bundleId, doc);
     }
     
     private indexDocById(bundleId: string, doc: ManifestDocument) {
@@ -104,18 +119,7 @@ export class BundleIndex {
 
     private indexIdByServiceName(bundleId: string, doc: ManifestDocument) {
         doc.getServiceNames().forEach(serviceName => {
-            this.servicename2bundleIdIdx.index(serviceName, bundleId);
-        });
-    }
-    private indexProvidesByServiceName(bundleId: string, doc: ManifestDocument) {
-
-        doc.getProvides().forEach(provides => {
-            this.servicename2provides.index(provides.value, provides);
-        });
-    }
-    private indexProvidingByServiceName(bundleId: string, doc: ManifestDocument) {
-        doc.getProviding().forEach(providing => {
-            this.servicename2providing.index(providing.value, providing);
+            this.servicename2uriIdx.index(serviceName, bundleId);
         });
     }
 }

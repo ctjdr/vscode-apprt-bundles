@@ -11,7 +11,7 @@ const jsonFile = `{
         },
         {
             "name": "B",
-            "provides": "B1"
+            "provides": "A2"
         },
         {
             "name": "R",
@@ -108,8 +108,7 @@ suite("ManifestDocument", function () {
   test("All components are returned if requested by correct service name", async function () {
     const manifest = await ManifestDocument.fromString(jsonFile);
     assert.equal(manifest.getComponentsFor("A1").size, 1);
-    assert.equal(manifest.getComponentsFor("A2").size, 1);
-    assert.equal(manifest.getComponentsFor("B1").size, 1);
+    assert.equal(manifest.getComponentsFor("A2").size, 2);
     assert.equal(manifest.getComponentsFor("A3").size, 0);
   });
 
@@ -121,12 +120,12 @@ suite("ManifestDocument", function () {
 
   test("All 'provides' elements are returned", async function () {
     const manifest = await ManifestDocument.fromString(jsonFile);
-    assert.equal(manifest.getProvides().size, 3);
+    assert.equal(manifest.getProvidesFor("A2").size, 2);
   });
 
   test("All 'providing' elements are returned", async function () {
     const manifest = await ManifestDocument.fromString(jsonFile);
-    assert.equal(manifest.getProviding().size, 1);
+    assert.equal(manifest.getProvidingFor("A2").size, 1);
   });
   // test("All 'provides' elements are returned if requested by correct service name", async function () {
   //   const manifest = await ManifestDocument.fromString(jsonFile);

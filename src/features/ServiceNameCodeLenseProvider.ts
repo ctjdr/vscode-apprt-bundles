@@ -25,14 +25,14 @@ export class ServiceNameCodeLenseProvider implements vscode.CodeLensProvider {
                 return Promise.resolve([]);
             }
             const linesWithFragments = manifestDoc.getStringFragmentLines();
-
+            const t0 = new Date().getTime();
             linesWithFragments.forEach((line) => {
                 manifestDoc.getStringFragmentsOnLine(line)?.forEach((fragment) => {
                     const section = fragment.section;
                     const fragmentType = fragment.type;
                     const mode = fragmentType === ValueType.provides ? "providing" : "provides";
                     const title = fragmentType === ValueType.referenceProviding ? 
-                        `Find provides (${this.bundleIndex.findProvidesFor(fragment.value).size})` : `Find providing (${this.bundleIndex.findProvidingFor(fragment.value).size})`;
+                        `Find provides (${this.bundleIndex.findProvidesFor(fragment.value).length})` : `Find providing (${this.bundleIndex.findProvidingFor(fragment.value).length})`;
                     const lense = new vscode.CodeLens(rangeOfSection(section), {
                         command: "moveCursorAndExecuteFind",
                         title,
@@ -41,6 +41,8 @@ export class ServiceNameCodeLenseProvider implements vscode.CodeLensProvider {
                     lenses.push(lense);
                 });
             });
+            const t1 = new Date().getTime();
+            console.debug(`CodeLense generation took ${t1 - t0} ms`);
             return lenses;
         })();
 

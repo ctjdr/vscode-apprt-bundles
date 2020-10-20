@@ -131,8 +131,8 @@ export default class ManifestDocument {
     #components: ComponentFragment[] = [];
     #servicename2components: MultiValueIndex<string, ComponentFragment> = new MultiValueIndex();
     #servicename2references: MultiValueIndex<string, ReferenceFragment> = new MultiValueIndex();
-    #provides: Set<StringFragment> = new Set();
-    #providing: Set<StringFragment> = new Set();
+    #servicename2provides: MultiValueIndex<string, StringFragment> = new MultiValueIndex();
+    #servicename2providing: MultiValueIndex<string, StringFragment> = new MultiValueIndex();
 
     #allServiceNames: Set<string> = new Set();
     #linebreakOffsets: number[];
@@ -191,12 +191,12 @@ export default class ManifestDocument {
         return this.#servicename2references.getValues(serviceInterfaceName);
     }
 
-    getProvides(): Set<StringFragment> {
-        return this.#provides;
+    getProvidingFor(servicename: string) {
+        return this.#servicename2providing.getValues(servicename);
     }
-
-    getProviding(): Set<StringFragment> {
-        return this.#providing;
+    
+    getProvidesFor(servicename: string) {
+        return this.#servicename2provides.getValues(servicename);
     }
 
     getServiceNames(): Set<string> {
@@ -278,12 +278,10 @@ export default class ManifestDocument {
     private buildAndRegisterStringFragment(key: string, node: json.Node, type: ValueType): StringFragment {
         const fragment = new StringFragment(key, node.value, this.sectionFor(node), type);
         if (type === ValueType.provides) {
-            // this.#servicename2provides.index(node.value, fragment);
-            this.#provides.add(fragment);
+            this.#servicename2provides.index(fragment.value, fragment);
         }
         if (type === ValueType.referenceProviding) {
-            // this.#servicename2providing.index(node.value, fragment);
-            this.#providing.add(fragment);
+            this.#servicename2providing.index(fragment.value, fragment);
         }
         this.registerStringFragment(fragment);
         return fragment;

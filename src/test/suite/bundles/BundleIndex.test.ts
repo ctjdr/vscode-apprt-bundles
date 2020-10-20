@@ -64,8 +64,8 @@ suite("Manifest Index", function () {
      let index = BundleIndex.create(provider);
      
      await index.update();
-     assert.equal(index.findProvidesFor("A1").size, 1);
-     assert.equal(index.findProvidesFor("xyz").size, 0);
+     assert.equal(index.findProvidesFor("A1").length, 1);
+     assert.equal(index.findProvidesFor("xyz").length, 0);
   });
   
   test("'providing' by service name found", async function () {
@@ -78,8 +78,8 @@ suite("Manifest Index", function () {
      let index = BundleIndex.create(provider);
      
      await index.update();
-     assert.equal(index.findProvidingFor("A2").size, 1);
-     assert.equal(index.findProvidingFor("xyz").size, 0);
+     assert.equal(index.findProvidingFor("A2").length, 1);
+     assert.equal(index.findProvidingFor("xyz").length, 0);
   });
 
   test("line breaks", function() {
