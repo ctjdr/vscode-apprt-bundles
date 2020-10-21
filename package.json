@@ -29,6 +29,22 @@
                 "fileMatch": "manifest.json",
                 "url": "./out/schemas/manifest.schema.json"
             }
+        ],
+        "configuration": {
+            "title": "apprt-bundles",
+            "properties": {
+                "apprtbundles.manifest.serviceNameCodeLens.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable/disable code lens for service names in manifest.json files, by default."
+                }
+            }
+        },
+        "commands": [
+            {
+                "command": "apprtbundles.manifest.toggleServiceNameCodeLens",
+                "title": "apprt Bundles: Toggle service name code lens"
+            }
         ]
     },
     "scripts": {

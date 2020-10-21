@@ -6,15 +6,43 @@ import { rangeOfSection } from "./Range";
 
 export class ServiceNameCodeLenseProvider implements vscode.CodeLensProvider {
 
+    private changeEmitter = new vscode.EventEmitter<void>();
+    public readonly onDidChangeCodeLenses = this.changeEmitter.event;
+
+    private codeLensToggleState = false;
+
     constructor(private context: vscode.ExtensionContext, private bundleIndex: BundleIndex) {
         context.subscriptions.push(
-            vscode.commands.registerCommand("moveCursorAndExecuteFind", moveCursorAndExecuteFind));
 
+            vscode.commands.registerCommand("moveCursorAndExecuteFind", moveCursorAndExecuteFind),
+
+            vscode.workspace.onDidChangeConfiguration( configEvt => {
+                if (configEvt.affectsConfiguration("apprtbundles.manifest.serviceNameCodeLens.enabled")) {
+                    this.changeEmitter.fire();
+                    this.updateConfig();
+                }
+            }),
+            vscode.commands.registerCommand("apprtbundles.manifest.toggleServiceNameCodeLens", () => {
+                this.codeLensToggleState = !this.codeLensToggleState;
+                this.changeEmitter.fire();
+            })
+        );
+            
+        this.updateConfig();
     }
-
-    onDidChangeCodeLenses?: vscode.Event<void> | undefined;
-
+        
+    private updateConfig() {
+        const codelensConfig = vscode.workspace.getConfiguration("apprtbundles.manifest.serviceNameCodeLens");
+        this.codeLensToggleState = codelensConfig.get<boolean>("enabled") ?? false;
+        console.debug(`Setting toggle state to ${this.codeLensToggleState}`);
+    }
+        
     provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult<vscode.CodeLens[]> {
+
+
+        if (!this.codeLensToggleState) {
+            return Promise.resolve([]);
+        }
         return (async () => {
 
             const lenses: vscode.CodeLens[] = [];
@@ -32,7 +60,7 @@ export class ServiceNameCodeLenseProvider implements vscode.CodeLensProvider {
                     const fragmentType = fragment.type;
                     const mode = fragmentType === ValueType.provides ? "providing" : "provides";
                     const title = fragmentType === ValueType.referenceProviding ? 
-                        `Find provides (${this.bundleIndex.findProvidesFor(fragment.value).length})` : `Find providing (${this.bundleIndex.findProvidingFor(fragment.value).length})`;
+                        `Peek providers (${this.bundleIndex.findProvidesFor(fragment.value).length})` : `Peek consumers (${this.bundleIndex.findProvidingFor(fragment.value).length})`;
                     const lense = new vscode.CodeLens(rangeOfSection(section), {
                         command: "moveCursorAndExecuteFind",
                         title,

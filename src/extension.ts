@@ -26,7 +26,6 @@ export async function activate(context: vscode.ExtensionContext) {
         bundleIndex.markDirty(evt.document.uri.toString());
     });
 
-
     context.subscriptions.push(
         vscode.languages.registerReferenceProvider(
             manifestFilesSelector, new ServiceNameReferenceProvider(bundleIndex, context)));
