@@ -10,12 +10,12 @@ Supports working with apprt bundles, especially when editing bundle _manifest.js
 2. Open a `manifest.json` file.
 3. Take advantage of the features described below.
 
-3. press CTRL+Space to get code-suggest and auto-complete or hover over a property to get documention hints.
 
 ## Features
 
 ### Validation, documentation, auto-complete for JSON structure
 
+Press CTRL+Space to get code-suggest and auto-complete or hover over a property to get documention hints.
 This feature is implemented based on a JSON Schema file, defining the cornerstones of a manifest.json file.
 
 * Structural _validation_ of manifest.json file
@@ -31,8 +31,8 @@ Finds all occurences in other manifest.json files.
 
 The search can be triggered by the following commands when your cursor is on a value for `"provides"` or `"providing"`:
 
-* \> _Find all References_ (Alt-Shift-F12)
-* \> _Go to References_ (Shift-F12)
+* \> _Find all References_ (`Alt-Shift-F12`)
+* \> _Go to References_ (`Shift-F12`)
 * \> _Peek References_
 
 ![Feature Demo](images/feature_servicename_references.gif)
@@ -52,7 +52,7 @@ Clicking on a lens opens the *Peek References* view inside the current file:
 
 ![Feature Demo](images/feature_servicename_codelens.gif)
 
-Code lenses are enabled by default but can be disabled permanently in the *Settings* under: _> Extensions > apprt-bundles_
+Code lenses are enabled by default but can be disabled permanently in the *Settings* under _> Extensions > apprt-bundles_
 
 If you just want to enable or disable code lenses for service names temporarily, look for *"apprt-bundles: Toggle service name code lens"* in the *Command Palette*. 
 
