@@ -2,7 +2,7 @@
     "name": "vscode-apprt-bundles",
     "displayName": "vscode-apprt-bundles",
     "description": "VS Code extension that supports working with a bundle manifest.json",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "author": {
         "name": "ctjdr"
     },
@@ -43,7 +43,7 @@
         "commands": [
             {
                 "command": "apprtbundles.manifest.toggleServiceNameCodeLens",
-                "title": "apprt Bundles: Toggle service name code lens"
+                "title": "apprt-bundles: Toggle service name code lens"
             }
         ]
     },

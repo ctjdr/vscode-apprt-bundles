@@ -54,7 +54,7 @@ Clicking on a lens opens the *Peek References* view inside the current file:
 
 Code lenses are enabled by default but can be disabled permanently in the *Settings* under: _> Extensions > apprt-bundles_
 
-If you just want to enable or disable code lenses for service names temporarily, look for *"apprt Bundles: Toggle service name code lens"* in the *Command Palette*. 
+If you just want to enable or disable code lenses for service names temporarily, look for *"apprt-bundles: Toggle service name code lens"* in the *Command Palette*. 
 
 ## Upcoming
 
