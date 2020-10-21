@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { BundleIndex } from "./bundles/BundleIndex";
-import { ServiceNameCodeLenseProvider } from "./features/ServiceNameCodeLenseProvider";
+import { ServiceNameCodeLensProvider } from "./features/ServiceNameCodeLensProvider";
 import { ServiceNameCompletionProvider } from "./features/ServiceNameCompletionProvider";
 import { ServiceNameReferenceProvider } from "./features/ServiceNameReferenceProvider";
 
@@ -36,7 +36,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
         vscode.languages.registerCodeLensProvider(manifestFilesSelector,
-            new ServiceNameCodeLenseProvider(context, bundleIndex)));
+            new ServiceNameCodeLensProvider(context, bundleIndex)));
 
     return Promise.resolve();
 }

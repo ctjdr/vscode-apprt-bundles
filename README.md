@@ -44,7 +44,7 @@ The list of service names available for completion is made up by all service nam
 
 ## Upcoming
 
-* Service name references CodeLense: Click on a small link right above a `"provides"` or `"providing"` element to navigate to service name references.
+* Service name references CodeLens: Click on a small link right above a `"provides"` or `"providing"` element to navigate to service name references.
 
 ## Further ideas
 

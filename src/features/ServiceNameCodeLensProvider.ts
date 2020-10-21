@@ -4,7 +4,7 @@ import { BundleIndex } from "../bundles/BundleIndex";
 import { rangeOfSection } from "./Range";
 
 
-export class ServiceNameCodeLenseProvider implements vscode.CodeLensProvider {
+export class ServiceNameCodeLensProvider implements vscode.CodeLensProvider {
 
     private changeEmitter = new vscode.EventEmitter<void>();
     public readonly onDidChangeCodeLenses = this.changeEmitter.event;
@@ -61,16 +61,16 @@ export class ServiceNameCodeLenseProvider implements vscode.CodeLensProvider {
                     const mode = fragmentType === ValueType.provides ? "providing" : "provides";
                     const title = fragmentType === ValueType.referenceProviding ? 
                         `Peek providers (${this.bundleIndex.findProvidesFor(fragment.value).length})` : `Peek consumers (${this.bundleIndex.findProvidingFor(fragment.value).length})`;
-                    const lense = new vscode.CodeLens(rangeOfSection(section), {
+                    const lens = new vscode.CodeLens(rangeOfSection(section), {
                         command: "moveCursorAndExecuteFind",
                         title,
                         arguments: [document, new vscode.Position(section.start.line, section.start.col), this.context, mode]
                     });
-                    lenses.push(lense);
+                    lenses.push(lens);
                 });
             });
             const t1 = new Date().getTime();
-            console.debug(`CodeLense generation took ${t1 - t0} ms`);
+            console.debug(`CodeLens generation took ${t1 - t0} ms`);
             return lenses;
         })();
 
