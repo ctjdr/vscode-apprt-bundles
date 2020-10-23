@@ -117,8 +117,8 @@ export class ComponentFragment implements Fragment {
 
 };
 
+let i: number = 0;
 function* unknownName(): Generator<string> {
-    let i: number = 0;
     while (true) {
         yield "unknown-name-" + (i++);
     }
@@ -235,7 +235,8 @@ export default class ManifestDocument {
     }
 
     private parseName(manifestNode: json.Node): string | undefined {
-        return json.findNodeAtLocation(manifestNode, ["name"])?.value?.toString();
+        const nameNode = json.findNodeAtLocation(manifestNode, ["name"]) || json.findNodeAtLocation(manifestNode, ["Bundle-SymbolicName"]);
+        return nameNode?.value?.toString();
     }
 
     private parseComponents(manifestNode: json.Node): ComponentFragment[] {
