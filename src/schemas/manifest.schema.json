@@ -354,6 +354,9 @@
         },
         "Components": {
             "type": "array",
+            "items": {
+                "$ref": "component.schema.json"
+            },
             "description": "DEPRECATED. Use 'components'."
         },
         "Product-Name": {

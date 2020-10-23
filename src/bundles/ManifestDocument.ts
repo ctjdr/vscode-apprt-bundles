@@ -240,7 +240,7 @@ export default class ManifestDocument {
     }
 
     private parseComponents(manifestNode: json.Node): ComponentFragment[] {
-        const componentsNode = json.findNodeAtLocation(manifestNode, ["components"]);
+        const componentsNode = json.findNodeAtLocation(manifestNode, ["components"]) || json.findNodeAtLocation(manifestNode, ["Components"]);
         if (!componentsNode?.children) {
             return [];
         }
