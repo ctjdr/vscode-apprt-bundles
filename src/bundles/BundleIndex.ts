@@ -70,6 +70,10 @@ export class BundleIndex {
         }
     }
 
+    public getBundles() {
+        return this.uri2manifestIdx.entries();
+    }
+
     public findBundleIdsByServiceName(serviceName: string): Set<string> {
         return this.servicename2uriIdx.getValues(serviceName);
     }

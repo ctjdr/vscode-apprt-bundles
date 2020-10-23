@@ -37,6 +37,16 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Enable/disable code lens for service names in manifest.json files, by default."
+                },
+                "apprtbundles.bundles.reveal.goal": {
+                    "type": "string",
+                    "enum": ["folder","manifest"],
+                    "enumDescriptions": [
+                        "Reveals/highlights the bundle's folder in the Explorer",
+                        "Reveals/highlights the bundle's manifest.json file in the Explorer"
+                    ],
+                    "default": "folder",
+                    "description": "Select the element in the Explorer that is revealed when calling the 'Open bundle' command"
                 }
             }
         },
@@ -44,6 +54,10 @@
             {
                 "command": "apprtbundles.manifest.toggleServiceNameCodeLens",
                 "title": "apprt-bundles: Toggle service name code lens"
+            },
+            {
+                "command": "apprtbundles.bundles.reveal",
+                "title": "apprt-bundles: Open bundle"
             }
         ]
     },
