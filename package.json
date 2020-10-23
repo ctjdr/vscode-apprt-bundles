@@ -38,7 +38,7 @@
                     "default": true,
                     "description": "Enable/disable code lens for service names in manifest.json files, by default."
                 },
-                "apprtbundles.bundles.reveal.goal": {
+                "apprtbundles.bundles.reveal.goal.type": {
                     "type": "string",
                     "enum": ["folder","manifest"],
                     "enumDescriptions": [
@@ -46,7 +46,12 @@
                         "Reveals/highlights the bundle's manifest.json file in the Explorer"
                     ],
                     "default": "folder",
-                    "description": "Select the element in the Explorer that is revealed when calling the 'Open bundle' command"
+                    "description": "Select the element in the Explorer that is revealed when calling the 'Open bundle' command."
+                },
+                "apprtbundles.bundles.reveal.goal.expandFolder": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Enable/disable automatic bundle folder expansion when calling the 'Open bundle' command. Only relevent if `#apprtbundles.bundles.reveal.goal#` is set to `folder`"
                 }
             }
         },
