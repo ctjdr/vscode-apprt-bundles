@@ -38,7 +38,7 @@ suite("ManifestDocument", function () {
         "version": "1.0"
        }`
     );
-    assert.equal(manifest.name, "unknown-name-0");
+    assert.isTrue(manifest.name.startsWith("unknown-name-"));
   });
 
   test("All components are detected with correct sections", async function () {
