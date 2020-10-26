@@ -27,7 +27,7 @@
         "jsonValidation": [
             {
                 "fileMatch": "manifest.json",
-                "url": "./out/schemas/manifest.schema.json"
+                "url": "apprtbundles://schemas/manifest.schema.json"
             }
         ],
         "configuration": {
@@ -56,6 +56,10 @@
             }
         },
         "commands": [
+            {
+                "command": "apprtbundles.manifest.toggleSchemaValidation",
+                "title": "apprt-bundles: Toggle schema validation"
+            },
             {
                 "command": "apprtbundles.manifest.toggleServiceNameCodeLens",
                 "title": "apprt-bundles: Toggle service name code lens"
