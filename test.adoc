@@ -1,6 +1,5 @@
 = Test
-
-:toc:
+:toc: macro
 
 image:https://github.com/ctjdr/vscode-apprt-bundles/workflows/Node.js%20CI/badge.svg?branch=master[Node.js
 CI]
@@ -21,6 +20,8 @@ _manifest.json_ files.
 
 [[manifestjson-features]]
 === manifest.json Features
+
+toc::[]
 
 ==== Documentation of properties
 
