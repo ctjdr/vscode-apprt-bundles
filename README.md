@@ -28,7 +28,7 @@ Find errors before your bundle gets loaded!
 
 ![Documentation hover](images/feature_manifest_validation.png)
 
-## Auto-completion & auto-suggest
+### Auto-completion & auto-suggest
 
 Press CTRL+Space to get code-suggest and auto-complete for most of the properties.
 Creating a new `"compomnent"` with `"references"` will only take a few seconds.
