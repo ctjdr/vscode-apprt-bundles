@@ -11,15 +11,28 @@ Supports working with apprt bundles, especially when editing bundle _manifest.js
 3. Take advantage of the features described below.
 
 
-## Features
+## manifest.json Features
 
-### Validation, documentation, auto-complete for JSON structure
+### Documentation of properties
 
-Press CTRL+Space to get code-suggest and auto-complete or hover over a property to get documention hints.
-This feature is implemented based on a JSON Schema file, defining the cornerstones of a manifest.json file.
+No idea what the property `"optionalDependencies"` is good for or what its effect is?
+Just hover over any standard property to get additional information you otherwise needed to look up in the official docs.
+Links inside the popups take you to the official docs directly if you need to know more.
 
-* Structural _validation_ of manifest.json file
-* _Documentation hints_ for the elements of a manifest file.
+![Documentation hover](images/feature_manifest_doc.png)
+
+### Validation
+
+Syntactical validation of manifest.json files will help you find those "simple" errors that would cost you valuable time.
+Find errors before your bundle gets loaded!
+
+![Documentation hover](images/feature_manifest_validation.png)
+
+## Auto-completion & auto-suggest
+
+Press CTRL+Space to get code-suggest and auto-complete for most of the properties.
+Creating a new `"compomnent"` with `"references"` will only take a few seconds.
+
 * _Auto-complete_ and _code suggest_ for manifest JSON structural elements
 
 ![Feature Demo](images/demo.gif)
