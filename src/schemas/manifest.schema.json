@@ -145,7 +145,7 @@
                 "type":"string"
             },
             "default": ["bundle"],
-            "description": "Names of the i18n files. Defaults to ['bundle'] if 'bundle':'true' is set.\nMust be set to [] (empty array) if no i18n files are provided (i.e. to disable i18n).\n For details, see https://docs.conterra.de/en/mapapps/latest/developersguide/osgi-runtime/module-layer.html#i18n.",
+            "description": "Names of the i18n files. Defaults to ['bundle'] if 'bundle':'true' is set.\nMust be set to [] (empty array) if no i18n files are provided (i.e. to disable i18n).\n For details, see https://docs.conterra.de/en/mapapps/latest/developersguide/osgi-runtime/module-layer.html#i18n .",
             "examples": [
                 [],
                 ["bundle"]
