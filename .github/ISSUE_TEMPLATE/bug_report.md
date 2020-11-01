@@ -20,13 +20,17 @@ Steps to reproduce the behavior:
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
+**Actual behavior**
+A clear and concise description of what exactly happens instead.
+
+
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
  - OS: [e.g. iOS]
- - VS Code version [e.g. 1.50.1]
- - vscode-apprt-bundles extension version [e.g. 0.0.5]
+ - VS Code version: [e.g. 1.50.1]
+ - vscode-apprt-bundles extension version: [e.g. 0.0.5]
 
 **Additional context**
 Add any other context about the problem here.
