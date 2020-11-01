@@ -38,9 +38,17 @@
                     "default": true,
                     "description": "Enable/disable code lens for service names in manifest.json files, by default."
                 },
+                "apprtbundles.manifest.documentationTooltips.enabled": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Enable/disable documentation tooltips for manifest.json properties."
+                },
                 "apprtbundles.bundles.reveal.goal.type": {
                     "type": "string",
-                    "enum": ["folder","manifest"],
+                    "enum": [
+                        "folder",
+                        "manifest"
+                    ],
                     "enumDescriptions": [
                         "Reveals/highlights the bundle's folder in the Explorer",
                         "Reveals/highlights the bundle's manifest.json file in the Explorer"
@@ -57,8 +65,8 @@
         },
         "commands": [
             {
-                "command": "apprtbundles.manifest.toggleSchemaValidation",
-                "title": "apprt-bundles: Toggle schema validation"
+                "command": "apprtbundles.manifest.toggleDocumentationTooltips",
+                "title": "apprt-bundles: Toggle manifest documentation"
             },
             {
                 "command": "apprtbundles.manifest.toggleServiceNameCodeLens",
@@ -85,6 +93,7 @@
         "get-version": "echo $npm_package_version"
     },
     "dependencies": {
+        "@apidevtools/json-schema-ref-parser": "^9.0.6",
         "jsonc-parser": "^2.3.1"
     },
     "devDependencies": {
