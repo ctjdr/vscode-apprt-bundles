@@ -20,23 +20,24 @@ export async function activate(context: vscode.ExtensionContext) {
     );
 
     console.debug("Indexing bundles...");
-    const bundleIndex = BundleIndex.createDefault();
-    let message = await bundleIndex.update();
+    const bundleIndex = BundleIndex.createDefault(new vscode.EventEmitter<void>());
+    let message = await bundleIndex.rebuild();
     console.debug("Indexing bundles finished. " + message);
 
-    const documentChangeHandler = (evt: vscode.TextDocumentChangeEvent): void => {
-        const doc = evt.document;
-        if (vscode.languages.match(manifestFilesSelector, doc) === 0) {
-            return;
+    context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((evt) => {
+            if (vscode.languages.match(manifestFilesSelector, evt.document) === 0) {
+                return;
+            }
+            bundleIndex.markDirty(evt.document.uri.toString());
         }
-        bundleIndex.markDirty(evt.document.uri.toString());
-    };
-    
+    ));
+
+
     context.subscriptions.push(
-
+        
+        bundleIndex,
+        
         ...new BundleQuickPicker(bundleIndex).register(),
-
-        vscode.workspace.onDidChangeTextDocument(documentChangeHandler),
 
         vscode.languages.registerReferenceProvider(
             manifestFilesSelector, new ServiceNameReferenceProvider(bundleIndex, context)),            

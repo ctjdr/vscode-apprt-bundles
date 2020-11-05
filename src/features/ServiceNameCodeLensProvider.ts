@@ -12,11 +12,24 @@ export class ServiceNameCodeLensProvider implements vscode.CodeLensProvider {
     private codeLensToggleState = false;
 
     constructor(private context: vscode.ExtensionContext, private bundleIndex: BundleIndex) {
+
+        // Reacting to index changes allows to trigger code lens generation for documents not being edited at the moment,
+        // but still open in an editor (eg. in a side-by-side view).
+        // Problem is that activating this would cause code lenses to be requested twice for the document being edited:
+        // 1. VS Code detects the editor change and requests lenses
+        // 2. BundleIndex detect the change and signals an index update
+        // Need to find a solution for that...
+
+        // bundleIndex.onIndexUpdated(() => {
+        //     this.changeEmitter.fire();
+        //     // this.cachedClean = false;
+        // });
+
         context.subscriptions.push(
 
             vscode.commands.registerCommand("moveCursorAndExecuteFind", moveCursorAndExecuteFind),
 
-            vscode.workspace.onDidChangeConfiguration( configEvt => {
+            vscode.workspace.onDidChangeConfiguration(configEvt => {
                 if (configEvt.affectsConfiguration("apprtbundles.manifest.serviceNameCodeLens.enabled")) {
                     this.changeEmitter.fire();
                     this.updateConfig();
@@ -27,56 +40,71 @@ export class ServiceNameCodeLensProvider implements vscode.CodeLensProvider {
                 this.changeEmitter.fire();
             })
         );
-            
+
         this.updateConfig();
     }
-        
+
     private updateConfig() {
         const codelensConfig = vscode.workspace.getConfiguration("apprtbundles.manifest.serviceNameCodeLens");
         this.codeLensToggleState = codelensConfig.get<boolean>("enabled") ?? false;
         console.debug(`Setting toggle state to ${this.codeLensToggleState}`);
     }
-        
-    provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult<vscode.CodeLens[]> {
 
+    provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult<vscode.CodeLens[]> {
+        console.debug(`CodeLens requested`);
 
         if (!this.codeLensToggleState) {
             return Promise.resolve([]);
         }
-        return (async () => {
 
-            const lenses: vscode.CodeLens[] = [];
-
-            await this.bundleIndex.updateDirty();
-            const manifestDoc = this.bundleIndex.findBundleByUri(document.uri.toString());
-            if (!manifestDoc) {
-                return Promise.resolve([]);
+        //return lenses only, if document is asserted to be up to date after no more than 2 secs
+        return this.bundleIndex.assertClean(document.uri.toString(), 2000).then(
+            () => {
+                return this.calcLenses(document);
             }
-            const linesWithFragments = manifestDoc.getStringFragmentLines();
-            const t0 = new Date().getTime();
-            linesWithFragments.forEach((line) => {
-                manifestDoc.getStringFragmentsOnLine(line)?.forEach((fragment) => {
-                    const section = fragment.section;
-                    const fragmentType = fragment.type;
-                    const mode = fragmentType === ValueType.provides ? "providing" : "provides";
-                    const title = fragmentType === ValueType.referenceProviding ? 
-                        `Peek providers (${this.bundleIndex.findProvidesFor(fragment.value).length})` : `Peek consumers (${this.bundleIndex.findProvidingFor(fragment.value).length})`;
-                    const lens = new vscode.CodeLens(rangeOfSection(section), {
-                        command: "moveCursorAndExecuteFind",
-                        title,
-                        arguments: [document, new vscode.Position(section.start.line, section.start.col), this.context, mode]
-                    });
-                    lenses.push(lens);
-                });
-            });
-            const t1 = new Date().getTime();
-            console.debug(`CodeLens generation took ${t1 - t0} ms`);
-            return lenses;
-        })();
-
+        );
     }
 
+    private async calcLenses(document: vscode.TextDocument): Promise<vscode.CodeLens[]> {
+        const lenses: vscode.CodeLens[] = [];
+
+        const manifestDoc = this.bundleIndex.findBundleByUri(document.uri.toString());
+        if (!manifestDoc) {
+            return Promise.resolve([]);
+        }
+        const linesWithFragments = manifestDoc.getStringFragmentLines();
+        const t0 = new Date().getTime();
+        linesWithFragments.forEach((line) => {
+            manifestDoc.getStringFragmentsOnLine(line)?.forEach((fragment) => {
+                const section = fragment.section;
+                const fragmentType = fragment.type;
+                const mode = fragmentType === ValueType.provides ? "providing" : "provides";
+                const title = this.lensMessage(fragmentType, fragment.value);
+                const lens = new vscode.CodeLens(rangeOfSection(section), {
+                    command: "moveCursorAndExecuteFind",
+                    title,
+                    arguments: [document, new vscode.Position(section.start.line, section.start.col), this.context, mode]
+                });
+                lenses.push(lens);
+            });
+        });
+        const t1 = new Date().getTime();
+        console.debug(`CodeLens generation took ${t1 - t0} ms`);
+        return lenses;
+    }
+    private lensMessage(type: ValueType, value: string) {
+        if (value.trim().length > 0) {
+            return type === ValueType.referenceProviding ?
+                `Peek providers (${this.bundleIndex.findProvidesFor(value).length})` : `Peek consumers (${this.bundleIndex.findProvidingFor(value).length})`;
+        } else {
+            return type === ValueType.referenceProviding ?
+                "Peek providers (0)" : "Peek consumers (0)";
+
+        }
+    }
 }
+
+
 async function moveCursorAndExecuteFind(doc: vscode.TextDocument, pos: vscode.Position, context: vscode.ExtensionContext, mode: "provides" | "provding") {
     const activeEditor = vscode.window.activeTextEditor;
     if (!activeEditor) {

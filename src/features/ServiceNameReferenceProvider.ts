@@ -23,7 +23,7 @@ export class ServiceNameReferenceProvider implements vscode.ReferenceProvider {
 
     private async getLocations(document: vscode.TextDocument, position: vscode.Position) {
 
-        await this.bundleIndex.updateDirty();
+        // await this.bundleIndex.updateDirty();
 
         const quotedLookupRef = document.getText(document.getWordRangeAtPosition(position));
         const lookupRef = quotedLookupRef.substring(1, quotedLookupRef.length - 1);

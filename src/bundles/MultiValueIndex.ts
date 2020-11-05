@@ -17,4 +17,30 @@ export default class MultiValueIndex<K, V> {
     getKeys(): IterableIterator<K> {
         return this.#i2v.keys();
     }
+
+    /**
+     * Signal that "value" needs to be removed from all buckets.
+     * Remove the index, if the buckets is empty afterwards
+     * @param value
+     */
+    invalidateValue(value: V): void {
+
+        const keysToDelete: K[] = [];
+
+        for (let entry of this.#i2v.entries()) {
+            const key = entry[0];
+            const bucket = entry[1];
+            if (bucket.has(value)) {
+                if (bucket.size <= 1) {
+                    keysToDelete.push(key);
+                } else {
+                    bucket.delete(value);
+                }
+            }
+        }
+        for (let keyToDelete of keysToDelete) {
+            this.#i2v.delete(keyToDelete);
+        }
+    }
+
 }

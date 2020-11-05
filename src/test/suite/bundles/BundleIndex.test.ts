@@ -37,7 +37,7 @@ suite("Manifest Index", function () {
 
      let index = BundleIndex.create(provider);
      
-     await index.update();
+     await index.rebuild();
      assert.isTrue(index.findBundleIdsByServiceName("A1").has("a"));
   });
 
@@ -50,7 +50,7 @@ suite("Manifest Index", function () {
 
      let index = BundleIndex.create(provider);
      
-     await index.update();
+     await index.rebuild();
      assert.equal(index.findBundleByUri("a")?.name, "abc");
   });
 
@@ -63,7 +63,7 @@ suite("Manifest Index", function () {
 
      let index = BundleIndex.create(provider);
      
-     await index.update();
+     await index.rebuild();
      assert.equal(index.findProvidesFor("A1").length, 1);
      assert.equal(index.findProvidesFor("xyz").length, 0);
   });
@@ -77,7 +77,7 @@ suite("Manifest Index", function () {
 
      let index = BundleIndex.create(provider);
      
-     await index.update();
+     await index.rebuild();
      assert.equal(index.findProvidingFor("A2").length, 1);
      assert.equal(index.findProvidingFor("xyz").length, 0);
   });
