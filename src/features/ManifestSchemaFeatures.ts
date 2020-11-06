@@ -7,8 +7,8 @@ export class ManifestSchemaFeatures {
 
     private schemaProvider: ApprtManifestSchemaProvider;
 
-    constructor() {
-        this.schemaProvider = new ApprtManifestSchemaProvider();
+    constructor(extensionPath: string) {
+        this.schemaProvider = new ApprtManifestSchemaProvider(extensionPath);
         this.updateFromConfig();
     }
 
@@ -51,8 +51,9 @@ class ApprtManifestSchemaProvider implements vscode.TextDocumentContentProvider{
     };
 
 
-    constructor() {
-        $RefParser.bundle("./out/schemas/manifest.schema.json").then((jsonSchema) => {
+    constructor(private extensionPath: string) {
+        console.info(process.cwd());
+        $RefParser.bundle(`${extensionPath}/out/schemas/manifest.schema.json`).then((jsonSchema) => {
             delete jsonSchema["$schema"];
             this.bundledSchema = JSON.stringify(jsonSchema);
         }, (rejected) => {

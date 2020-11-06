@@ -16,7 +16,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     // manifest schema doc provider must be registered before manifest.json files are read the first time.
     context.subscriptions.push(
-        ...new ManifestSchemaFeatures().register()
+        ...new ManifestSchemaFeatures(context.extensionPath).register()
     );
 
     console.debug("Indexing bundles...");
