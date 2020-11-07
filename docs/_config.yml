@@ -35,7 +35,8 @@ baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : "ctjdr/vscode-apprt-bundles"
 # path of fallback teaser image, e.g. "/assets/images/500x300.png"
 teaser                   : "/assets/images/feature_bundle_open01.png"
-logo                     : # path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
+# path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
+logo                     : "/assets/images/feature_bundle_open01.png"
 # overrides the website title displayed in the masthead, use " " for no title
 masthead_title           : " "
 # breadcrumbs            : false # true, false (default)
