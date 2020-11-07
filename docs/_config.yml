@@ -1,3 +1,5 @@
 title: "apprt Bundles VS Code Extension"
 description: []
 remote_theme: "mmistakes/minimal-mistakes@4.21.0"
+plugins:
+  - jekyll-include-cache
