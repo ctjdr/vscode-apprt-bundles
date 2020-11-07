@@ -34,7 +34,7 @@ baseurl                  : # the subpath of your site, e.g. "/blog"
 # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 repository               : "ctjdr/vscode-apprt-bundles"
 # path of fallback teaser image, e.g. "/assets/images/500x300.png"
-teaser                   : "/assets/feature_bundle_open01.png"
+teaser                   : "/assets-foo/feature_bundle_open01.png"
 logo                     : # path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
 # overrides the website title displayed in the masthead, use " " for no title
 masthead_title           : " "
