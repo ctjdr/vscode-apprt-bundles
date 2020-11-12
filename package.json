@@ -2,7 +2,7 @@
     "name": "vscode-apprt-bundles",
     "displayName": "vscode-apprt-bundles",
     "description": "VS Code extension that supports working with a bundle manifest.json",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "author": {
         "name": "ctjdr"
     },
@@ -18,18 +18,16 @@
     "categories": [
         "Other"
     ],
-    "icon": "images/boxes-v3.png",
+    "icon": "logo.png",
     "activationEvents": [
         "*"
     ],
     "main": "./out/extension.js",
     "contributes": {
-        "jsonValidation": [
-            {
-                "fileMatch": "manifest.json",
-                "url": "apprtbundles://schemas/manifest.schema.json"
-            }
-        ],
+        "jsonValidation": [{
+            "fileMatch": "manifest.json",
+            "url": "apprtbundles://schemas/manifest.schema.json"
+        }],
         "configuration": {
             "title": "apprt-bundles",
             "properties": {
@@ -63,8 +61,7 @@
                 }
             }
         },
-        "commands": [
-            {
+        "commands": [{
                 "command": "apprtbundles.manifest.toggleDocumentationTooltips",
                 "title": "apprt-bundles: Toggle manifest documentation"
             },
