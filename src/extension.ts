@@ -19,10 +19,14 @@ export async function activate(context: vscode.ExtensionContext) {
         ...new ManifestSchemaFeatures(context.extensionPath).register()
     );
 
-    console.debug("Indexing bundles...");
-    const bundleIndex = BundleIndex.createDefault(new vscode.EventEmitter<void>());
-    let message = await bundleIndex.rebuild();
-    console.debug("Indexing bundles finished. " + message);
+    
+    
+    let bundleIndex = BundleIndex.createDefault(new vscode.EventEmitter<void>());
+    const indexBundles  = async () => {
+        const message = await bundleIndex.rebuild();
+        vscode.window.setStatusBarMessage(`Finished indexing ${message} bundles.`, 4000);
+    };
+    vscode.window.setStatusBarMessage("Indexing bundles... ", indexBundles());
 
     context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((evt) => {
             if (vscode.languages.match(manifestFilesSelector, evt.document) === 0) {

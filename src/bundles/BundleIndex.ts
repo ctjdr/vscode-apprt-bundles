@@ -72,7 +72,7 @@ export class BundleIndex implements Disposable {
         return new BundleIndex(manifestProvider, updateEmitter);
     }
     
-    public async rebuild(): Promise<string> {
+    public async rebuild(): Promise<number> {
         
         // TODO: Should clear index maps before rebuilding
         
@@ -86,7 +86,7 @@ export class BundleIndex implements Disposable {
         
         this.dirtyRunner = new AsynRunner(this.handleDirtyIds);
         this.dirtyRunner.start();
-        return Promise.resolve(`Indexed ${ids.length} bundles.`);
+        return Promise.resolve(ids.length);
         
     }
     
