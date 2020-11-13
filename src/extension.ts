@@ -9,10 +9,26 @@ import { ServiceNameReferenceProvider } from "./features/ServiceNameReferencePro
 const manifestFilesSelector: vscode.DocumentSelector = {
     language: "json",
     scheme: "file",
-    pattern: "**/src/**/manifest.json"
+    pattern: "**/manifest.json"
+};
+
+const fileExclusion: vscode.DocumentSelector = {
+    language: "json",
+    scheme: "file",
+    pattern: "**/node_modules/**"
 };
 
 export async function activate(context: vscode.ExtensionContext) {
+
+    vscode.commands.registerCommand("apprtbundles.activate", async () => {
+        const decision = await vscode.window.showInformationMessage(
+            "VS Code needs to be reloaded. Otherwise the extension might not work as expected. Unsaved changes will be lost!",
+            {title: "Reload later", reload: false}, { title: "Reload", reload: true});
+
+        if (decision?.reload) {
+            vscode.commands.executeCommand("workbench.action.reloadWindow");
+        }
+    });
 
     // manifest schema doc provider must be registered before manifest.json files are read the first time.
     context.subscriptions.push(
@@ -28,8 +44,9 @@ export async function activate(context: vscode.ExtensionContext) {
     };
     vscode.window.setStatusBarMessage("Indexing bundles... ", indexBundles());
 
-    context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((evt) => {
-            if (vscode.languages.match(manifestFilesSelector, evt.document) === 0) {
+    context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((evt) =>
+        {
+            if (vscode.languages.match(manifestFilesSelector, evt.document) === 0 || vscode.languages.match(fileExclusion, evt.document) !== 0) {
                 return;
             }
             bundleIndex.markDirty(evt.document.uri.toString());

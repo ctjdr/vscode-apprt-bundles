@@ -9,11 +9,10 @@ export class ManifestSchemaFeatures {
 
     constructor(extensionPath: string) {
         this.schemaProvider = new ApprtManifestSchemaProvider(extensionPath);
-        this.updateFromConfig();
     }
-
+    
     register(): vscode.Disposable[] {
-        return [
+        const disposables = [
             vscode.workspace.registerTextDocumentContentProvider("apprtbundles", this.schemaProvider),
             vscode.commands.registerCommand("apprtbundles.manifest.toggleDocumentationTooltips", () => {
                 this.schemaProvider.toggle(Toggle.showDocumentation);
@@ -24,9 +23,11 @@ export class ManifestSchemaFeatures {
                 }
             })
         ];
+        this.updateFromConfig();
+        return disposables;
     }
 
-    updateFromConfig(): void {
+    private updateFromConfig(): void {
         const docTooltipsEnabled = vscode.workspace.getConfiguration("apprtbundles.manifest.documentationTooltips").get<boolean>("enabled") ?? true;
         this.schemaProvider.toggle(Toggle.showDocumentation, docTooltipsEnabled);
     }

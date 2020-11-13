@@ -20,12 +20,13 @@
     ],
     "icon": "logo.png",
     "activationEvents": [
-        "workspaceContains:**/manifest.json"
+        "workspaceContains:**/manifest.json",
+        "onCommand:apprtbundles.activate"
     ],
     "main": "./out/extension.js",
     "contributes": {
         "jsonValidation": [{
-            "fileMatch": "manifest.json",
+            "fileMatch": ["manifest.json", "!/node_modules/**/manifest.json","!/node_modules/manifest.json"],
             "url": "apprtbundles://schemas/manifest.schema.json"
         }],
         "configuration": {
@@ -71,8 +72,11 @@
             },
             {
                 "command": "apprtbundles.bundles.reveal",
-                "title": "apprt-bundles: Open bundle",
-                "enablement": ""
+                "title": "apprt-bundles: Open bundle"
+            },
+            {
+                "command": "apprtbundles.activate",
+                "title": "apprt-bundles: Activate extension"
             }
         ],
         "menus": {
@@ -87,6 +91,10 @@
                 {
                     "command": "apprtbundles.bundles.reveal",
                     "when": "vscode-apprt-bundles:showCommands"
+                },
+                {
+                    "command": "apprtbundles.activate",
+                    "when": "!vscode-apprt-bundles:showCommands"
                 }
             ]
         }
