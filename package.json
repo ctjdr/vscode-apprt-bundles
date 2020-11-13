@@ -20,7 +20,7 @@
     ],
     "icon": "logo.png",
     "activationEvents": [
-        "*"
+        "workspaceContains:**/manifest.json"
     ],
     "main": "./out/extension.js",
     "contributes": {
@@ -71,9 +71,25 @@
             },
             {
                 "command": "apprtbundles.bundles.reveal",
-                "title": "apprt-bundles: Open bundle"
+                "title": "apprt-bundles: Open bundle",
+                "enablement": ""
             }
-        ]
+        ],
+        "menus": {
+            "commandPalette": [{
+                    "command": "apprtbundles.manifest.toggleDocumentationTooltips",
+                    "when": "vscode-apprt-bundles:showCommands"
+                },
+                {
+                    "command": "apprtbundles.manifest.toggleServiceNameCodeLens",
+                    "when": "vscode-apprt-bundles:showCommands"
+                },
+                {
+                    "command": "apprtbundles.bundles.reveal",
+                    "when": "vscode-apprt-bundles:showCommands"
+                }
+            ]
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",

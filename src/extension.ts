@@ -37,6 +37,10 @@ export async function activate(context: vscode.ExtensionContext) {
     ));
 
 
+    vscode.commands.executeCommand('setContext', 'vscode-apprt-bundles:showCommands', true);
+
+
+
     context.subscriptions.push(
         
         bundleIndex,
@@ -59,4 +63,6 @@ export async function activate(context: vscode.ExtensionContext) {
  
 
 
-export function deactivate() { }
+export function deactivate() { 
+    vscode.commands.executeCommand('setContext', 'vscode-apprt-bundles:showCommands', false);
+}
