@@ -116,7 +116,7 @@
         "watch": "npm run copy-json && tsc -watch -p ./",
         "watch-json": "copy-and-watch --watch src/schemas/**/*.json out/schemas/",
         "copy-json": "copyfiles -u 1 src/schemas/* src/test/suite/files/* out/",
-        "pretest": "npm run copy-json && npm run compile && npm run lint",
+        "pretest": "npm run copy-json && npm run test-compile && npm run lint",
         "test": "node ./out/test/runTest",
         "testIt": "node ./out/test/runIntegrationTest",
         "testIt2": "mocha out/test/suite/index.js",
