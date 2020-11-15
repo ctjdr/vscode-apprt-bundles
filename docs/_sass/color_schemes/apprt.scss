@@ -1,0 +1,84 @@
+$body-line-height: 1.7;
+$content-line-height: 1.7;
+$link-color: $blue-200;
+$body-text-color: $grey-dk-200;
+$body-heading-color: $grey-dk-200;
+$root-font-size: 15px;
+$font-size-1: 61px;
+//nav-list items
+// $font-size-4: 61px;
+//h4
+$font-size-3: 15px;
+//running text
+$font-size-5: 15px;
+//h3
+$font-size-6: 22px;
+//h2
+$font-size-7: 30px;
+//h1
+$font-size-9: 40px;
+$sidebar-color: #ffffff;
+#main-content h2,
+#main-content h3 {
+    font-weight: 200 !important;
+}
+
+p>strong {
+    line-height: 30px;
+}
+
+ul>li {
+    margin: 0;
+}
+
+$body-font-family: "Open Sans",
+"Helvetica Neue",
+"Helvetica",
+Arial,
+sans-serif;
+.nav-list .nav-list-item .nav-list-link:hover,
+.nav-list .nav-list-item .nav-list-link.active {
+    background-image: none !important;
+}
+
+footer.site-footer {
+    font-weight: 100;
+    font-size: 12px !important;
+}
+
+.nav-list-link {
+    color: $grey-dk-200;
+}
+
+code {
+    font-size: 0.85em !important;
+}
+
+
+@font-face {
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 700;
+    src: local("Open Sans Bold"), local("OpenSans-Bold"), url(https://themes.googleusercontent.com/static/fonts/opensans/v6/k3k702ZOKiLJc3WVjuplzJ1r3JsPcQLi8jytr04NNhU.woff) format('woff');
+}
+
+@font-face {
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 300;
+    src: local("Open Sans Light"), local("OpenSans-Light"), url(https://themes.googleusercontent.com/static/fonts/opensans/v6/DXI1ORHCpsQm3Vp6mXoaTZ1r3JsPcQLi8jytr04NNhU.woff) format('woff');
+}
+
+@font-face {
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 800;
+    src: local("Open Sans Extrabold"), local("OpenSans-Extrabold"), url(https://themes.googleusercontent.com/static/fonts/opensans/v6/EInbV5DfGHOiMmvb1Xr-hp1r3JsPcQLi8jytr04NNhU.woff) format('woff');
+}
+
+@font-face {
+    font-family: "Open Sans";
+    font-style: normal;
+    font-weight: 400;
+    src: local("Open Sans"), local("OpenSans"), url(https://themes.googleusercontent.com/static/fonts/opensans/v6/K88pR3goAWT7BTt32Z01mz8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
+}
