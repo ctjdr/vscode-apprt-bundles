@@ -54,7 +54,7 @@ class ApprtManifestSchemaProvider implements vscode.TextDocumentContentProvider{
 
     constructor(private extensionPath: string) {
         console.info(process.cwd());
-        $RefParser.bundle(`${extensionPath}/out/schemas/manifest.schema.json`).then((jsonSchema) => {
+        $RefParser.bundle(`${extensionPath}/dist/schemas/manifest.schema.json`).then((jsonSchema) => {
             delete jsonSchema["$schema"];
             this.bundledSchema = JSON.stringify(jsonSchema);
         }, (rejected) => {

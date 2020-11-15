@@ -1,6 +1,6 @@
 .vscode/**
 .vscode-test/**
-out/test/**
+out/**
 src/**
 .gitignore
 .yarnrc
@@ -13,3 +13,4 @@ DEVELOPMENT.md
 docs/**
 .github/**
 images/**
+node_modules/**
