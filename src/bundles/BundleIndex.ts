@@ -47,7 +47,6 @@ export class BundleIndex implements Disposable {
     private handleDirtyIds = async () => {        
         if (this.dirtyIds.size === 0 ) {
             //no new dirty IDs, task can be suspended
-            console.debug(`dirt: No docs dirty. Suspend cleaning docs. ${new Date().toISOString()}`);
             return {suspend: true};
         }
         console.info(`dirt: ${this.dirtyIds.size} docs dirty. Cleaning docs. ${new Date().toISOString()}`);
@@ -93,7 +92,6 @@ export class BundleIndex implements Disposable {
     private async updateSingle(bundleId: string) {
         let doc = await this.manifestProvider.resolve(bundleId.toString());
         const manifestDoc = await ManifestDocument.fromString(doc);
-        console.debug(`Indexing bundle manifest <${bundleId}>`);
         // TODO: This doesn't clean index servicenames->bundleIds correctly: 
         // What if a bundle does not reference a service name any more? The entry is kept although it should be deleted.
         this.indexManifestDoc(bundleId.toString(), manifestDoc);
@@ -103,10 +101,8 @@ export class BundleIndex implements Disposable {
         const preSize = this.dirtyIds.size;
         this.dirtyIds.add(bundleId);
         if (preSize === 0) {
-            console.debug(`dirt: New dirty docs. Resume cleaning docs. ${new Date().toISOString()}`);
             this.dirtyRunner?.resume();
         }
-        console.debug(`${bundleId} marked dirty. Now ${this.dirtyIds.size} marked dirty.`);
     }
     public assertClean(bundleId: string, timeout: number = 2000): Promise<any> {
         if (this.dirtyIds.size === 0 || !this.dirtyIds.has(bundleId)) {
