@@ -1,4 +1,18 @@
 {
     "name": "test",
-    "version": "test-version"
+    "version": "test-version",
+    "components": [
+        {
+            "name": "compo1",
+            "provides": [
+                "provides1"
+            ],
+            "references": [
+                {
+                    "name": "ref1",
+                    "providing": "providing1"
+                }
+            ]
+        }
+    ]
 }

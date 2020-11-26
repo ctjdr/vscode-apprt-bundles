@@ -6,7 +6,7 @@ import { ServiceNameCodeLensProvider } from "./features/ServiceNameCodeLensProvi
 import { ServiceNameCompletionProvider } from "./features/ServiceNameCompletionProvider";
 import { ServiceNameReferenceProvider } from "./features/ServiceNameReferenceProvider";
 
-const manifestFilesSelector: vscode.DocumentSelector = {
+export const manifestFilesSelector: vscode.DocumentSelector = {
     language: "json",
     scheme: "file",
     pattern: "**/manifest.json"
@@ -17,6 +17,10 @@ const fileExclusion: vscode.DocumentSelector = {
     scheme: "file",
     pattern: "**/node_modules/**"
 };
+
+export function noManifestFile(doc: vscode.TextDocument): boolean {
+    return (vscode.languages.match(manifestFilesSelector, doc) === 0 || vscode.languages.match(fileExclusion, doc) !== 0);
+}
 
 export async function activate(context: vscode.ExtensionContext) {
 
@@ -30,13 +34,6 @@ export async function activate(context: vscode.ExtensionContext) {
         }
     });
 
-    // manifest schema doc provider must be registered before manifest.json files are read the first time.
-    context.subscriptions.push(
-        ...new ManifestSchemaFeatures(context.extensionPath).register()
-    );
-
-    
-    
     let bundleIndex = BundleIndex.createDefault(new vscode.EventEmitter<void>());
     const indexBundles  = async () => {
         const message = await bundleIndex.rebuild();
@@ -46,7 +43,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((evt) =>
         {
-            if (vscode.languages.match(manifestFilesSelector, evt.document) === 0 || vscode.languages.match(fileExclusion, evt.document) !== 0) {
+            if (noManifestFile(evt.document)) {
                 return;
             }
             bundleIndex.markDirty(evt.document.uri.toString());
@@ -59,8 +56,12 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
     context.subscriptions.push(
+
+        
         
         bundleIndex,
+
+        ...new ManifestSchemaFeatures(context).register(),
         
         ...new BundleQuickPicker(bundleIndex).register(),
 
@@ -72,7 +73,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
         vscode.languages.registerCodeLensProvider(manifestFilesSelector,
             new ServiceNameCodeLensProvider(context, bundleIndex))
-
     );
 
     return Promise.resolve();
