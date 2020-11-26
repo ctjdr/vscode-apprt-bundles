@@ -47,11 +47,9 @@ export class ServiceNameCodeLensProvider implements vscode.CodeLensProvider {
     private updateConfig() {
         const codelensConfig = vscode.workspace.getConfiguration("apprtbundles.manifest.serviceNameCodeLens");
         this.codeLensToggleState = codelensConfig.get<boolean>("enabled") ?? false;
-        console.debug(`Setting toggle state to ${this.codeLensToggleState}`);
     }
 
     provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult<vscode.CodeLens[]> {
-        console.debug(`CodeLens requested`);
 
         if (!this.codeLensToggleState) {
             return Promise.resolve([]);
