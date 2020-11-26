@@ -9,7 +9,7 @@ const schema4 = require("../../../schemas/layout.schema.json");
 const schema5 = require("../../../schemas/framework.schema.json");
 
 const ajv = new AJV();
-const validat = ajv.addSchema(schema2).addSchema(schema3).addSchema(schema4).addSchema(schema5).compile(schema1);
+const validat = ajv.addSchema(schema2, "https://www.conterra.de/schemas/component.schema.json").addSchema(schema3).addSchema(schema4).addSchema(schema5).compile(schema1);
 
 
 module.exports = function (data: any) {

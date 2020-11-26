@@ -1,6 +1,5 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://www.conterra.de/schemas/component.schema.json",
     "definitions": {
         "reference-type": {
             "type": "object",
@@ -134,7 +133,8 @@
                         {},
                         "privateProperty"
                     ],
-                    "description": "A private property that is NOT part of the component interface and NOT registered as service property."
+                    "description": "A private property that is NOT part of the component interface and NOT registered as service property.",
+                    "description-short": "A private property that is NOT part of the component interface and NOT registered as service property."
                 },
                 "^\\+.+": {
                     "examples": [
@@ -197,7 +197,8 @@
                 "",
                 "myService"
             ],
-            "description": "The name of the component. Used as 'impl' value if 'impl' is not declared. Must be unique inside a bundle."
+            "description": "The name of the component. Used as 'impl' value if 'impl' is not declared. Must be unique inside a bundle.",
+            "description-short": "The name of the component."
         },
         "impl": {
             "type": "string",
@@ -293,7 +294,8 @@
                     "default": ""
                 }
             ],
-            "description": "Single string or array of provided service interfaces used to registered this component at the runtime. A service interface may be referenced by other components using the 'providing' property."
+            "description": "Single string or array of provided service interfaces used to registered this component at the runtime. A service interface may be referenced by other components using the 'providing' property.",
+            "description-short": "Provi"
         },
         "propertiesConstructor": {
             "type": "boolean",
