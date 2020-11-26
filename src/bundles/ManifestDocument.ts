@@ -139,7 +139,7 @@ export default class ManifestDocument {
     readonly name: string;
 
     private constructor(documentContent: string) {
-        this.#linebreakOffsets = this.calcLineBreakOffsets(documentContent);
+        this.#linebreakOffsets = ManifestDocument.calcLineBreakOffsets(documentContent);
         const manifestNode = json.parseTree(documentContent);
         this.#components = this.parseComponents(manifestNode);
         this.name = this.parseName(manifestNode) || unknownName().next().value;
@@ -166,7 +166,7 @@ export default class ManifestDocument {
         };
     }
 
-    private calcLineBreakOffsets(text: string): number[] {
+    public static calcLineBreakOffsets(text: string): number[] {
         const lbOffsets:number[] = [];
 
         let nextLb = 0;
