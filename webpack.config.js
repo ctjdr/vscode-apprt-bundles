@@ -8,7 +8,7 @@
 'use strict';
 
 const path = require('path');
-const CopyPlugin = require('copy-webpack-plugin');
+const SchemaAggregator = require('./src/build/SchemaAggregator');
 
 
 /**@type {import('webpack').Configuration}*/
@@ -45,7 +45,7 @@ const config = {
     ]
   },
   plugins: [
-    new CopyPlugin({patterns: [{ from: "src/schemas", to:"schemas" }]})
+    new SchemaAggregator(__dirname)
   ]
 };
 module.exports = config;
