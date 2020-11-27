@@ -2,9 +2,22 @@
 layout: default
 title: Changelog
 parent: Updates
-nav_order: 100
+nav_order: 1000
 ---
 # Changelog
+
+## 0.2.0 (2020-11-27)
+
+**Enhancements**
+
+- Activate extension only when manifest.json file present in workspace [\#9](https://github.com/ctjdr/vscode-apprt-bundles/issues/9)
+- Indicate extension startup in status bar [\#8](https://github.com/ctjdr/vscode-apprt-bundles/issues/8)
+
+**Bug fixes**
+
+- Use webpack to bundle extension [\#10](https://github.com/ctjdr/vscode-apprt-bundles/issues/10)
+
+
 
 ## 0.1.0 (2020-11-06)
 
