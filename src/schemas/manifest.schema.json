@@ -145,7 +145,7 @@
                 "type":"string"
             },
             "default": ["bundle"],
-            "description": "Names of the i18n files.\n\nDefaults to `['bundle']` if `'bundle':'true'` is set.\nMust be set to `[]` if no i18n files are provided (i.e. to disable i18n).\n\nFor details, see https://docs.conterra.de/en/mapapps/latest/developersguide/osgi-runtime/module-layer.html#i18n .",
+            "description": "Names of the i18n files.\n\nDefaults to `[\"bundle\"]` if `\"bundle\": true` is set.\nMust be set to `[]` if no i18n files are provided (i.e. to disable i18n).\n\nFor details, see https://docs.conterra.de/en/mapapps/latest/developersguide/osgi-runtime/module-layer.html#i18n .",
             "examples": [
                 [],
                 ["bundle"]
@@ -168,7 +168,7 @@
         "layer": {
             "type": "string",
             "default": "",
-            "description": "Name of a `.js` file, which is loaded during the resolve phase of the bundle.\n\nThis file should load all resources required for bundle loading and component resolving, like the implementation class of a component.\nDefaults to `'module'` if `'bundle': 'true'` is set.\nSet to `''` to disable loading a file in any case",
+            "description": "Name of a `.js` file, which is loaded during the resolve phase of the bundle.\n\nThis file should load all resources required for bundle loading and component resolving, like the implementation class of a component.\n\nDefaults to `\"module\"` if `\"bundle\": true` is set.\nSet to `\"\"` to disable loading a file in any case",
             "examples": [
                 "",
                 "module"
@@ -182,7 +182,7 @@
         "bundle": {
             "type": "boolean",
             "default": false,
-            "description": "If set to `true` consuming entities (like the runtime is) will treat this as a _real_ bundle, applying the following defaults, if not specified:\n* `'layer': 'module'`\n* `'main': 'main'`\n* `'i18n':'['bundle']'`\n\nIf requested from the JS Registry, `'bundle': 'true'` is automatically set.\n\nIt is recommended to set this to `true`."
+            "description": "If set to `true` consuming entities (like the runtime is) will treat this as a _real_ bundle, applying the following defaults, if not specified:\n* `\"layer\": \"module\"`\n* `\"main\": \"main\"`\n* `\"i18n\": [\"bundle\"]`\n\nIf requested from the JS Registry, `\"bundle\": true` is automatically set.\n\nIt is recommended to set this to `true`."
         },
         "productName": {
             "type": "string",
@@ -196,7 +196,7 @@
         "main": {
             "type": "string",
             "default": "",
-            "description": "AMD package main file, normally used to trigger i18n loading.\n\nDefaults to `'main'` if `'bundle': 'true'` is set. Set to `''` to disable loading a file in any case."
+            "description": "AMD package main file, normally used to trigger i18n loading.\n\nDefaults to `\"main\"` if `\"bundle\": true` is set. Set to `\"\"` to disable loading a file in any case."
         },
         "configBundleLocation": {
             "type": "string",
@@ -226,12 +226,12 @@
         "autoStartPolicy": {
             "enum": ["yes", "no"],
             "default": "yes",
-            "description": "Defines that this bundle shall be started by the runtime.\n\nSet to `'no'` if bundle startup should be controlled manually."
+            "description": "Defines that this bundle shall be started by the runtime.\n\nSet to `\"no\"` if bundle startup should be controlled manually."
         },
         "activator": {
             "type": "string",
             "default": "",
-            "description": "Specifies a bundle activator class that implements the 'BundleActivator' interface.\n\nIts `start()` and `stop()` methods are called by the runtime when the bundle is started and stopped, respectively."
+            "description": "Specifies a bundle activator class that implements the `BundleActivator` interface.\n\nIts `start(...)` and `stop(...)` methods are called by the runtime when the bundle is started and stopped, respectively."
         },
         "requiredExecutionEnvironment": {
             "type": "array",
@@ -274,102 +274,102 @@
         },
         "Config-Bundle-Location": {
             "type": "string",
-            "description": "_DEPRECATED_.\n\nUse `'configBundleLocation'`."
+            "description": "_DEPRECATED_.\n\nUse `\"configBundleLocation\"`."
         },
         "Bundle-SymbolicName": {
             "type": "string",
-            "description": "_DEPRECATED_.\n\nUse `'name'`."
+            "description": "_DEPRECATED_.\n\nUse `\"name\"`."
         },
         "Bundle-Version": {
             "type": "string",
-            "description": "_DEPRECATED_.\n\nUse `'version'`."
+            "description": "_DEPRECATED_.\n\nUse `\"version\"`."
         },
         "Bundle-Name": {
             "type": "string",
-            "description": "_DEPRECATED_.\n\nUse `'title'`."
+            "description": "_DEPRECATED_.\n\nUse `\"title\"`."
         },
         "Bundle-Description": {
             "type": "string",
-            "description": "_DEPRECATED_.\n\nUse `'description'`."
+            "description": "_DEPRECATED_.\n\nUse `\"description\"`."
         },
         "Bundle-Vendor": {
             "type": "string",
-            "description": "_DEPRECATED_.\n\nUse `'vendor'`."
+            "description": "_DEPRECATED_.\n\nUse `\"vendor\"`."
         },
         "Bundle-Category": {
             "type": "array",
-            "description": "_DEPRECATED_.\n\nUse `'keywords'`."
+            "description": "_DEPRECATED_.\n\nUse `\"keywords\"`."
         },
         "Bundle-ContactAddress": {
             "type": "string",
-            "description": "_DEPRECATED_.\n\nUse `'contactAddress'`."
+            "description": "_DEPRECATED_.\n\nUse `\"contactAddress\"`."
         },
         "Bundle-Copyright": {
             "type": "string",
-            "description": "_DEPRECATED_.\n\nUse `'copyright'`."
+            "description": "_DEPRECATED_.\n\nUse `\"copyright\"`."
         },
         "Bundle-DocURL": {
             "type": "string",
-            "description": "_DEPRECATED_.\n\nUse `'url'`."
+            "description": "_DEPRECATED_.\n\nUse `\"url\"`."
         },
         "Bundle-Main": {
             "type": "string",
-            "description": "_DEPRECATED_.\n\nUse `'main'`."
+            "description": "_DEPRECATED_.\n\nUse `\"main\"`."
         },
         "Bundle-Icon": {
             "type": "object",
-            "description": "_DEPRECATED_.\n\nUse `'icon'`."
+            "description": "_DEPRECATED_.\n\nUse `\"icon\"`."
         },
         "Bundle-Namespace": {
             "type": "string",
-            "description": "_DEPRECATED_.\n\nUse `'namespace'`."
+            "description": "_DEPRECATED_.\n\nUse `\"namespace\"`."
         },
         "Bundle-Layer": {
             "type": "string",
-            "description": "_DEPRECATED_.\n\nUse `'layer'`."
+            "description": "_DEPRECATED_.\n\nUse `\"layer\"`."
         },
         "Bundle-StartLevel": {
             "type": "integer",
-            "description": "_DEPRECATED_.\n\nUse `'startLevel'`."
+            "description": "_DEPRECATED_.\n\nUse `\"startLevel\"`."
         },
         "Bundle-AutoStartPolicy": {
             "type": "string",
-            "description": "_DEPRECATED_.\n\nUse `'autoStartPolicy'`."
+            "description": "_DEPRECATED_.\n\nUse `\"autoStartPolicy\"`."
         },
         "Bundle-Activator": {
             "type": "string",
-            "description": "_DEPRECATED_.\n\nUse `'activator'`."
+            "description": "_DEPRECATED_.\n\nUse `\"activator\"`."
         },
         "Bundle-Localization": {
             "type": "array",
-            "description": "_DEPRECATED_.\n\nUse `'i18n'`."
+            "description": "_DEPRECATED_.\n\nUse `\"i18n\"`."
         },
         "Bundle-RequiredExecutionEnvironment": {
             "type": "array",
-            "description": "_DEPRECATED_.\n\nUse `'requiredExecutionEnvironment'`."
+            "description": "_DEPRECATED_.\n\nUse `\"requiredExecutionEnvironment\"`."
         },
         "Bundle-ExcludedExecutionEnvironment": {
             "type": "array",
-            "description": "_DEPRECATED_.\n\nUse `'excludedExecutionEnvironment'`."
+            "description": "_DEPRECATED_.\n\nUse `\"excludedExecutionEnvironment\"`."
         },
         "Components": {
             "type": "array",
             "items": {
                 "$ref": "component.schema.json"
             },
-            "description": "_DEPRECATED_.\n\nUse `'components'`."
+            "description": "_DEPRECATED_.\n\nUse `\"components\"`."
         },
         "Product-Name": {
             "type": "string",
-            "description": "_DEPRECATED_.\n\nUse `'productName'`."
+            "description": "_DEPRECATED_.\n\nUse `\"productName\"`."
         },
         "Bundle-License": {
             "type": "string",
-            "description": "_DEPRECATED_.\n\nUse `'licenses'`."
+            "description": "_DEPRECATED_.\n\nUse `\"licenses\"`."
         },
         "Require-Bundle": {
             "type": "array",
-            "description": "_DEPRECATED_.\n\nUse `'dependencies'`."
+            "description": "_DEPRECATED_.\n\nUse `\"dependencies\"`."
         },
         "i18n-extension": {
             "type": "array",

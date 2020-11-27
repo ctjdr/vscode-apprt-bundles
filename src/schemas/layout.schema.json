@@ -7,7 +7,7 @@
             "items": {
                 "$ref": "#/definitions/layout-widget"
             },
-            "description": "An array of widget definitions. This mechanism provides a way to link widgets provided in custom bundles into an existing app without having to add new attach points to the layout template.\nSee https://demos.conterra.de/mapapps/resources/jsregistry/root/templates/latest/README.md for details."
+            "description": "An array of widget definitions.\n\nThis mechanism provides a way to link widgets provided in custom bundles into an existing app without having to add new attach points to the layout template.\nSee https://demos.conterra.de/mapapps/resources/jsregistry/root/templates/latest/README.md for details."
         },
         "layout-widget" : {
             "type": "object",
@@ -51,7 +51,7 @@
                     "type": "object"
                 }
             },
-            "description": "A widget. Each widget is an object as described above for the widget property of the TemplateModel component.\nSee https://demos.conterra.de/mapapps/resources/jsregistry/root/templates/latest/COMPONENTS.md for details.",
+            "description": "A widget. Each widget is an object as described above for the widget property of the TemplateModel component.\n\nSee https://demos.conterra.de/mapapps/resources/jsregistry/root/templates/latest/COMPONENTS.md for details.",
             "examples": [
             ]        
         },

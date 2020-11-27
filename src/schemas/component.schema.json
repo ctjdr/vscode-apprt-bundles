@@ -19,7 +19,7 @@
                 },
                 "providing": {
                     "type": "string",
-                    "description": "The service interface name which the requested service must provide. Used to lookup an actual instance at the runtime.",
+                    "description": "The service interface name which the requested service must provide.\n\nUsed to lookup an actual instance at the runtime.",
                     "examples": [
                         "",
                         "ct.framework.api.LogService"
@@ -28,7 +28,7 @@
                 "filter": {
                     "type": "string",
                     "default": "",
-                    "description": "A filter expression to further reduce the requested services specified with the 'providing' property.",
+                    "description": "A filter expression to further reduce the requested services specified with the `\"providing\"` property.",
                     "examples": [
                         "",
                         "(&(useIn=selection)(id={storeId}))",
@@ -41,7 +41,7 @@
                         "static"
                     ],
                     "default": "dynamic",
-                    "description": "'dynamic': Defines that the component instance is able to react dynamically on changes in the bound service set itself. Therefore the runtime is not restarting the component configuration.\n'static': Defines that the component instance is not able to react on dynamic changes in the bound service set. This means the runtime restarts the component configuration on such changes."
+                    "description": "* `\"dynamic\"` (default): Defines that the component instance is able to react dynamically on changes in the bound service set itself. Therefore the runtime is not restarting the component configuration.\n* `\"static\"`: Defines that the component instance is not able to react on dynamic changes in the bound service set. This means the runtime restarts the component configuration on such changes."
                 },
                 "cardinality": {
                     "enum": [
@@ -51,15 +51,15 @@
                         "0..n"
                     ],
                     "default": "1..1",
-                    "description": "'1..1' Selects exactly one target service from the set of target services and a target service must be available to become satisfied. This is the default.\n'0..1': The reference is satisfied if none or more target services are available. Selects one service from the set of target services, if available.\n'1..n': Selects all target services from the set of target services and a target service must be available to become satisfied.\n'0..n': The reference is satisfied if none or more target services are available. Selects all services from the set of target services, if available."
+                    "description": "* `\"1..1\"` (default): Selects exactly one target service from the set of target services and a target service must be available to become satisfied.\n* `\"0..1\"`: The reference is satisfied if none or more target services are available. Selects one service from the set of target services, if available.\n* `\"1..n\"`: Selects all target services from the set of target services and a target service must be available to become satisfied.\n* `\"0..n\"`: The reference is satisfied if none or more target services are available. Selects all services from the set of target services, if available."
                 },
                 "bind": {
                     "type": "string",
-                    "description": "Specifies the method called when an instance of this reference is injected. Defaults to 'set<reference_name>' or 'add<reference_name>, depending on cardinality."
+                    "description": "Specifies the method called when an instance of this reference is injected.\n\nDefaults to `set<reference_name>()` or `add<reference_name>()`, depending on cardinality."
                 },
                 "unbind": {
                     "type": "string",
-                    "description": "Specifies the method called  when an instance of this reference is ejected. Defaults to 'unset<reference_name>' or 'remove<reference_name>, depending on cardinality."
+                    "description": "Specifies the method called  when an instance of this reference is ejected.\n\nDefaults to `unset<reference_name>()` or `remove<reference_name>()`, depending on cardinality."
                 },
                 "noInjection": {
                     "type": "boolean",
@@ -72,7 +72,7 @@
                     "additionalProperties": {
                         "type": "string"
                     },
-                    "description": "DEPRECATED. Use 'on'.\nMapping of event names fired by the reference to handler methods provided by the referencing component.",
+                    "description": "DEPRECATED. Use `\"on\"`.\n\nMapping of event names fired by the reference to handler methods provided by the referencing component.",
                     "examples": [
                         {},
                         {
@@ -142,7 +142,7 @@
                         {},
                         "publicProperty"
                     ],
-                    "description": "A property that is private if there are explicitly declared public properties (using the '+' prefix or being enumerated in 'publicProperties')."
+                    "description": "A property that is private if there are explicitly declared public properties (using the `+` prefix or being enumerated in `\"publicProperties\"`)."
                 },
                 "^[^-+].+": {
                     "examples": [
@@ -197,8 +197,7 @@
                 "",
                 "myService"
             ],
-            "description": "The name of the component. Used as 'impl' value if 'impl' is not declared. Must be unique inside a bundle.",
-            "description-short": "The name of the component."
+            "description": "The name of the component.\n\nUsed as `\"impl\"` value if `\"impl\"` is not declared. Must be unique inside a bundle."
         },
         "impl": {
             "type": "string",
@@ -206,7 +205,7 @@
                 "",
                 "MyService"
             ],
-            "description": "The implementing class of this component used to create an instance of it. The class is load from the module layer. This usually means that it is resolved using the object returned by the 'module.js' file."
+            "description": "The implementing class of this component used to create an instance of it.\n\nThe class is loaded from the module layer. This usually means that it is resolved using the object returned by the `module.js` file."
         },
         "enabled": {
             "type": "boolean",
@@ -216,12 +215,12 @@
         "componentFactory": {
             "type": "boolean",
             "default": "false",
-            "description": "If set to 'true', this component is treated as a factory component.\nA factory component is a special design pattern, because it acts more as a template for the dynamic creation of component configurations based on component descriptions. The SCR parses the component description. If it is satisfied, it registers a service with the interface 'ct.framework.api.ComponentFactory' for this configuration. This service provides a method 'newInstance', which can be used to create new component configurations during runtime. The 'newInstance' method returns a 'ComponentInstance' object, which provides the method 'getInstance' for accessing the real instance and the method 'dispose' for shutting down the component configuration. The caller of 'newInstance' is responsible for the disposal of the created component configuration."
+            "description": "If set to `true`, this component is treated as a factory component.\n\nA factory component is a special design pattern, because it acts more as a template for the dynamic creation of component configurations based on component descriptions. The SCR parses the component description. If it is satisfied, it registers a service with the interface `ct.framework.api.ComponentFactory` for this configuration. This service provides a method `newInstance()`, which can be used to create new component configurations during runtime. The `newInstance` method returns a `ComponentInstance` object, which provides the method `getInstance()` for accessing the real instance and the method `dispose()` for shutting down the component configuration. The caller of `newInstance` is responsible for the disposal of the created component configuration."
         },
         "serviceFactory": {
             "type": "boolean",
             "default": false,
-            "description": "If set to 'true' this component will create a separate service instance for each bundle it is referenced from. This component must have the 'provides' property and must not be 'immediate':true."
+            "description": "If set to `true` this component will create a separate service instance for each bundle it is referenced from.\n\nThis component must have the `\"provides\"` property and must _not_ be `\"immediate\": true`."
         },
         "configPolicy": {
             "enum": [
@@ -229,14 +228,14 @@
                 "ignore"
             ],
             "default": "optional",
-            "description": "Accepted values are 'ignore' or 'optional'. Specifies if a configuration element must be available at the Configuration Admin Service."
+            "description": "Accepted values are `\"ignore\"` and `\"optional\"`. Specifies if a configuration element must be available at the Configuration Admin Service."
         },
         "immediate": {
             "oneOf": [
                 {
                     "type": "boolean",
                     "default": false,
-                    "description": "If set to 'true', this component is instantly created as soon as all references are satisfied. Must not be a factory component."
+                    "description": "If set to `true`, this component is instantly created as soon as all references are satisfied.\n\nMust not be a factory component."
                 },
                 {
                     "type": "string",
@@ -245,7 +244,7 @@
                         "true",
                         "false"
                     ],
-                    "description": "DEPRECATED. Use boolean value."
+                    "description": "_DEPRECATED_. Use boolean value."
                 }
             ]
         },
@@ -267,7 +266,7 @@
         "instanceFactory": {
             "type": "boolean",
             "default": false,
-            "description": "If set to 'true' this component does not register an instance of its 'impl' class but creates an instance (of another class) to be registered as service. Must implement the method 'createInstance'. Implementation of the method 'destroyInstance' is optional. Method names can be overwritten by specifying the properties 'createInstance' and 'destroyInstance', respectively.\nMainly used to wrap an instance of a class that should or cannot not be \"polluted\" by framework code."
+            "description": "If set to `true` this component does not register an instance of its `\"impl\"` class but creates an instance (of another class) to be registered as service.\n\nMust implement the method `createInstance()`. Implementation of the method `destroyInstance()` is optional. Method names can be overwritten by specifying the properties `\"createInstance\"` and `\"destroyInstance\"`, respectively.\nMainly used to wrap an instance of a class that should or cannot not be \"polluted\" by framework code."
         },
         "createInstance": {
             "type": "string",
@@ -294,31 +293,30 @@
                     "default": ""
                 }
             ],
-            "description": "Single string or array of provided service interfaces used to registered this component at the runtime. A service interface may be referenced by other components using the 'providing' property.",
-            "description-short": "Provi"
+            "description": "Single string or array of provided service interfaces used to registered this component at the runtime.\n\nA service interface may be referenced by other components using the `\"providing\"` property."
         },
         "propertiesConstructor": {
             "type": "boolean",
             "default": false,
-            "description": "If set to 'true', the component properties are passed as options to the constructor of the implementing class."
+            "description": "If set to `true`, the component properties are passed as options to the constructor of the implementing class."
         },
         "properties": {
             "$ref": "#/definitions/property-type",
-            "description": "Configuration properties of this component. If the component provides a service interface (i.e. 'provides' is defined), public properties are available to service users.\nProperties may be accessed as 'this._properties.<propName>' within methods of the implementation class."
+            "description": "Configuration properties of this component.\n\nIf the component provides a service interface (i.e. `\"provides\"` is defined), public properties are available to service users.\n\nProperties may be accessed as `this._properties.<propName>` within methods of the implementation class."
         },
         "publicProperties": {
             "type": "array",
             "items": {
                 "uniqueItems": true
             },
-            "description": "Names of 'properties' entries that are public. If used, all other properties become private."
+            "description": "Names of `\"properties\"` entries that are public.\n\nIf used, all other properties become private."
         },
         "privateProperties": {
             "type": "array",
             "items": {
                 "uniqueItems": true
             },
-            "description": "Names of 'properties' entries that are private."
+            "description": "Names of `\"properties\"` entries that are private."
         },
         "references": {
             "type": "array",
@@ -329,5 +327,5 @@
             "description": "An array of references to other services registered in the runtime."
         }
     },
-    "description": "Declaration of a component.\nSee https://docs.conterra.de/en/mapapps/latest/developersguide/osgi-runtime/declarative-components.html for details."
+    "description": "Declaration of a component.\n\nSee https://docs.conterra.de/en/mapapps/latest/developersguide/osgi-runtime/declarative-components.html for details."
 }
