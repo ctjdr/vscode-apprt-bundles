@@ -4,11 +4,11 @@
     "definitions": {
         "Framework-Startlevel-Beginning": {
             "type": "integer",
-            "description": "Specifies the beginning start level of the framework."
+            "markdownDescription": "Specifies the beginning start level of the framework."
         },
         "Framework-Startlevel-Running": {
             "type": "integer",
-            "description": "Specifies the start level of the framework if it is running."
+            "markdownDescription": "Specifies the start level of the framework if it is running."
         },
         "Components-Create-On-Starting": {
             "type": "boolean",
