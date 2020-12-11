@@ -13,17 +13,17 @@ class SchemaAggregator {
     apply(compiler) {
         compiler.hooks.afterCompile.tap("SchemaAggregator", (compilation) => {
             $RefParser.bundle(path.resolve(this.srcSchemaPath, "manifest.schema.json")).then((jsonSchema) => {
-                delete jsonSchema["$schema"];
-                this.processDescriptions(jsonSchema, (obj) => {
-                    const description = obj["description"];
-                    delete obj["description"];
-                    obj["description-short"] = description;
-                });
-                const bundledSchema = JSON.stringify(jsonSchema);
                 if (!fs.existsSync(this.targetSchemaPath)) {
                     fs.mkdirSync(this.targetSchemaPath, {recursive: true});
                 }
-                fs.writeFileSync(path.resolve(this.targetSchemaPath, "manifest.schema.json"), bundledSchema);
+                //Remove $schema element. This is a trick to make the json-language-server of vscode invalidate its schema cache.
+                delete jsonSchema["$schema"];
+                fs.writeFileSync(path.resolve(this.targetSchemaPath, "manifest.schema.json"),  JSON.stringify(jsonSchema));
+                this.processDescriptions(jsonSchema, (obj) => {
+                    delete obj["markdownDescription"];
+                });
+                const bundledSchema = JSON.stringify(jsonSchema);
+                fs.writeFileSync(path.resolve(this.targetSchemaPath, "manifest.schema.short.json"), bundledSchema);
             }, (rejected) => {
                 console.error("Cannot load manfiest.json schema: " + rejected);    
             }
@@ -40,7 +40,7 @@ class SchemaAggregator {
         }
 
         if (obj instanceof Object) {
-            let description = obj["description"];
+            let description = obj["markdownDescription"];
             if (typeof description === "string" || description instanceof String) {
                 cb(obj);
             }

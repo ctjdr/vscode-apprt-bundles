@@ -1,39 +1,21 @@
 import * as vscode from "vscode";
-import * as $RefParser from "@apidevtools/json-schema-ref-parser";
-import { ManifestDocHoverProvider } from "./ManifestDocHoverProvider";
-import { manifestFilesSelector } from "../extension";
+import * as fs from "fs";
 
 
-export class ManifestSchemaFeatures implements vscode.Disposable {
+export class ManifestSchemaFeatures {
     
-    private featureToggles: Record<FeatureNames, boolean> = {
-        [FeatureNames.showDocumentation]: true
-    };
-    
-    private features: Map<FeatureNames, Feature> = new Map();
-    
-    
+    private maniPro: ManifestProvider;
+    private displayHelp = true;
     
     constructor(private extensionCtx: vscode.ExtensionContext) {
-        this.features.set(FeatureNames.showDocumentation, new DisposableFeature( 
-            (ctx: vscode.ExtensionContext) => {
-                return vscode.languages.registerHoverProvider(
-                    manifestFilesSelector, new ManifestDocHoverProvider(ctx.extensionPath));
-                }
-        )
-    );
-
+        this.maniPro = new ManifestProvider(extensionCtx.extensionPath);            
     }
-    dispose() {
-        for (const feature of this.features) {
-            feature[1].deactivate();
-        }
-    }
-    
+            
     register(): vscode.Disposable[] {
         const disposables = [
+            vscode.workspace.registerTextDocumentContentProvider("apprt", this.maniPro),
             vscode.commands.registerCommand("apprtbundles.manifest.toggleDocumentationTooltips", () => {
-                this.toggleFeature(FeatureNames.showDocumentation);
+                this.maniPro.toggleHelp();
             }),
             vscode.workspace.onDidChangeConfiguration( configEvt => {
                 if (configEvt.affectsConfiguration("apprtbundles.manifest.documentationTooltips.enabled")) {
@@ -44,133 +26,43 @@ export class ManifestSchemaFeatures implements vscode.Disposable {
         this.updateFromConfig();
         return disposables;
     }
-
+            
     private updateFromConfig(): void {
         const docTooltipsEnabled = vscode.workspace.getConfiguration("apprtbundles.manifest.documentationTooltips").get<boolean>("enabled") ?? true;
-        this.setFeature(FeatureNames.showDocumentation, docTooltipsEnabled);
-    }
-
-    setFeature(featureName: FeatureNames, featureEnabled: boolean) {
-        const feature = this.features.get(featureName);
-        if (!feature) {
-            return;
-        }
+        this.maniPro.setHelp(docTooltipsEnabled);       
+    }            
+}
         
-        featureEnabled ? feature.activate(this.extensionCtx):feature.deactivate();
-    }
-    
-    toggleFeature(featureName: FeatureNames) {
-        const feature = this.features.get(featureName);
-        if (!feature) {
-            return;
-        }
 
-        feature.activated()?feature.deactivate():feature.activate(this.extensionCtx);
-    }
 
-}
-
-class DisposableFeature implements Feature {
-
-    private disposable?: vscode.Disposable;
-
-    constructor(private activator: (ctx: vscode.ExtensionContext) => vscode.Disposable) {
-    }
-
-    activate(ctx: vscode.ExtensionContext) {
-        this.disposable?.dispose();
-        // if (this.disposable) {
-        //     this.disposable.dispose();
-        // }
-        this.disposable = this.activator(ctx);
-    }
-    
-    deactivate() {
-        this.disposable?.dispose();
-        this.disposable = undefined;
-    }
-
-    activated() {
-        return !!this.disposable;
-    }
-
-}
-
-interface Feature {
-    activate: (ctx: vscode.ExtensionContext) => void;
-    deactivate: () => void;
-    activated: () => boolean;
-};
-
-enum FeatureNames {
-    // validation,
-    showDocumentation
-};
-
-class ApprtManifestSchemaProvider implements vscode.TextDocumentContentProvider{
+class ManifestProvider implements vscode.TextDocumentContentProvider {
 
     private changeEmitter = new vscode.EventEmitter<vscode.Uri>();
-    public readonly onDidChange = this.changeEmitter.event;
+    onDidChange = this.changeEmitter.event;
+    private provideHelp = false;
+    private maniLong: string;
+    private maniShort: string;
 
-    private bundledSchema = "{}";
-
-    private toggles: Record<FeatureNames, boolean> = {
-        // [Toggle.validation]: true,
-        [FeatureNames.showDocumentation]: true
-    };
-
-
-    constructor(extensionPath: string) {
-        $RefParser.bundle(`${extensionPath}/dist/schemas/manifest.schema.json`).then((jsonSchema) => {
-                delete jsonSchema["$schema"];
-                this.bundledSchema = JSON.stringify(jsonSchema);
-            }, (rejected) => {
-                vscode.window.showErrorMessage("Cannot load manfiest.json schema: " + rejected);
-                console.error(rejected);
-            }
-        );
-
+    constructor(private extensionPath: string) {
+        this.maniLong = fs.readFileSync(this.extensionPath + "/dist/schemas/manifest.schema.json", "utf-8");
+        this.maniShort = fs.readFileSync(this.extensionPath + "/dist/schemas/manifest.schema.short.json", "utf-8");
+    }
+    
+    async provideTextDocumentContent(uri: vscode.Uri) {
+        return (this.provideHelp ? this.maniLong : this.maniShort);
     }
 
-    private removeDescriptions(obj: any): void {
-        if (obj instanceof Array) {
-            for (var i in obj) {
-                this.removeDescriptions(obj[i]);
-            }
+    toggleHelp() {
+        this.setHelp(!this.provideHelp);
+    }
+
+    setHelp(provideHelp: boolean) {
+        if (this.provideHelp === provideHelp) {
             return;
         }
-
-        if (obj instanceof Object) {
-            let description = obj["description"];
-            if (typeof description === "string" || description instanceof String) {
-                delete obj["description"];
-            }
-            let children = Object.keys(obj);
-            if (children.length > 0) {
-                for (let i = 0; i < children.length; i++) {
-                    this.removeDescriptions(obj[children[i]]);
-                }
-            }
-        }
-        return;
-    }
-
-    toggle(type: FeatureNames, value?: boolean) {
-        if (value !== undefined) {
-            this.toggles[type] = value;
-        } else {
-            this.toggles[type] = !this.toggles[type];
-        }
-        this.changeEmitter.fire(vscode.Uri.parse("apprtbundles://schemas/manifest.schema.json"));
-    }
-
-    provideTextDocumentContent(uri: vscode.Uri, token: vscode.CancellationToken): vscode.ProviderResult<string> {
-        if (!this.toggles[FeatureNames.showDocumentation]) {
-            const parsedSchema = JSON.parse(this.bundledSchema);
-            this.removeDescriptions(parsedSchema);
-            return JSON.stringify(parsedSchema); 
-        }
-        return this.bundledSchema; 
+        this.provideHelp = provideHelp;
+        this.changeEmitter.fire(vscode.Uri.parse("apprt://./manifest.schema.json"));
     }
 
 }
+

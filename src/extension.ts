@@ -24,6 +24,8 @@ export function noManifestFile(doc: vscode.TextDocument): boolean {
 
 export async function activate(context: vscode.ExtensionContext) {
 
+    const manifestSchemaDisposables =  new ManifestSchemaFeatures(context).register();
+
     vscode.commands.registerCommand("apprtbundles.activate", async () => {
         const decision = await vscode.window.showInformationMessage(
             "VS Code needs to be reloaded. Otherwise the extension might not work as expected. Unsaved changes will be lost!",
@@ -56,12 +58,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
 
     context.subscriptions.push(
-
-        
         
         bundleIndex,
 
-        ...new ManifestSchemaFeatures(context).register(),
+        ...manifestSchemaDisposables,
         
         ...new BundleQuickPicker(bundleIndex).register(),
 
