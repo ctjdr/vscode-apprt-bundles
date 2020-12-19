@@ -4,18 +4,17 @@
     "definitions": {
         "dependencies-type": {
             "type": "object",
-            "propertyNames": {
-                "markdownDescription": "Name of dependent bundle"
-            },
             "additionalProperties": {
                 "type": "string",
-                "uniqueItems": true,
-                "markdownDescription": "Version range accepted for this dependency.\n\nExamples:\n* `~1.2.3`: later or 1.2.3-x and earlier then 1.3.0-0 (\"until next minor\")\n* `^1.2.3`: later or 1.2.3-x and earlier then 2.0.0-0 (\"until next major\")\n* `1.2.3`: 1.2.3-x (\"This version, including prereleases\")\n\nSee https://docs.conterra.de/en/mapapps/latest/developersguide/osgi-runtime/module-layer.html#_advanced_syntax"
+                "markdownDescription": "Name of dependent bundle mapped to a version range accepted for this dependency.\n\nExamples:\n* `~1.2.3`: later or 1.2.3-x and earlier then 1.3.0-0 (\"until next minor\")\n* `^1.2.3`: later or 1.2.3-x and earlier then 2.0.0-0 (\"until next major\")\n* `1.2.3`: 1.2.3-x (\"This version, including prereleases\")\n\nSee https://docs.conterra.de/en/mapapps/latest/developersguide/osgi-runtime/module-layer.html#_advanced_syntax"
             },
             "default": {},
-            "examples": [
-                {},
-                {"dependency-bundle": "~4.9.1-SNAPSHOT"}
+            "defaultSnippets": [
+                {
+                    "body": {
+                        "${1:bundle_name}": "${2:version}"
+                    }
+                }
             ]
         },
         "icon-type": {
@@ -99,36 +98,25 @@
         "$schema":true,
         "name": {
             "type": "string",
-            "examples": [
-                "",
-                "my-bundlename"
-            ],
             "markdownDescription": "Unique name of this bundle.\n\nUsed as an identifier by the runtime. Should match the folder name of this bundle."
         },
         "namespace": {
             "type": "string",
-            "examples": [
-                "",
-                "my-bundlename"
-            ],
             "markdownDescription": "The namespace of this bundle.\n\nDefaults to the `\"name\"` of this bundle."
         },
         "version": {
             "type": "string",
             "examples": [
-                "",
                 "1.0.0"
             ],
             "markdownDescription": "The version of this bundle.\n\nHas to follow the rules of semantic versioning as defined by https://semver.org/"
         },
         "title": {
             "type": "string",
-            "default": "same_as_name",
-            "markdownDescription": "The human-friendly display name of this bundle.\n\nDefaults to the `\"name\"` of this bundle."
+            "markdownDescription": "The human-friendly display name of this bundle.\n\nDefaults to the value of `\"name\"`."
         },
         "description": {
             "type": "string",
-            "default": "",
             "markdownDescription": "A description of this bundle.\n\nDisplayed in the Live Configuration bundle details."
         },
         "keywords": {
@@ -153,12 +141,11 @@
         },
         "vendor": {
             "type": "string",
-            "default": "",
             "markdownDescription": "Name of the bundle vendor.\n\nDisplayed in the Live Configuration bundle details."
         },
         "author": {
             "type": "string",
-            "default": "Name of the bundle author.\n\nUsed for package.json compatibility."
+            "markdownDescription": "Name of the bundle author.\n\nUsed for package.json compatibility."
         },
         "contactAddress": {
             "type": "string",
@@ -168,28 +155,24 @@
         "layer": {
             "type": "string",
             "default": "",
-            "markdownDescription": "Name of a `.js` file, which is loaded during the resolve phase of the bundle.\n\nThis file should load all resources required for bundle loading and component resolving, like the implementation class of a component.\n\nDefaults to `\"module\"` if `\"bundle\": true` is set.\nSet to `\"\"` to disable loading a file in any case",
-            "examples": [
-                "",
-                "module"
-            ]
+            "markdownDescription": "Name of a `.js` file, which is loaded during the resolve phase of the bundle.\n\nThis file should load all resources required for bundle loading and component resolving, like the implementation class of a component.\n\nDefaults to `\"module\"` if `\"bundle\": true` is set.\nSet to `\"\"` to disable loading a file in any case"
         },
         "startLevel": {
             "type": "integer",
-            "default": 50,
+            "examples": [
+                50
+            ],
             "markdownDescription": "Defines the StartLevel of this bundle.\n\nThis provides a way to modify or optimize the start order of bundles."
         },
         "bundle": {
             "type": "boolean",
-            "default": false,
+            "default": true,
             "markdownDescription": "If set to `true` consuming entities (like the runtime is) will treat this as a _real_ bundle, applying the following defaults, if not specified:\n* `\"layer\": \"module\"`\n* `\"main\": \"main\"`\n* `\"i18n\": [\"bundle\"]`\n\nIf requested from the JS Registry, `\"bundle\": true` is automatically set.\n\nIt is recommended to set this to `true`."
         },
         "productName": {
             "type": "string",
-            "default": "map.apps",
             "markdownDescription": "Name of product this bundle belongs to.\n\nUsed to group bundles in some UI element of map.apps.",
             "examples": [
-                "",
                 "map.apps"
             ]
         },
@@ -208,7 +191,16 @@
             "items": {
                 "$ref": "#/definitions/license-type"
             },
-            "default": [],
+            "examples": [
+                [],
+                [
+                    {
+                        "type": "",
+                        "version": "",
+                        "url": ""
+                    }
+                ]
+            ],
             "markdownDescription": "Metadata about the license of this bundle.\n\nDisplayed in the Live Configuration bundle details."
         },
         "icon": {
@@ -217,7 +209,7 @@
         },
         "copyright": {
             "type": "string",
-            "markdownDescription": "Copyright informatione.\n\nDisplayed in the Live Configuration bundle details."
+            "markdownDescription": "Copyright information.\n\nDisplayed in the Live Configuration bundle details."
         },
         "url": {
             "type": "string",
@@ -225,12 +217,15 @@
         },
         "autoStartPolicy": {
             "enum": ["yes", "no"],
-            "default": "yes",
-            "markdownDescription": "Defines that this bundle shall be started by the runtime.\n\nSet to `\"no\"` if bundle startup should be controlled manually."
+            "default": "no",
+            "markdownDescription": "Defines if this bundle shall be started by the runtime.\n\nDefaults to `\"yes\"`.",
+            "enumDescriptions": [
+                "Bundle shall be started by the runtime",
+                "Bundle startup is handled manually"
+            ]
         },
         "activator": {
             "type": "string",
-            "default": "",
             "markdownDescription": "Specifies a bundle activator class that implements the `BundleActivator` interface.\n\nIts `start(...)` and `stop(...)` methods are called by the runtime when the bundle is started and stopped, respectively."
         },
         "requiredExecutionEnvironment": {
@@ -263,8 +258,14 @@
         },
         "optionalDependencies": {
             "$ref": "#/definitions/dependencies-type",
-            "markdownDescription": "A map of bundle names to their accepted versions this bundle depends on, but can still work without.\n\nIn contrast to dependencies declared under `\"dependencies\"` this bundle is started, even if a dependency declared here fails to load."
+            "markdownDescription": "A map of bundle names to their accepted versions this bundle depends on, _but can still work without_.\n\nIn contrast to dependencies declared under `\"dependencies\"` this bundle is started, even if a dependency declared here fails to load."
         },
+        "skipResolve": {
+            "type": "boolean",
+            "examples": [true],
+            "markdownDescription": "Disables fetching of any js file during *resolve* phase.\n\nDefaults to `false`."
+        },
+
         "components": {
             "type": "array",
             "items": {
@@ -274,102 +275,126 @@
         },
         "Config-Bundle-Location": {
             "type": "string",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"configBundleLocation\"`."
+            "markdownDescription": "Points to the sub bundle or external bundle.",
+            "deprecationMessage": "Use \"configBundleLocation\" instead."
         },
         "Bundle-SymbolicName": {
             "type": "string",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"name\"`."
+            "markdownDescription": "Unique name of this bundle.\n\nUsed as an identifier by the runtime. Should match the folder name of this bundle.",
+            "deprecationMessage": "Use \"name\" instead."
         },
         "Bundle-Version": {
             "type": "string",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"version\"`."
+            "deprecationMessage": "Use \"version\" instead.",
+            "markdownDescription": "The version of this bundle.\n\nHas to follow the rules of semantic versioning as defined by https://semver.org/"
         },
         "Bundle-Name": {
             "type": "string",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"title\"`."
+            "deprecationMessage": "Use \"title\" instead.",
+            "markdownDescription": "The human-friendly display name of this bundle.\n\nDefaults to the `\"name\"` of this bundle."
         },
         "Bundle-Description": {
             "type": "string",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"description\"`."
+            "deprecationMessage": "Use \"description\" instead.",
+            "markdownDescription": "A description of this bundle.\n\nDisplayed in the Live Configuration bundle details."
         },
         "Bundle-Vendor": {
             "type": "string",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"vendor\"`."
+            "deprecationMessage": "Use \"vendor\" instead.",
+            "markdownDescription": "Name of the bundle vendor.\n\nDisplayed in the Live Configuration bundle details."
         },
         "Bundle-Category": {
             "type": "array",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"keywords\"`."
+            "deprecationMessage": "Use \"keywords\" instead.",
+            "markdownDescription": "A list of categories (application specific use, tags for the bundle).\n\nDisplayed in the Live Configuration bundle details."
         },
         "Bundle-ContactAddress": {
             "type": "string",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"contactAddress\"`."
+            "deprecationMessage": "Use \"contactAddress\" instead.",
+            "markdownDescription": "Address where problems with the bundle may be reported, for example an email address.\n\nDisplayed in the Live Configuration bundle details."
         },
         "Bundle-Copyright": {
             "type": "string",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"copyright\"`."
+            "deprecationMessage": "Use \"copyright\" instead.",
+            "markdownDescription": "Copyright informatione.\n\nDisplayed in the Live Configuration bundle details."
         },
         "Bundle-DocURL": {
             "type": "string",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"url\"`."
+            "deprecationMessage": "Use \"url\" instead.",
+            "markdownDescription": "URL, from whichfurther information about the bundle may be obtained.\n\nDisplayed in the Live Configuration bundle details."
         },
         "Bundle-Main": {
             "type": "string",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"main\"`."
+            "deprecationMessage": "Use \"main\" instead.",
+            "markdownDescription": "AMD package main file, normally used to trigger i18n loading.\n\nDefaults to `\"main\"` if `\"bundle\": true` is set. Set to `\"\"` to disable loading a file in any case."
         },
         "Bundle-Icon": {
             "type": "object",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"icon\"`."
+            "deprecationMessage": "Use \"icon\" instead.",
+            "markdownDescription": "Metadata about the icon of this bundle.\n\nUsed in the Live Configuration bundle list."
         },
         "Bundle-Namespace": {
             "type": "string",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"namespace\"`."
+            "deprecationMessage": "Use \"namespace\" instead.",
+            "markdownDescription": "The namespace of this bundle.\n\nDefaults to the `\"name\"` of this bundle."
         },
         "Bundle-Layer": {
             "type": "string",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"layer\"`."
+            "deprecationMessage": "Use \"layer\" instead.",
+            "markdownDescription": "Name of a `.js` file, which is loaded during the resolve phase of the bundle.\n\nThis file should load all resources required for bundle loading and component resolving, like the implementation class of a component.\n\nDefaults to `\"module\"` if `\"bundle\": true` is set.\nSet to `\"\"` to disable loading a file in any case"
         },
         "Bundle-StartLevel": {
             "type": "integer",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"startLevel\"`."
+            "deprecationMessage": "Use \"startLevel\" instead.",
+            "markdownDescription": "Defines the StartLevel of this bundle.\n\nThis provides a way to modify or optimize the start order of bundles."
         },
         "Bundle-AutoStartPolicy": {
             "type": "string",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"autoStartPolicy\"`."
+            "deprecationMessage": "Use \"autoStartPolicy\" instead.",
+            "markdownDescription": "Defines that this bundle shall be started by the runtime.\n\nSet to `\"no\"` if bundle startup should be controlled manually."
         },
         "Bundle-Activator": {
             "type": "string",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"activator\"`."
+            "deprecationMessage": "Use \"activator\" instead.",
+            "markdownDescription": "Specifies a bundle activator class that implements the `BundleActivator` interface.\n\nIts `start(...)` and `stop(...)` methods are called by the runtime when the bundle is started and stopped, respectively."
         },
         "Bundle-Localization": {
             "type": "array",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"i18n\"`."
+            "deprecationMessage": "Use \"i18n\" instead.",
+            "markdownDescription": "Names of the i18n files.\n\nDefaults to `[\"bundle\"]` if `\"bundle\": true` is set.\nMust be set to `[]` if no i18n files are provided (i.e. to disable i18n).\n\nFor details, see https://docs.conterra.de/en/mapapps/latest/developersguide/osgi-runtime/module-layer.html#i18n ."
         },
         "Bundle-RequiredExecutionEnvironment": {
             "type": "array",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"requiredExecutionEnvironment\"`."
+            "deprecationMessage": "Use \"requiredExecutionEnvironment\" instead.",
+            "markdownDescription": "Specifies client environment requirements.\n\nIf this requirements are not fulfilled, the bundle is not started."
         },
         "Bundle-ExcludedExecutionEnvironment": {
             "type": "array",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"excludedExecutionEnvironment\"`."
+            "deprecationMessage": "Use \"excludedExecutionEnvironment\" instead.",
+            "markdownDescription": "Excludes an execution environment\n\nWorks like `\"requiredExecutionEnvironment\"`, but excluding and not including."
         },
         "Components": {
             "type": "array",
             "items": {
                 "$ref": "component.schema.json"
             },
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"components\"`."
+            "deprecationMessage": "Use \"components\" instead.",
+            "markdownDescription": "This is the entry point for component declarations.\n\nSee Declarative services: https://docs.conterra.de/en/mapapps/latest/developersguide/osgi-runtime/declarative-components.html"
         },
         "Product-Name": {
             "type": "string",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"productName\"`."
+            "deprecationMessage": "Use \"productName\" instead.",
+            "markdownDescription": "Name of product this bundle belongs to.\n\nUsed to group bundles in some UI element of map.apps."
         },
         "Bundle-License": {
             "type": "string",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"licenses\"`."
+            "deprecationMessage": "Use \"licenses\" instead.",
+            "markdownDescription": "Metadata about the license of this bundle.\n\nDisplayed in the Live Configuration bundle details."
         },
         "Require-Bundle": {
             "type": "array",
-            "markdownDescription": "_DEPRECATED_.\n\nUse `\"dependencies\"`."
+            "deprecationMessage": "Use \"dependencies\" instead.",
+            "markdownDescription": "A map of bundle names to their accepted versions this bundle depends on.\n\nIf this bundle has an implementation class dependency to another bundle (i.e. it needs a class of another bundle), declare this dependency here.\n\nIf a bundle requires another bundle to be installed in the application to work correctly, this requirement should explicitly be expressed here. The runtime ensures that theses bundles are started before this bundle."
         },
         "i18n-extension": {
             "type": "array",
@@ -425,6 +450,7 @@
 
     },
     "markdownDescription": "The manifest.json file provides some meta information and defines the functionality provided by the bundle.",
+
     "examples": [
         {},
         {
