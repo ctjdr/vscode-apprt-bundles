@@ -1,18 +1,103 @@
 {
-    "name": "test",
-    "version": "test-version",
-    "components": [
+    "$schema":"/home/drewnak/dev/projects/private/vscode-apprt-bundles/src/schemas/manifest.schema.json",
+    "Application-Config": {},
+    "name": "foo",
+    "namespace": "",
+    "version": "1.0.0",
+    "description": "asdads",
+    "vendor": "sadjsad",
+    "contactAddress": "asdsda",
+    "layer": "module",
+    "keywords": [
+        "saasd"
+    ],
+    "i18n": [
+        "bundle"
+    ],
+    "activator": "asdasd",
+    "author": "sdkfvnsdf",
+    "startLevel": 50,
+    "bundle": true,
+    "productName": "map.apps",
+    "licenses": [
         {
-            "name": "compo1",
+            "type": "",
+            "version": "",
+            "url": ""
+        }
+    ],
+    "icon": {
+        "url": "/icons/bundle.png",
+        "width": 64,
+        "height": 64
+    },
+    "copyright": "",
+    "url": "",
+    "autoStartPolicy": "yes",
+    "requiredExecutionEnvironment": [
+        "IE:[7,]",
+        "FF:[3,]"
+    ],
+    "excludedExecutionEnvironment": [
+        "iPhone"
+    ],
+    "dependencies": {
+        "asdad": "sadfadsf"
+    },
+    "optionalDependencies": {
+        "dependency-bundle": "~4.9.1-SNAPSHOT"
+    },
+    "components": [
+                
+
+        {
+            "name": "component_name",
+            "impl": "asdlasdhasd",
+            "enabled": true,
+            "componentFactory": true,
+            "serviceFactory": false,
+            "configPolicy": "optional",
+            "immediate": true,
+            "activate": "activate",
+            "deactivate": "deactivate",
+            "modified": "modified",
+            "instanceFactory": true,
+            "createInstance": "createInstance",
+            "destroyInstance": "destroyInstance",
             "provides": [
-                "provides1"
+                "adkjashkdk",
+                "asdkjhasd"
             ],
+            "propertiesConstructor": true,
+            "properties": {
+                "askjdads": "asjhdfasd"
+            },
+            "publicProperties": ["asdasdasd"],
             "references": [
                 {
-                    "name": "ref1",
-                    "providing": "providing1"
+                    "name": "ref_name",
+                    "providing": "requested_interface"
+                },
+                {
+                    "name": "ref_name",
+                    "providing": "requested_interface"
+                },
+                {
+                    "name": "ref_name",
+                    "providing": "requested_interface",
+                    "cardinality": "1..1",
+                    "bind": "",
+                    "filter": "(&(useIn=selection)(id={storeId}))",
+                    "noInjection": true,
+                    "on": {
+                        "asdkjhasd": "askdjhaskjdh"
+                    },
+                    "watch": {
+                        "asdasdkhg": "asdjasdgasjhdg"
+                    }
                 }
-            ]
+            ],
+            "privateProperties": [""]
         }
     ]
 }
