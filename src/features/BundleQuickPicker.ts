@@ -43,7 +43,6 @@ export default class BundleQuickPicker {
             }
         }),
 
-    
     ];
     }
     private static  manifestFileNameLength = "/manifest.json".length;

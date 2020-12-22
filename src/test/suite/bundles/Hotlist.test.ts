@@ -1,4 +1,3 @@
-// import { fail } from "assert";
 import { expect } from "chai";
 import { MostRecentHotlist } from "../../../bundles/Hotlist";
 

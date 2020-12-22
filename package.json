@@ -84,6 +84,14 @@
             {
                 "command": "apprtbundles.activate",
                 "title": "apprt-bundles: Activate extension"
+            },
+            {
+                "command": "apprtbundles.bundles.open.manifest",
+                "title": "apprt-bundles: Open current manifest.json"
+            },
+            {
+                "command": "apprtbundles.bundles.open.readme",
+                "title": "apprt-bundles: Open current READMDE.md"
             }
         ],
         "menus": {
@@ -98,6 +106,14 @@
                 },
                 {
                     "command": "apprtbundles.bundles.reveal",
+                    "when": "vscode-apprt-bundles:showCommands"
+                },
+                {
+                    "command": "apprtbundles.bundles.open.manifest",
+                    "when": "vscode-apprt-bundles:showCommands"
+                },
+                {
+                    "command": "apprtbundles.bundles.open.readme",
                     "when": "vscode-apprt-bundles:showCommands"
                 },
                 {

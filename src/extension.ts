@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import { BundleIndex } from "./bundles/BundleIndex";
 import BundleQuickPicker from "./features/BundleQuickPicker";
 import { ManifestSchemaFeatures } from "./features/ManifestSchemaFeatures";
+import { BundleFileOpener } from "./features/BundleFileOpener";
 import { ServiceNameCodeLensProvider } from "./features/ServiceNameCodeLensProvider";
 import { ServiceNameCompletionProvider } from "./features/ServiceNameCompletionProvider";
 import { ServiceNameReferenceProvider } from "./features/ServiceNameReferenceProvider";
@@ -72,7 +73,9 @@ export async function activate(context: vscode.ExtensionContext) {
             manifestFilesSelector, new ServiceNameCompletionProvider(bundleIndex), "\"", ":"),
 
         vscode.languages.registerCodeLensProvider(manifestFilesSelector,
-            new ServiceNameCodeLensProvider(context, bundleIndex))
+            new ServiceNameCodeLensProvider(context, bundleIndex)),
+
+        ... new BundleFileOpener(bundleIndex).register()
     );
 
     return Promise.resolve();
