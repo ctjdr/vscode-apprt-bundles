@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import { BundleIndex } from "../bundles/BundleIndex";
-import ManifestDocument from "../bundles/ManifestDocument";
 
 export class BundleFileOpener {
 
