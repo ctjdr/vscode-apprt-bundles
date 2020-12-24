@@ -6,6 +6,7 @@ import { BundleFileOpener } from "./features/BundleFileOpener";
 import { ServiceNameCodeLensProvider } from "./features/ServiceNameCodeLensProvider";
 import { ServiceNameCompletionProvider } from "./features/ServiceNameCompletionProvider";
 import { ServiceNameReferenceProvider } from "./features/ServiceNameReferenceProvider";
+import { ComponentDefinitionProvider } from "./features/ComponentDefinitionProvider";
 
 export const manifestFilesSelector: vscode.DocumentSelector = {
     language: "json",
@@ -43,17 +44,17 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.window.setStatusBarMessage(`Finished indexing ${message} bundles.`, 4000);
     };
     vscode.window.setStatusBarMessage("Indexing bundles... ", indexBundles());
-
+    
     context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((evt) =>
-        {
-            if (noManifestFile(evt.document)) {
-                return;
-            }
-            bundleIndex.markDirty(evt.document.uri.toString());
+    {
+        if (noManifestFile(evt.document)) {
+            return;
         }
+        bundleIndex.markDirty(evt.document.uri.toString());
+    }
     ));
-
-
+    
+    
     vscode.commands.executeCommand('setContext', 'vscode-apprt-bundles:showCommands', true);
 
 
@@ -66,6 +67,8 @@ export async function activate(context: vscode.ExtensionContext) {
         
         ...new BundleQuickPicker(bundleIndex).register(),
 
+        ... new BundleFileOpener(bundleIndex).register(),
+
         vscode.languages.registerReferenceProvider(
             manifestFilesSelector, new ServiceNameReferenceProvider(bundleIndex, context)),            
             
@@ -75,12 +78,15 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.languages.registerCodeLensProvider(manifestFilesSelector,
             new ServiceNameCodeLensProvider(context, bundleIndex)),
 
-        ... new BundleFileOpener(bundleIndex).register()
+        vscode.languages.registerDefinitionProvider(manifestFilesSelector,
+            new ComponentDefinitionProvider(bundleIndex))
+
     );
 
     return Promise.resolve();
 }
  
+
 
 
 export function deactivate() { 
