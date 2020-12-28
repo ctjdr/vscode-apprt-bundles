@@ -17,23 +17,26 @@ export class ComponentDefinitionProvider implements DefinitionProvider{
         for (const component of manifestDoc.getComponents()) {
             
             const componentNameFragment = component.getName();
-            if (!componentNameFragment || !componentNameFragment.section.contains(pos.line, pos.character)) {
+            const componentImplFragment = component.getImpl();
+            if (!componentNameFragment) {
                 continue;
             }
+
+            if (!componentNameFragment.section.contains(pos.line, pos.character) && !componentImplFragment?.section.contains(pos.line, pos.character) ) {
+                    continue;
+            }
+
             const bundlePath = doc.uri.fsPath.replace(/(.*)\/manifest.json/, "$1");              
             
             const componentImplUris = await workspace.findFiles({
                 base: bundlePath,
-                pattern: `${componentNameFragment.value}.{js,ts}`
+                pattern: `${componentImplFragment?.value.replace(/^.\//, "") || componentNameFragment.value}.{js,ts}`
             });
 
             if (componentImplUris.length === 0) {
                 return undefined;
             }
 
-            //TODO: Check for component's "impl" property, eg.
-            // "./LocalImplClass"
-            // "anotherBundle/folder/ImplClass"
             return componentImplUris.map( uri => new Location(uri, new Position(0,0)));
         }                
 

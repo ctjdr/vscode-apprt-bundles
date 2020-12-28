@@ -89,6 +89,7 @@ export class ComponentFragment implements Fragment {
     #provides: StringFragment[] = [];
     #references: ReferenceFragment[] = [];
     #name: StringFragment | undefined;
+    #impl: StringFragment | undefined;
     readonly section: Section;
     readonly key = "components";
     readonly type = ValueType.component;
@@ -100,6 +101,14 @@ export class ComponentFragment implements Fragment {
 
     getName() {
         return this.#name;
+    }
+
+    getImpl() {
+        return this.#impl;
+    }
+
+    setImpl(impl: StringFragment) {
+        this.#impl = impl;
     }
 
     addProvides(...serviceInterfaceNames: StringFragment[]) {
@@ -246,10 +255,14 @@ export default class ManifestDocument {
         }
         return componentsNode.children.flatMap((componentNode) => {
             const nameNode = json.findNodeAtLocation(componentNode, ["name"]);
+            const implNode = json.findNodeAtLocation(componentNode, ["impl"]);
             if (!nameNode) {
                 return [];
             }
             const component = new ComponentFragment(new StringFragment("name", nameNode.value, this.sectionFor(nameNode), ValueType.unknown),this.sectionFor(componentNode));
+            if (implNode) {
+                component.setImpl(new StringFragment("impl", implNode.value, this.sectionFor(implNode), ValueType.unknown));
+            }
             const provides = this.parseProvides(componentNode);
             component.addProvides(...provides);
             component.addReferences(...this.parseReferences(componentNode));
