@@ -1,6 +1,5 @@
-import { CancellationToken, DefinitionProvider, Location, Position, TextDocument, Uri, window, workspace } from "vscode";
+import { CancellationToken, DefinitionProvider, Location, Position, TextDocument, workspace } from "vscode";
 import { BundleIndex } from "../bundles/BundleIndex";
-import * as path from "path";
 
 export class ComponentDefinitionProvider implements DefinitionProvider{
 
