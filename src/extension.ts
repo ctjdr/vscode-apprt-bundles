@@ -7,6 +7,7 @@ import { ServiceNameCodeLensProvider } from "./features/ServiceNameCodeLensProvi
 import { ServiceNameCompletionProvider } from "./features/ServiceNameCompletionProvider";
 import { ServiceNameReferenceProvider } from "./features/ServiceNameReferenceProvider";
 import { ComponentDefinitionProvider } from "./features/ComponentDefinitionProvider";
+import { BundleService } from "./bundles/BundleService";
 
 export const manifestFilesSelector: vscode.DocumentSelector = {
     language: "json",
@@ -39,6 +40,9 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 
     let bundleIndex = BundleIndex.createDefault(new vscode.EventEmitter<void>());
+    const bundleService = new BundleService(bundleIndex);
+
+
     const indexBundles  = async () => {
         const message = await bundleIndex.rebuild();
         vscode.window.setStatusBarMessage(`Finished indexing ${message} bundles.`, 4000);
@@ -65,7 +69,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
         ...manifestSchemaDisposables,
         
-        ...new BundleQuickPicker(bundleIndex).register(),
+        ...new BundleQuickPicker(bundleService).register(),
 
         ... new BundleFileOpener(bundleIndex).register(),
 

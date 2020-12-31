@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
-import { BundleIndex } from "../bundles/BundleIndex";
+import { Bundle } from "../bundles/BundleModel";
+import { BundleService } from "../bundles/BundleService";
 import { MostRecentHotlist } from "../bundles/Hotlist";
 
 interface BundleQickPickItem extends vscode.QuickPickItem {
@@ -20,10 +21,8 @@ export default class BundleQuickPicker {
     private revealGoalExpandFolder = true;
     private hotlist = new MostRecentHotlist<string>(5);
 
-    private static pathRegex = /.*\/src\/main\/js\/((.*)\/manifest\.json)/;
 
-
-    constructor(private bundleIndex: BundleIndex) {
+    constructor(private bundleService: BundleService) {
         this.updateFromConfig();
     }
 
@@ -54,11 +53,11 @@ export default class BundleQuickPicker {
         this.revealGoalExpandFolder = goalConfig.has("expandFolder") ? goalConfig.get<boolean>("expandFolder")! : true;
     }
 
-    private async openBundle(selectedBundleUri:vscode.Uri) {
+    private async openBundle(selectedBundleUri: string) {
 
-        this.hotlist.promote(selectedBundleUri.toString());
+        this.hotlist.promote(selectedBundleUri);
 
-        const manifestPath = selectedBundleUri.path;
+        const manifestPath = vscode.Uri.parse(selectedBundleUri).path;
         let pickUri = vscode.Uri.parse(manifestPath);
         if (this.revealGoalType === "folder") {
             pickUri = vscode.Uri.parse(manifestPath.substring(0, manifestPath.length - BundleQuickPicker.manifestFileNameLength));
@@ -73,37 +72,15 @@ export default class BundleQuickPicker {
     }
 
     async getItems() {
-
-        const items: BundleQickPickItem[] = [];
-        const id2bundleEntries = this.bundleIndex.getBundles();
-        
-        for (let [key, value] of id2bundleEntries) {
-            items.push(this.createPickItem(key, value.name));
-        }
-        const itemsSorted = items.sort((item1, item2) => item1.label!.localeCompare(item2.label!));
-
-        for (const hotlistUri of this.hotlist.getTop(5).reverse()) {
-            const bundle = this.bundleIndex.findBundleByUri(hotlistUri);
-            const item = this.createPickItem(hotlistUri, `$(star-full) ${bundle?.name || "unknown"}`);
-            itemsSorted.unshift(item);
-        }
-
-        return itemsSorted;
+        return this.bundleService.getBundles({ hotCount: 5 }).map(bundle => this.createPickItem(bundle));
     }
 
 
-    private createPickItem(bundleUriString: string, label: string) {
-        const bundleUri = vscode.Uri.parse(bundleUriString);
-
-        const manifestPath = bundleUri.path;
-        const matcher = BundleQuickPicker.pathRegex.exec(manifestPath);
-        const shortBundlePath = matcher === null ? "" :  matcher[this.revealGoalType === "folder"? 2 : 1];
-
-        const pickItem = {
-            label,
-            description: shortBundlePath,
-            bundleUri
+    private createPickItem(bundle: Bundle) {
+        return {
+            label: bundle.name,
+            description: this.revealGoalType === "folder" ? bundle.shortPath : bundle.shortManifestPath,
+            bundleUri: bundle.uri
         };
-        return pickItem;
     }
 }
