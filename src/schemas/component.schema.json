@@ -70,8 +70,7 @@
                     "type": "object",
                     "default": {},
                     "additionalProperties": {
-                        "type": "string",
-                        "description": "foo"
+                        "type": "string"
                     },
                     "markdownDescription": "Mapping of event names fired by the reference to handler methods provided by the referencing component.",
                     "deprecationMessage": "Use \"on\" instead.",    
