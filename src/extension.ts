@@ -7,6 +7,7 @@ import { ServiceNameCodeLensProvider } from "./features/ServiceNameCodeLensProvi
 import { ServiceNameCompletionProvider } from "./features/ServiceNameCompletionProvider";
 import { ServiceNameReferenceProvider } from "./features/ServiceNameReferenceProvider";
 import { ComponentDefinitionProvider } from "./features/ComponentDefinitionProvider";
+import { BundleTreeProvider } from "./features/BundleTreeProvider";
 import { BundleService } from "./bundles/BundleService";
 
 export const manifestFilesSelector: vscode.DocumentSelector = {
@@ -46,6 +47,9 @@ export async function activate(context: vscode.ExtensionContext) {
     const indexBundles  = async () => {
         const message = await bundleIndex.rebuild();
         vscode.window.setStatusBarMessage(`Finished indexing ${message} bundles.`, 4000);
+        context.subscriptions.push(
+            vscode.window.registerTreeDataProvider("apprtbundles.tree", new BundleTreeProvider(bundleService))
+        );
     };
     vscode.window.setStatusBarMessage("Indexing bundles... ", indexBundles());
     
