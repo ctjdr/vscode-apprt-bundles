@@ -82,6 +82,10 @@
                 "title": "apprt-bundles: Open bundle"
             },
             {
+                "command": "apprtbundles.component.goto",
+                "title": "apprt-bundles: Go to component"
+            },
+            {
                 "command": "apprtbundles.activate",
                 "title": "apprt-bundles: Activate extension"
             },
@@ -112,6 +116,10 @@
                 },
                 {
                     "command": "apprtbundles.bundles.reveal",
+                    "when": "vscode-apprt-bundles:showCommands"
+                },
+                {
+                    "command": "apprtbundles.component.goto",
                     "when": "vscode-apprt-bundles:showCommands"
                 },
                 {

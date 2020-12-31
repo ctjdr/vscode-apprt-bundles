@@ -7,6 +7,7 @@ import { ServiceNameCodeLensProvider } from "./features/ServiceNameCodeLensProvi
 import { ServiceNameCompletionProvider } from "./features/ServiceNameCompletionProvider";
 import { ServiceNameReferenceProvider } from "./features/ServiceNameReferenceProvider";
 import { ComponentDefinitionProvider } from "./features/ComponentDefinitionProvider";
+import { ComponentQuickPicker } from "./features/ComponentQuickPicker";
 import { BundleTreeProvider } from "./features/BundleTreeProvider";
 import { BundleService } from "./bundles/BundleService";
 
@@ -22,7 +23,10 @@ const fileExclusion: vscode.DocumentSelector = {
     pattern: "**/node_modules/**"
 };
 
-export function noManifestFile(doc: vscode.TextDocument): boolean {
+export function noManifestFile(doc: vscode.TextDocument | undefined): boolean {
+    if (!doc) {
+        return true;
+    }
     return (vscode.languages.match(manifestFilesSelector, doc) === 0 || vscode.languages.match(fileExclusion, doc) !== 0);
 }
 
@@ -48,6 +52,7 @@ export async function activate(context: vscode.ExtensionContext) {
         const message = await bundleIndex.rebuild();
         vscode.window.setStatusBarMessage(`Finished indexing ${message} bundles.`, 4000);
         context.subscriptions.push(
+            ... new ComponentQuickPicker(bundleIndex).register(),
             vscode.window.registerTreeDataProvider("apprtbundles.tree", new BundleTreeProvider(bundleService))
         );
     };

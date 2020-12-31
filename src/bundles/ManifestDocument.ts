@@ -3,11 +3,12 @@ import MultiValueIndex from './MultiValueIndex';
 
 
 export enum ValueType {
-    "provides", 
+    "provides",
     "referenceProviding",
     "reference",
     "component",
-    "unknown"
+    "unknown",
+    "components"
 }
 
 export class StringFragment implements Fragment {
@@ -117,6 +118,9 @@ export class ComponentFragment implements Fragment {
     provides(serviceInterfaceName: string) {
         return this.#provides.find((fragement) => fragement.value === serviceInterfaceName);
     }
+    getProvides() {
+        return this.#provides;
+    }
     addReferences(...references: ReferenceFragment[]) {
         this.#references.push(...references);
     }
@@ -146,6 +150,7 @@ export default class ManifestDocument {
     #allServiceNames: Set<string> = new Set();
     #linebreakOffsets: number[];
     readonly name: string;
+    private componentsFragment: StringFragment | undefined;
 
     private constructor(documentContent: string) {
         this.#linebreakOffsets = ManifestDocument.calcLineBreakOffsets(documentContent);
@@ -216,6 +221,10 @@ export default class ManifestDocument {
         return this.#components;
     }
 
+    getComponentsFragment() {
+        return this.componentsFragment;
+    }
+
     /**
      * 
      * @param line zero-based line number
@@ -253,6 +262,8 @@ export default class ManifestDocument {
         if (!componentsNode?.children) {
             return [];
         }
+        this.componentsFragment = new StringFragment("components", componentsNode.value, this.sectionFor(componentsNode), ValueType.components);
+
         return componentsNode.children.flatMap((componentNode) => {
             const nameNode = json.findNodeAtLocation(componentNode, ["name"]);
             const implNode = json.findNodeAtLocation(componentNode, ["impl"]);
