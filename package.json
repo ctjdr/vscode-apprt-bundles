@@ -91,7 +91,7 @@
             },
             {
                 "command": "apprtbundles.bundles.open.readme",
-                "title": "apprt-bundles: Open current READMDE.md"
+                "title": "apprt-bundles: Open current README.md"
             }
         ],
         "menus": {
