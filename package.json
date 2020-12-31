@@ -117,6 +117,12 @@
             {
                 "command": "apprtbundles.bundles.open.readme",
                 "title": "apprt-bundles: Open current README.md"
+            },
+            {
+                "command": "apprtbundles.bundles.tree.refresh",
+                "title": "Refresh",
+                "icon": "$(check)"
+                
             }
         ],
         "menus": {
@@ -144,6 +150,21 @@
                 {
                     "command": "apprtbundles.activate",
                     "when": "!vscode-apprt-bundles:showCommands"
+                }
+            ],
+            "view/title": [
+                {
+                    "command": "apprtbundles.bundles.tree.refresh",
+                    "when": "view == apprtbundles.tree",
+                    "group": "navigation"
+                }
+            ]
+        },
+        "views": {
+            "explorer": [
+                {
+                    "id": "apprtbundles.tree",
+                    "name": "apprt Bundles"
                 }
             ]
         }

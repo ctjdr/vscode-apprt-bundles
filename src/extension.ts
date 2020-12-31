@@ -11,6 +11,7 @@ import { BundleService } from "./api/bundles/BundleService";
 import { BundleActionHandler } from "./bundles/BundleActions";
 import { MostRecentHotlist } from "./api/bundles/Hotlist";
 import { ExtensionConfiguration } from "./Configuration";
+import { BundleTreeProvider } from "./features/BundleTreeProvider";
 
 export const manifestFilesSelector: vscode.DocumentSelector = {
     language: "json",
@@ -50,7 +51,14 @@ export async function activate(context: vscode.ExtensionContext) {
     const bundleActionHandler = new BundleActionHandler();
     const bundleHotlist  = new MostRecentHotlist<string>(20);
 
-    initIndex(bundleIndex);
+    const indexBundles  = async () => {
+        const message = await bundleIndex.rebuild();
+        vscode.window.setStatusBarMessage(`Finished indexing ${message} bundles.`, 4000);
+        context.subscriptions.push(
+            vscode.window.registerTreeDataProvider("apprtbundles.tree", new BundleTreeProvider(bundleService))
+        );
+    };
+    vscode.window.setStatusBarMessage("Indexing bundles... ", indexBundles());
     
     context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((evt) =>
     {
