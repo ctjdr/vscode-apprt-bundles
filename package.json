@@ -7,6 +7,7 @@
         "name": "ctjdr"
     },
     "publisher": "ctjdr",
+    "homepage": "https://ctjdr.github.io/vscode-apprt-bundles/",
     "repository": {
         "type": "git",
         "url": "https://github.com/ctjdr/vscode-apprt-bundles.git",
