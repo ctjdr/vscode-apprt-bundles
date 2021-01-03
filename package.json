@@ -13,6 +13,9 @@
         "url": "https://github.com/ctjdr/vscode-apprt-bundles.git",
         "directory": ""
     },
+    "bugs": {
+        "url": "https://github.com/ctjdr/vscode-apprt-bundles/issues"
+    },
     "engines": {
         "vscode": "^1.49.0"
     },
