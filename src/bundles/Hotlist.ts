@@ -1,74 +1,74 @@
 /**
- * A list of items that have positional relationship to each other.
+ * A list of entries that have positional relationship to each other.
  * 
- * Items can be promoted or hyped to get a higher position than other items.
- * Clients can request the x top-most items.
+ * Entries can be promoted or hyped to get a higher position than other entries.
+ * Clients can request the x top-most entries.
  * 
  */
 export interface Hotlist<T> {
     /**
-     * Promotes an item in the hotlist.
-     * If the item does not exist, yet, it will be added to the list.
+     * Promotes an entry in the hotlist.
+     * If the entry does not exist, yet, it will be added to the list.
      * 
-     * The effect of promoting an item is depending on the Hotlist implementation.
-     * Promotion should result in the item to stay in the current position or higher. 
+     * The effect of promoting an entry is depending on the Hotlist implementation.
+     * Promotion should result in the entry to stay in the current position or higher. 
      * 
-     * @param  {T} item
+     * @param  {T} entry
      * @returns void
      */
-    promote(item: T): void;
+    promote(entry: T): void;
     
     /**
-     * Immediatly bumps an item to the top position.
-     * If the item does not exist, yet, it will be added to the list.
+     * Immediatly bumps an entry to the top position.
+     * If the entry does not exist, yet, it will be added to the list.
      * 
-     * @param  {T} item
+     * @param  {T} entry
      * @returns void
      */
-    hype(item: T): void;
-    drop(item: T): void;
+    hype(entry: T): void;
+    drop(entry: T): void;
 
     
     /**
-     * Returns the top most ("hottest") items of the hotlist.
+     * Returns the top most ("hottest") entries of the hotlist.
      * 
      * @param  {number} count
-     * @returns T an array oth the `count`top-most items, where the 1st item (index 0) is the top item.
+     * @returns T an array oth the `count` top-most entries, where the 1st entry (index 0) is the top entry.
      */
     getTop(count: number): T[];
 }
 
 
 /**
- * A hotlist where items promoted more recently are at the top of the list.
+ * A hotlist where entries promoted more recently are at the top of the list.
  * 
  */
 export class MostRecentHotlist<T> implements Hotlist<T> {
 
     private instant = 0;
-    private bundleToInstant = new Map<T, number>();
+    private entryToInstant = new Map<T, number>();
 
     constructor(private maxSize: number) {
     }
 
-    promote(bundleName: T): void {
-        this.hype(bundleName);
+    promote(entry: T): void {
+        this.hype(entry);
     }
     
-    hype(bundleName: T): void {
-        this.bundleToInstant.set(bundleName, this.instant++);
-        this.bundleToInstant = new Map([...this.bundleToInstant.entries()].sort((entry1, entry2) => entry2[1] - entry1[1]).slice(0, this.maxSize));
+    hype(entry: T): void {
+        this.entryToInstant.set(entry, this.instant++);
+        this.entryToInstant = new Map([...this.entryToInstant.entries()].sort((entry1, entry2) => entry2[1] - entry1[1]).slice(0, this.maxSize));
     }
 
-    drop(bundleName: T): void {
-        this.bundleToInstant.delete(bundleName);
+    drop(entry: T): void {
+        this.entryToInstant.delete(entry);
     }
 
     getTop(count: number): T[] {
         if (count <= 0) {
             return [];
         }
-        return [...this.bundleToInstant.entries()].sort((entry1, entry2) => entry2[1] - entry1[1]).map(entry => entry[0]).slice(0, count);
+        return [...this.entryToInstant.entries()].sort((entry1, entry2) => entry2[1] - entry1[1]).map(entry => entry[0]).slice(0, count);
     }
 
 }

@@ -1,53 +1,57 @@
 import * as vscode from "vscode";
 import * as path from "path";
+import * as fs from "fs";
 import { BundleIndex } from "../bundles/BundleIndex";
 
 export class BundleFileOpener {
 
-    constructor(private bundleIndex: BundleIndex) {
-
-    }
+    constructor(
+        private bundleIndex: BundleIndex
+    ) {}
 
     register(): vscode.Disposable[] {
         return [
             vscode.commands.registerCommand("apprtbundles.bundles.open.manifest",
                 () => {
-                    const bundleData = this.findCurrentBundle();
+                    const bundleData = this.findCurrentBundleFolder();
                     if (bundleData) {
-                        vscode.window.showTextDocument(bundleData.manifestUri);
+                        vscode.window.showTextDocument(vscode.Uri.parse(path.join(bundleData, "manifest.json")));
                     }
                 }
                 ),
             vscode.commands.registerCommand("apprtbundles.bundles.open.readme",
                 () => {
-                    const bundleData = this.findCurrentBundle();
+                    const bundleData = this.findCurrentBundleFolder();
                     if (bundleData) {
-                        vscode.window.showTextDocument(vscode.Uri.parse(path.join(bundleData.path, "README.md")));
+                        vscode.window.showTextDocument(vscode.Uri.parse(path.join(bundleData, "README.md")));
                     }
                 }
                 )
             ];
         }
         
-    private findCurrentBundle() {
+    private findCurrentBundleFolder() {
         if (!vscode.window.activeTextEditor) {
             return;
         }
+        const activeDoc = vscode.window.activeTextEditor.document;
+        const workspacePath = vscode.workspace.getWorkspaceFolder(activeDoc.uri)?.uri.fsPath;
 
-        const currentFilePath = path.parse(vscode.window.activeTextEditor.document.fileName);
-        let workdir = currentFilePath.dir;                    
-        do {
-            const manifestUri = vscode.Uri.parse(path.join(workdir, "manifest.json"));
-            const bundle = this.bundleIndex.findBundleByUri(manifestUri.toString());
-            if (bundle) {
-                return { 
-                        name: bundle.name,
-                        path: workdir,
-                        manifestUri
-                    };
+        if (!workspacePath) {
+            return;
+        }
+
+        let testDir = path.parse(activeDoc.fileName).dir;
+
+        while (!testDir.endsWith(workspacePath) && testDir !== "/") {
+            const testManifestPath =  path.join(testDir, "manifest.json");
+            if (fs.existsSync(testManifestPath)) {
+                return testDir;
             }
-            workdir = path.resolve(workdir, "..");
-        } while (!workdir.endsWith("src/main/js") && workdir !== "/");
+            
+            // Move one folder up, until workspace or filesystem root path reached.
+            testDir = path.resolve(testDir, "..");
+        }
 
         return undefined;
     }

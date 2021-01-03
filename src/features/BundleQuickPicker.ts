@@ -1,85 +1,50 @@
 import * as vscode from "vscode";
+import { BundleActionHandler } from "../bundles/BundleActions";
 import { Bundle } from "../bundles/BundleModel";
 import { BundleService } from "../bundles/BundleService";
-import { MostRecentHotlist } from "../bundles/Hotlist";
-
-interface BundleQickPickItem extends vscode.QuickPickItem {
-    label: string ;
-    description: string;
-    detail?: string | undefined;
-    picked?: boolean | undefined;
-    alwaysShow?: boolean | undefined;
-    bundleUri: vscode.Uri;
-}
-
-
-type RevealGoalType = "folder" | "manifest";
+import { Hotlist } from "../bundles/Hotlist";
 
 export default class BundleQuickPicker {
 
-    private revealGoalType: RevealGoalType = "folder";
-    private revealGoalExpandFolder = true;
-    private hotlist = new MostRecentHotlist<string>(5);
-
-
-    constructor(private bundleService: BundleService) {
-        this.updateFromConfig();
-    }
+    constructor(
+        private bundleService: BundleService,
+        private bundleActionHandler: BundleActionHandler,
+        private hotlist: Hotlist<string>
+    ) {}
 
     register(): vscode.Disposable[] {
         return [
             vscode.commands.registerCommand("apprtbundles.bundles.reveal", async () => {
-            const selectedBundle = await vscode.window.showQuickPick(
-                this.getItems()
-            );
-            if (selectedBundle) {
-                await this.openBundle(selectedBundle.bundleUri);
-            }
-        }),
-        vscode.workspace.onDidChangeConfiguration( configEvt => {
-            if (configEvt.affectsConfiguration("apprtbundles.bundles.reveal.goal")) {
-                this.updateFromConfig();
-            }
-        }),
-
-    ];
-    }
-    private static  manifestFileNameLength = "/manifest.json".length;
-
-
-    private updateFromConfig() {
-        const goalConfig = vscode.workspace.getConfiguration("apprtbundles.bundles.reveal.goal");
-        this.revealGoalType = goalConfig.get<string>("type") as RevealGoalType || "folder";
-        this.revealGoalExpandFolder = goalConfig.has("expandFolder") ? goalConfig.get<boolean>("expandFolder")! : true;
+                const selectedBundle = await vscode.window.showQuickPick(
+                    this.createPickItems()
+                );
+                if (selectedBundle) {
+                    this.bundleActionHandler.revealBundle(selectedBundle.bundleUri);
+                }
+            })
+        ];
     }
 
-    private async openBundle(selectedBundleUri: string) {
+    private async createPickItems() {
+        const pickItems = this.bundleService.getBundles().map(bundle => this.createPickItem(bundle));
 
-        this.hotlist.promote(selectedBundleUri);
-
-        const manifestPath = vscode.Uri.parse(selectedBundleUri).path;
-        let pickUri = vscode.Uri.parse(manifestPath);
-        if (this.revealGoalType === "folder") {
-            pickUri = vscode.Uri.parse(manifestPath.substring(0, manifestPath.length - BundleQuickPicker.manifestFileNameLength));
+        //Add hotlist bundles to the top
+        for (const bundleUri of this.hotlist.getTop(5).reverse()) {
+            const bundle = this.bundleService.getBundle(bundleUri);
+            if (!bundle) {
+                continue;
+            }
+            pickItems.unshift(this.createPickItem(bundle, "$(star-full) "));  
         }
 
-
-        if (this.revealGoalType === "folder" && this.revealGoalExpandFolder) {
-            //Expand folder as a side effect by 1st revealing the manifest.json file 
-            await vscode.commands.executeCommand("revealInExplorer", vscode.Uri.joinPath(pickUri, "manifest.json"));
-        }
-        await vscode.commands.executeCommand("revealInExplorer", pickUri);
-    }
-
-    async getItems() {
-        return this.bundleService.getBundles({ hotCount: 5 }).map(bundle => this.createPickItem(bundle));
+        return pickItems;
     }
 
 
-    private createPickItem(bundle: Bundle) {
+    private createPickItem(bundle: Bundle, labelPrefix: string = "") {
         return {
-            label: bundle.name,
-            description: this.revealGoalType === "folder" ? bundle.shortPath : bundle.shortManifestPath,
+            label: `${labelPrefix}${bundle.name}`,
+            description: bundle.shortPath,
             bundleUri: bundle.uri
         };
     }

@@ -8,6 +8,8 @@ import { ServiceNameCompletionProvider } from "./features/ServiceNameCompletionP
 import { ServiceNameReferenceProvider } from "./features/ServiceNameReferenceProvider";
 import { ComponentDefinitionProvider } from "./features/ComponentDefinitionProvider";
 import { BundleService } from "./bundles/BundleService";
+import { BundleActionHandler } from "./bundles/BundleActions";
+import { MostRecentHotlist } from "./bundles/Hotlist";
 
 export const manifestFilesSelector: vscode.DocumentSelector = {
     language: "json",
@@ -41,7 +43,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
     let bundleIndex = BundleIndex.createDefault(new vscode.EventEmitter<void>());
     const bundleService = new BundleService(bundleIndex);
-
+    const bundleActionHandler = new BundleActionHandler();
+    const bundleHotlist  = new MostRecentHotlist<string>(20);
 
     const indexBundles  = async () => {
         const message = await bundleIndex.rebuild();
@@ -68,8 +71,10 @@ export async function activate(context: vscode.ExtensionContext) {
         bundleIndex,
 
         ...manifestSchemaDisposables,
+
+        ...bundleActionHandler.register(),
         
-        ...new BundleQuickPicker(bundleService).register(),
+        ...new BundleQuickPicker(bundleService, bundleActionHandler, bundleHotlist).register(),
 
         ... new BundleFileOpener(bundleIndex).register(),
 
@@ -79,11 +84,14 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.languages.registerCompletionItemProvider(
             manifestFilesSelector, new ServiceNameCompletionProvider(bundleIndex), "\"", ":"),
 
-        vscode.languages.registerCodeLensProvider(manifestFilesSelector,
-            new ServiceNameCodeLensProvider(context, bundleIndex)),
+        vscode.languages.registerCodeLensProvider(
+            manifestFilesSelector, new ServiceNameCodeLensProvider(context, bundleIndex)),
 
-        vscode.languages.registerDefinitionProvider(manifestFilesSelector,
-            new ComponentDefinitionProvider(bundleIndex))
+        vscode.languages.registerDefinitionProvider(
+            manifestFilesSelector, new ComponentDefinitionProvider(bundleIndex)),
+
+        bundleActionHandler.onRevealBundle( bundleUri => bundleHotlist.promote(bundleUri))
+
 
     );
 

@@ -4,7 +4,6 @@ export {
     BundleDetails
 };
 
-
 class Bundle {
     
     constructor(
@@ -15,6 +14,7 @@ class Bundle {
     ) {}
 
 }
+
 
 class BundleDetails {
     constructor() {}
