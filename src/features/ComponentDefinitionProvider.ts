@@ -1,7 +1,7 @@
 import { CancellationToken, DefinitionProvider, Location, Position, TextDocument, workspace } from "vscode";
 import { BundleIndex } from "../bundles/BundleIndex";
 
-export class ComponentDefinitionProvider implements DefinitionProvider{
+export class ComponentDefinitionProvider implements DefinitionProvider {
 
     constructor(
         private bundleIndex: BundleIndex
