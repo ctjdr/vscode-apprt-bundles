@@ -11,7 +11,7 @@ interface BundleListOptions {
 
 export class BundleService {
 
-    private static pathRegex = /.*\/src\/main\/js\/((.*)\/manifest\.json)/;
+    private static pathRegex = /.*\/src\/main\/js\/((.*\/)(.*\/)manifest\.json)/;
 
     constructor(
         private bundleIndex: BundleIndex,
