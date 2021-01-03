@@ -1,13 +1,8 @@
 import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
-import { BundleIndex } from "../bundles/BundleIndex";
 
 export class BundleFileOpener {
-
-    constructor(
-        private bundleIndex: BundleIndex
-    ) {}
 
     register(): vscode.Disposable[] {
         return [
