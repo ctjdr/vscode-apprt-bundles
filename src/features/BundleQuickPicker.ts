@@ -16,7 +16,10 @@ export default class BundleQuickPicker {
         return [
             vscode.commands.registerCommand("apprtbundles.bundles.reveal", async () => {
                 const selectedBundle = await vscode.window.showQuickPick(
-                    this.createPickItems()
+                    this.createPickItems(),
+                    {
+                        matchOnDescription: true
+                    }
                 );
                 if (selectedBundle) {
                     this.bundleActionHandler.revealBundle(selectedBundle.bundleUri);
