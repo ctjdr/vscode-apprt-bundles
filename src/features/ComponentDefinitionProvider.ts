@@ -1,5 +1,6 @@
 import { CancellationToken, DefinitionProvider, Location, Position, TextDocument, workspace } from "vscode";
 import { BundleIndex } from "../bundles/BundleIndex";
+import * as path from "path";
 
 export class ComponentDefinitionProvider implements DefinitionProvider {
 
@@ -25,7 +26,7 @@ export class ComponentDefinitionProvider implements DefinitionProvider {
                     continue;
             }
 
-            const bundlePath = doc.uri.fsPath.replace(/(.*)\/manifest.json/, "$1");              
+            const bundlePath =  path.resolve(doc.uri.fsPath, "..");
             
             const componentImplUris = await workspace.findFiles({
                 base: bundlePath,
