@@ -44,7 +44,7 @@ export class BundleService {
     }
 
     private createBundle(uri: string, manifestdoc: ManifestDocument): Bundle {
-        const matcher = BundleService.pathRegex.exec(Uri.parse(uri).fsPath);
+        const matcher = BundleService.pathRegex.exec(Uri.parse(uri).path);
         const shortBundlePath = matcher === null ? "" : matcher[2];
         return {
             uri,
