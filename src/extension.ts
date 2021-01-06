@@ -18,14 +18,7 @@ export const manifestFilesSelector: vscode.DocumentSelector = {
     pattern: "**/manifest.json"
 };
 
-const fileExclusion: vscode.DocumentSelector = {
-    language: "json",
-    scheme: "file",
-    pattern: "**/node_modules/**"
-};
-
 export function noManifestFile(doc: vscode.TextDocument): boolean {
-    // return (vscode.languages.match(manifestFilesSelector, doc) === 0 || vscode.languages.match(fileExclusion, doc) !== 0);
     return (vscode.languages.match(manifestFilesSelector, doc) === 0);
 }
 
@@ -50,10 +43,9 @@ export async function activate(context: vscode.ExtensionContext) {
         initIndex(bundleIndex);
     });
 
-    // let bundleIndex = BundleIndex.createDefault(new vscode.EventEmitter<void>());
     let bundleIndex = BundleIndex.createDefault();
     bundleIndex.setBundleExclusions(configuration.get<string[]>("apprtbundles.bundles.ignorePaths") ?? []);
-    const bundleService = new BundleService(bundleIndex, configuration);
+    const bundleService = new BundleService(bundleIndex);
     const bundleActionHandler = new BundleActionHandler();
     const bundleHotlist  = new MostRecentHotlist<string>(20);
 

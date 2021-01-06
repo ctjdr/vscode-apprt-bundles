@@ -6,9 +6,7 @@ export class WorkspaceManifestProvider implements ManifestResolver {
 
 
     async getAllUris(): Promise<string[]> {
-        // return (await workspace.findFiles("**/manifest.json", "**/target/**")).map(uri => uri.toString()).filter((uri) => uri.indexOf("node_modules") === -1);
-        // return (await workspace.findFiles("**/manifest.json", "{**/target/**,**/node_modules/**}")).map(uri => uri.toString());
-        return (await workspace.findFiles("**/manifest.json", "**/target/**")).map(uri => uri.toString());
+        return (await workspace.findFiles("**/manifest.json")).map(uri => uri.toString());
 
     }
     

@@ -76,9 +76,22 @@
                         "type": "string"
                     },
                     "default": [
-                        "**/node_modules/**"
+                        "**/node_modules/**",
+                        "**/target/**"
                     ],
-                    "markdownDescription": "Don't displays bundles with a file path matching any of the globs defined here."
+                    "markdownDescription": "manifest.json files with a file path matching any of the globs defined here are not treated as app.rt bundles. They are not indexed so some features of this extension won't work."
+                },
+                "apprtbundles.bundles.hidePaths": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "default": [
+                        "**/sample/apps/**",
+                        "**/tests/**",
+                        "**/src/test/**"
+                    ],
+                    "markdownDescription": "Bundles with a path matching any of the globs defined here are hidden. They for example won't get displayed when using the 'Open bundle' command. They still get indexed so all features of this extension will work for them."
                 }
             }
         },
