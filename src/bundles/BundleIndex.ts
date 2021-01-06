@@ -88,6 +88,7 @@ export class BundleIndex implements Disposable {
     }
     
     public markDirty(bundleId: string):void {
+        //Todo: check if bundleId is tracked.
         const preSize = this.dirtyIds.size;
         this.dirtyIds.add(bundleId);
         if (preSize === 0) {

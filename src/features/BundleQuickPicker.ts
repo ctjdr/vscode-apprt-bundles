@@ -17,7 +17,6 @@ export default class BundleQuickPicker {
         return [
             vscode.commands.registerCommand("apprtbundles.bundles.reveal", async () => {
                 const pickItems = this.createPickItems();
-                const filteredDiffCount = pickItems.unfilteredCount - pickItems.filteredCount;
                 const selectedBundle = await vscode.window.showQuickPick(
                     pickItems.items,
                     {
