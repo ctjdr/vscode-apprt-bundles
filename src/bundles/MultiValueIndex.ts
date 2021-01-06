@@ -1,6 +1,6 @@
 export default class MultiValueIndex<K, V> {
     #i2v: Map<K, Set<V>> = new Map();
-
+    
     index(idx: K, value: V) {
         let bucket = this.#i2v.get(idx);
         if (!bucket) {
@@ -9,15 +9,18 @@ export default class MultiValueIndex<K, V> {
         }
         bucket.add(value);
     }
-
+    
     getValues(key: K): Set<V> {
         return this.#i2v.get(key) ?? new Set();
     }
-
+    
     getKeys(): IterableIterator<K> {
         return this.#i2v.keys();
     }
-
+    
+    clear() {
+        this.#i2v.clear();
+    }
     /**
      * Signal that "value" needs to be removed from all buckets.
      * Remove the index, if the buckets is empty afterwards

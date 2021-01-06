@@ -3,8 +3,6 @@ import { BundleIndex } from "./BundleIndex";
 import ManifestDocument from "./ManifestDocument";
 import { Bundle, BundleDetails } from "./BundleModel";
 
-
-
 interface BundleListOptions {
     sorted?: boolean
 }
@@ -14,8 +12,7 @@ export class BundleService {
     private static pathRegex = /.*\/src\/main\/js\/((.*\/)(.*\/)manifest\.json)/;
 
     constructor(
-        private bundleIndex: BundleIndex,
-        private exclusionGlobs: string[] = ["**/test/**", "**/sample/**"]
+        private bundleIndex: BundleIndex
     ) {}
 
     getBundles(options?: BundleListOptions): Bundle[] {
@@ -42,7 +39,7 @@ export class BundleService {
         return this.createBundle(uri, manifestDoc);
     }
 
-    getBundleDetails(uri: string): BundleDetails {
+    getBundleDetails(uri: string): BundleDetails | undefined {
         return new BundleDetails();
     }
 

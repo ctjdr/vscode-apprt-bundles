@@ -10,6 +10,7 @@ import { ComponentDefinitionProvider } from "./features/ComponentDefinitionProvi
 import { BundleService } from "./bundles/BundleService";
 import { BundleActionHandler } from "./bundles/BundleActions";
 import { MostRecentHotlist } from "./bundles/Hotlist";
+import { ExtensionConfiguration } from "./Configuration";
 
 export const manifestFilesSelector: vscode.DocumentSelector = {
     language: "json",
@@ -17,14 +18,8 @@ export const manifestFilesSelector: vscode.DocumentSelector = {
     pattern: "**/manifest.json"
 };
 
-const fileExclusion: vscode.DocumentSelector = {
-    language: "json",
-    scheme: "file",
-    pattern: "**/node_modules/**"
-};
-
 export function noManifestFile(doc: vscode.TextDocument): boolean {
-    return (vscode.languages.match(manifestFilesSelector, doc) === 0 || vscode.languages.match(fileExclusion, doc) !== 0);
+    return (vscode.languages.match(manifestFilesSelector, doc) === 0);
 }
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -41,16 +36,20 @@ export async function activate(context: vscode.ExtensionContext) {
         }
     });
 
-    let bundleIndex = BundleIndex.createDefault(new vscode.EventEmitter<void>());
+    const configuration = new ExtensionConfiguration();
+    configuration.onConfigKeyChange("apprtbundles.bundles.ignorePaths", (change) => {
+        const ignorePaths = change.value as string[];
+        bundleIndex.setBundleExclusions(ignorePaths);
+        initIndex(bundleIndex);
+    });
+
+    let bundleIndex = BundleIndex.createDefault();
+    bundleIndex.setBundleExclusions(configuration.get<string[]>("apprtbundles.bundles.ignorePaths") ?? []);
     const bundleService = new BundleService(bundleIndex);
     const bundleActionHandler = new BundleActionHandler();
     const bundleHotlist  = new MostRecentHotlist<string>(20);
 
-    const indexBundles  = async () => {
-        const message = await bundleIndex.rebuild();
-        vscode.window.setStatusBarMessage(`Finished indexing ${message} bundles.`, 4000);
-    };
-    vscode.window.setStatusBarMessage("Indexing bundles... ", indexBundles());
+    initIndex(bundleIndex);
     
     context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((evt) =>
     {
@@ -69,14 +68,16 @@ export async function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         
         bundleIndex,
-
+        
         ...manifestSchemaDisposables,
+
+        ...configuration.register(),
 
         ...bundleActionHandler.register(),
         
         ...new BundleQuickPicker(bundleService, bundleActionHandler, bundleHotlist).register(),
 
-        ... new BundleFileOpener(bundleIndex).register(),
+        ...new BundleFileOpener().register(),
 
         vscode.languages.registerReferenceProvider(
             manifestFilesSelector, new ServiceNameReferenceProvider(bundleIndex, context)),            
@@ -100,6 +101,14 @@ export async function activate(context: vscode.ExtensionContext) {
  
 
 
+
+function initIndex(bundleIndex: BundleIndex) {
+    const indexBundles = async () => {
+        const message = await bundleIndex.rebuild();
+        vscode.window.setStatusBarMessage(`Finished indexing ${message} bundles.`, 4000);
+    };
+    vscode.window.setStatusBarMessage("Indexing bundles... ", indexBundles());
+}
 
 export function deactivate() { 
     vscode.commands.executeCommand('setContext', 'vscode-apprt-bundles:showCommands', false);

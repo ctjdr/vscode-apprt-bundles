@@ -3,6 +3,7 @@ import { BundleActionHandler } from "../bundles/BundleActions";
 import { Bundle } from "../bundles/BundleModel";
 import { BundleService } from "../bundles/BundleService";
 import { Hotlist } from "../bundles/Hotlist";
+import  * as glob from "./glob";
 
 export default class BundleQuickPicker {
 
@@ -15,10 +16,12 @@ export default class BundleQuickPicker {
     register(): vscode.Disposable[] {
         return [
             vscode.commands.registerCommand("apprtbundles.bundles.reveal", async () => {
+                const pickItems = this.createPickItems();
                 const selectedBundle = await vscode.window.showQuickPick(
-                    this.createPickItems(),
+                    pickItems.items,
                     {
-                        matchOnDescription: true
+                        matchOnDescription: true,
+                        placeHolder: "Bundle name or path"
                     }
                 );
                 if (selectedBundle) {
@@ -28,19 +31,34 @@ export default class BundleQuickPicker {
         ];
     }
 
-    private async createPickItems() {
-        const pickItems = this.bundleService.getBundles().map(bundle => this.createPickItem(bundle));
+    private getHiddenBundlePaths() {
+        return vscode.workspace.getConfiguration("apprtbundles").get<string[]>("bundles.hidePaths") || [];
+    }
 
-        //Add hotlist bundles to the top
-        for (const bundleUri of this.hotlist.getTop(5).reverse()) {
-            const bundle = this.bundleService.getBundle(bundleUri);
-            if (!bundle) {
-                continue;
+    private createPickItems() {
+        let pickItems = this.bundleService.getBundles().map(bundle => this.createPickItem(bundle));
+        const unfilteredCount = pickItems.length;
+
+        pickItems = glob.allNotMatching(this.getHiddenBundlePaths(), pickItems, (item) => vscode.Uri.parse(item.bundleUri).fsPath);
+        const filteredCount = pickItems.length;
+
+        //Don't add hotlist items if there are not more entries in the bundle list than could be in the hotlist.
+        if (pickItems.length > 5) {
+            //Add hotlist bundles to the top
+            for (const bundleUri of this.hotlist.getTop(5).reverse()) {
+                const bundle = this.bundleService.getBundle(bundleUri);
+                if (!bundle) {
+                    continue;
+                }
+                pickItems.unshift(this.createPickItem(bundle, "$(star-full) "));  
             }
-            pickItems.unshift(this.createPickItem(bundle, "$(star-full) "));  
         }
 
-        return pickItems;
+        return { 
+            items: pickItems,
+            unfilteredCount,
+            filteredCount
+        };
     }
 
 
