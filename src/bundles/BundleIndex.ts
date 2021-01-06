@@ -1,3 +1,4 @@
+import { FilteringManifestResolverAdapter } from "./FilteringManifestResolverAdapter";
 import ManifestDocument, { StringFragment } from "./ManifestDocument";
 import MultiValueIndex from "./MultiValueIndex";
 
@@ -18,31 +19,31 @@ type Disposable = {
     dispose(): void;
 };
 
-type Event<T> = (cb: ((evt: T) => void), thisArg?:any, disposables?: Array<Disposable>) => Disposable;
+// type Event<T> = (cb: ((evt: T) => void), thisArg?:any, disposables?: Array<Disposable>) => Disposable;
 
-type Emitter<T> = {
-    event: Event<T>;
-    fire(data?: T): void;
-};
+// type Emitter<T> = {
+//     event: Event<T>;
+//     fire(data?: T): void;
+// };
 
-const nullEvent: Event<any> = () => {
-    return {
-        dispose(){}
-    };
-};
+// const nullEvent: Event<any> = () => {
+//     return {
+//         dispose(){}
+//     };
+// };
 
 
 export class BundleIndex implements Disposable {
     
-    private manifestProvider: ManifestResolver;
+    private manifestProvider: FilteringManifestResolverAdapter;
     
     private uri2manifestIdx: Map<string, ManifestDocument> = new Map();
     private servicename2uriIdx: MultiValueIndex<string, string> = new MultiValueIndex();
 
-    private onIndexUpdatedEmitter: Emitter<void>;
+    // private onIndexUpdatedEmitter: Emitter<void>;
     private dirtyIds: Set<string> = new Set();
     private dirtyRunner?: AsynRunner;
-    public onIndexUpdated: Event<void>;
+    // public onIndexUpdated: Event<void>;
     
     private handleDirtyIds = async () => {        
         if (this.dirtyIds.size === 0 ) {
@@ -51,29 +52,33 @@ export class BundleIndex implements Disposable {
         }
         console.info(`dirt: ${this.dirtyIds.size} docs dirty. Cleaning docs. ${new Date().toISOString()}`);
         await this.updateDirty();
-        this.onIndexUpdatedEmitter.fire(undefined);
+        // this.onIndexUpdatedEmitter.fire(undefined);
         return {
             suspend: false
         };
     };
-    private constructor(manifestProvider: ManifestResolver, updateEmitter?: Emitter<void>) {
-        this.onIndexUpdatedEmitter = updateEmitter || {event: nullEvent, fire(){}};
-        this.onIndexUpdated = updateEmitter?.event ?? nullEvent;
-        this.manifestProvider = manifestProvider;
+    // private constructor(manifestProvider: ManifestResolver, updateEmitter?: Emitter<void>) {
+    private constructor(manifestProvider: ManifestResolver) {
+        // this.onIndexUpdatedEmitter = updateEmitter || {event: nullEvent, fire(){}};
+        // this.onIndexUpdated = updateEmitter?.event ?? nullEvent;
+        this.manifestProvider = new FilteringManifestResolverAdapter(manifestProvider);
     }    
     
-    static createDefault(updateEmitter?: Emitter<void>): BundleIndex {
+    // static createDefault(updateEmitter?: Emitter<void>): BundleIndex {
+    static createDefault(): BundleIndex {
         const workspaceManifestProvider = require("./WorkspaceManifestResolver");
-        return new BundleIndex(new workspaceManifestProvider.WorkspaceManifestProvider(), updateEmitter);
+        // return new BundleIndex(new workspaceManifestProvider.WorkspaceManifestProvider(), updateEmitter);
+        return new BundleIndex(new workspaceManifestProvider.WorkspaceManifestProvider());
     }
     
-    static create(manifestProvider: ManifestResolver, updateEmitter?: Emitter<void>): BundleIndex {
-        return new BundleIndex(manifestProvider, updateEmitter);
+    // static create(manifestProvider: ManifestResolver, updateEmitter?: Emitter<void>): BundleIndex {
+    static create(manifestProvider: ManifestResolver): BundleIndex {
+        // return new BundleIndex(manifestProvider, updateEmitter);
+        return new BundleIndex(manifestProvider);
     }
     
     public async rebuild(): Promise<number> {
-        
-        // TODO: Should clear index maps before rebuilding
+        this.cleanCache();
         
         let ids = await this.manifestProvider.getAllUris();
         
@@ -81,12 +86,22 @@ export class BundleIndex implements Disposable {
             await this.updateSingle(id);
         }
         
-        this.onIndexUpdatedEmitter.fire(undefined);
+        // this.onIndexUpdatedEmitter.fire(undefined);
         
         this.dirtyRunner = new AsynRunner(this.handleDirtyIds);
         this.dirtyRunner.start();
         return Promise.resolve(ids.length);
         
+    }
+
+    private cleanCache() {
+        this.dirtyIds.clear();
+        this.servicename2uriIdx.clear();
+        this.uri2manifestIdx.clear();
+    }
+
+    public setBundleExclusions(exclusionGlobs: string[]) {
+        this.manifestProvider.setExclusionGlobs(exclusionGlobs);
     }
     
     private async updateSingle(bundleId: string) {

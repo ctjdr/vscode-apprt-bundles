@@ -31,6 +31,12 @@ export default class BundleQuickPicker {
     private async createPickItems() {
         const pickItems = this.bundleService.getBundles().map(bundle => this.createPickItem(bundle));
 
+        if (pickItems.length <= 5) {
+            //Don't add hotlist items if there are not more entries in the bundle list than could be in the hotlist.
+            return pickItems;
+        }
+
+
         //Add hotlist bundles to the top
         for (const bundleUri of this.hotlist.getTop(5).reverse()) {
             const bundle = this.bundleService.getBundle(bundleUri);
