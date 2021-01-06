@@ -10,7 +10,7 @@ export class BundleFileOpener {
                 () => {
                     const bundleData = this.findCurrentBundleFolder();
                     if (bundleData) {
-                        vscode.window.showTextDocument(vscode.Uri.parse(path.join(bundleData, "manifest.json")));
+                        vscode.window.showTextDocument(vscode.Uri.file(path.join(bundleData, "manifest.json")));
                     }
                 }
                 ),
@@ -18,7 +18,7 @@ export class BundleFileOpener {
                 () => {
                     const bundleData = this.findCurrentBundleFolder();
                     if (bundleData) {
-                        vscode.window.showTextDocument(vscode.Uri.parse(path.join(bundleData, "README.md")));
+                        vscode.window.showTextDocument(vscode.Uri.file(path.join(bundleData, "README.md")));
                     }
                 }
                 )
@@ -39,7 +39,7 @@ export class BundleFileOpener {
         let testDir = path.parse(activeDoc.fileName).dir;
 
         while (!testDir.endsWith(workspacePath) && testDir !== "/") {
-            const testManifestPath =  path.join(testDir, "manifest.json");
+            const testManifestPath = path.join(testDir, "manifest.json");
             if (fs.existsSync(testManifestPath)) {
                 return testDir;
             }
