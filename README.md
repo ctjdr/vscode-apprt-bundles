@@ -16,7 +16,7 @@ Visit the [official extension web site](https://ctjdr.github.io/vscode-apprt-bun
 ## Using the extension
 
 1. Install the extension, either 
-   * from the_ Extension_ view **directly from inside VS Code**, or
+   * from the _Extension_ view **directly from inside VS Code**, or
    * [**downloading**](https://github.com/ctjdr/vscode-apprt-bundles/releases) the `vsix` extension file release from this site.
 2. Open a project containing `manifest.json` files.
 3. Take advantage of its [features](https://ctjdr.github.io/vscode-apprt-bundles/features/manifest-editing.html).
