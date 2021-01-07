@@ -56,19 +56,16 @@
                     "type": "string",
                     "enum": [
                         "folder",
+                        "folderExpand",
                         "manifest"
                     ],
                     "enumDescriptions": [
-                        "Reveals/highlights the bundle's folder in the Explorer",
-                        "Reveals/highlights the bundle's manifest.json file in the Explorer"
+                        "Selects the bundle's folder in the Explorer",
+                        "Selects and expands the bundle's folder in the Explorer",
+                        "Selects the bundle's manifest.json file in the Explorer"
                     ],
                     "default": "manifest",
-                    "description": "Select the element in the Explorer that is revealed when calling the 'Open bundle' command."
-                },
-                "apprtbundles.bundles.reveal.goal.expandFolder": {
-                    "type": "boolean",
-                    "default": true,
-                    "markdownDescription": "Enable/disable automatic bundle folder expansion when calling the 'Open bundle' command. Only relevent if `#apprtbundles.bundles.reveal.goal#` is set to `folder`"
+                    "description": "Choose the element in the Explorer that is selected when calling the 'Open bundle' command."
                 },
                 "apprtbundles.bundles.ignorePaths": {
                     "type": "array",
