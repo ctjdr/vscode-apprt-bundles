@@ -60,12 +60,12 @@
                         "manifest"
                     ],
                     "enumDescriptions": [
-                        "Reveals/highlights the bundle's folder in the Explorer",
-                        "Reveals/highlights and expands the bundle's folder in the Explorer",
-                        "Reveals/highlights the bundle's manifest.json file in the Explorer"
+                        "Selects the bundle's folder in the Explorer",
+                        "Selects and expands the bundle's folder in the Explorer",
+                        "Selects the bundle's manifest.json file in the Explorer"
                     ],
                     "default": "manifest",
-                    "description": "Select the element in the Explorer that is revealed when calling the 'Open bundle' command."
+                    "description": "Choose the element in the Explorer that is selected when calling the 'Open bundle' command."
                 },
                 "apprtbundles.bundles.ignorePaths": {
                     "type": "array",
