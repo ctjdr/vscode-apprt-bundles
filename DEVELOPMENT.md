@@ -1,4 +1,4 @@
-# Developing the vscode-apprt-bundles extension
+# Developing the app.rt bundles extension
 
 ## Test and debug extension
 

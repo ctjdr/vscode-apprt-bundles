@@ -2,7 +2,7 @@ remote_theme: pmarsceill/just-the-docs
 theme: just-the-docs
 color_scheme: apprt
 logo: "/images/boxes-v3.png"
-title: "vscode-apprt-bundles"
+title: "app.rt Bundles"
 
 aux_links:
   "GitHub Repo":
