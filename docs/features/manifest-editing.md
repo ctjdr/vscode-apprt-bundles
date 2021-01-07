@@ -39,8 +39,8 @@ Find errors before your bundle gets loaded!
 
 ## Auto-completion & auto-suggest
 
-Press `CTRL+Space` to get code-suggest and auto-complete for most of the properties.
-Creating a new `"compomnent"` with `"references"` will only take a few seconds.
+Press `Ctrl+Space` to get code-suggest and auto-complete for most of the properties.
+Creating a new `"component"` with `"references"` will only take a few seconds.
 
 ![Feature Demo](../images/demo.gif)
 
