@@ -62,7 +62,7 @@
                         "Reveals/highlights the bundle's folder in the Explorer",
                         "Reveals/highlights the bundle's manifest.json file in the Explorer"
                     ],
-                    "default": "folder",
+                    "default": "manifest",
                     "description": "Select the element in the Explorer that is revealed when calling the 'Open bundle' command."
                 },
                 "apprtbundles.bundles.reveal.goal.expandFolder": {
