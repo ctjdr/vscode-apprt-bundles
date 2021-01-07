@@ -1,7 +1,7 @@
 {
     "name": "vscode-apprt-bundles",
-    "displayName": "vscode-apprt-bundles",
-    "description": "VS Code extension that supports working with a bundle manifest.json",
+    "displayName": "app.rt Bundles",
+    "description": "Support working with bundles of the app.rt framework",
     "version": "0.3.0",
     "author": {
         "name": "ctjdr"
@@ -40,7 +40,7 @@
             }
         ],
         "configuration": {
-            "title": "apprt-bundles",
+            "title": "app.rt Bundles",
             "properties": {
                 "apprtbundles.manifest.serviceNameCodeLens.enabled": {
                     "type": "boolean",
@@ -65,7 +65,7 @@
                         "Selects the bundle's manifest.json file in the Explorer"
                     ],
                     "default": "manifest",
-                    "description": "Choose the element in the Explorer that is selected when calling the 'Open bundle' command."
+                    "markdownDescription": "Choose the element in the Explorer that is selected when calling the *Open bundle* command."
                 },
                 "apprtbundles.bundles.ignorePaths": {
                     "type": "array",

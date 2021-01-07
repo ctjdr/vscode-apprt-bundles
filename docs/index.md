@@ -8,7 +8,7 @@ nav_order: 1
 Version [0.2.0](updates/v0.2.0.html) was released on Nov, 27th 2020!
 {: .fs-4 .fw-700}
 
-# Visual Studio Code extension for apprt bundles
+# Visual Studio Code extension for app.rt bundles
 
 This extension supports you writing and navigating *manifest.json* files plus working with bundles in general.
 
@@ -23,6 +23,7 @@ For a comprehensive list of what this tool can do for you, have a look at the [t
    * [**downloading**](https://github.com/ctjdr/vscode-apprt-bundles/releases) the `vsix` extension file release from this site.
 2. Open a project containing `manifest.json` files.
 3. Take advantage of its [features](../features/manifest-editing.html).
+
 ## Updates & changes
 
  

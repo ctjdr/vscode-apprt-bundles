@@ -39,8 +39,8 @@ Find errors before your bundle gets loaded!
 
 ## Auto-completion & auto-suggest
 
-Press `CTRL+Space` to get code-suggest and auto-complete for most of the properties.
-Creating a new `"compomnent"` with `"references"` will only take a few seconds.
+Press `Ctrl+Space` to get code-suggest and auto-complete for most of the properties.
+Creating a new `"component"` with `"references"` will only take a few seconds.
 
 ![Feature Demo](../images/demo.gif)
 
@@ -74,6 +74,6 @@ Clicking on a lens opens the *Peek References* view inside the current file:
 
 ![Feature Demo](../images/feature_servicename_codelens.gif)
 
-Code lenses are enabled by default but can be disabled permanently in the settings under _Extensions > apprt-bundles_
+Code lenses are enabled by default but can be disabled permanently in the settings under _Extensions > app.rt Bundles_
 
 If you just want to enable or disable code lenses for service names temporarily, look for **apprt-bundles: Toggle service name code lens** in the command palette.
