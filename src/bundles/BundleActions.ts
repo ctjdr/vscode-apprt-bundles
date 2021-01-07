@@ -12,7 +12,7 @@ class BundleActionHandler {
     private static manifestFileNameLength = "/manifest.json".length;
 
 
-    private revealGoalType: RevealGoalType = "folder";
+    private revealGoalType: RevealGoalType = "manifest";
     private revealGoalExpandFolder = true;
 
     private revealEventEmitter = new vscode.EventEmitter<string>();
@@ -34,7 +34,7 @@ class BundleActionHandler {
 
     private updateFromConfig() {
         const goalConfig = vscode.workspace.getConfiguration("apprtbundles.bundles.reveal.goal");
-        this.revealGoalType = goalConfig.get<string>("type") as RevealGoalType || "folder";
+        this.revealGoalType = goalConfig.get<string>("type") as RevealGoalType || "manifest";
         this.revealGoalExpandFolder = goalConfig.has("expandFolder") ? goalConfig.get<boolean>("expandFolder")! : true;
     }
 
