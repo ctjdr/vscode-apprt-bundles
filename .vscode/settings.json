@@ -7,5 +7,14 @@
         "out": true // set this to false to include "out" folder in search results
     },
     // Turn off tsc task auto detection since we have the necessary tasks as npm scripts
-    "typescript.tsc.autoDetect": "off"
+    "typescript.tsc.autoDetect": "off",
+    "markdown.extension.completion.root": "/home/drewnak/dev/projects/private/vscode-apprt-bundles/docs",
+    "markdown.extension.syntax.plainTheme": true,
+    "markdown.styles": [
+        "docs/_site/assets/css/just-the-docs-default.css"
+    ],
+    "markdown.preview.fontSize": 12,
+    "markdown.preview.scrollEditorWithPreview": false,
+    "markdown.preview.scrollPreviewWithEditor": false,
+    "markdown.preview.markEditorSelection": false
 }
