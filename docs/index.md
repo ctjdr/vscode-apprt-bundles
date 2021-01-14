@@ -27,7 +27,7 @@ For a comprehensive list of what this tool can do for you, have a look at the [t
 ## Updates & changes
 
  
-* [New in 0.3.0](updates/v0.3.0.md)
+* [New in 0.3.0](updates/v0.3.0.html)
 * [New in 0.2.0](updates/v0.2.0.html)
 * [New in 0.1.0](updates/v0.1.0.html)
 
