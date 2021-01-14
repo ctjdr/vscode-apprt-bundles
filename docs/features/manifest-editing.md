@@ -16,6 +16,7 @@ Features provided by the extension that help editing `manifest.json` files are:
   - [Auto-completion](#auto-completion)
   - [CodeLenses](#codelenses)
 
+
 ## Documentation of properties
 
 No idea what the property `"optionalDependencies"` is good for or what its effect is?
@@ -25,7 +26,7 @@ Links inside the popups take you to the official docs directly if you need to kn
 ![Documentation hover](../images/feature_manifest_doc.png)
 
 Sometimes you might want to hide those documentation hints because you already now them by heart :nerd_face:.
-In that case you can use the command **apprt-bundles: Toggle manifest documentation** to switch documentation hovers on and off.
+In that case you can use the command *> apprt-bundles: Toggle manifest documentation* to switch documentation hovers on and off.
 
 To get rid of them permanently, set `apprtbundles.manifest.documentationTooltips.enabled` to `false` in the settings.
 
@@ -33,7 +34,7 @@ To get rid of them permanently, set `apprtbundles.manifest.documentationTooltips
 ## Validation
 
 Syntactical validation of manifest.json files will help you find those "simple" errors that would cost you valuable time.
-Find errors before your bundle gets loaded!
+Find errors and deprecated keys before your bundle gets loaded!
 
 ![Documentation hover](../images/feature_manifest_validation.png)
 
@@ -76,4 +77,5 @@ Clicking on a lens opens the *Peek References* view inside the current file:
 
 Code lenses are enabled by default but can be disabled permanently in the settings under _Extensions > app.rt Bundles_
 
-If you just want to enable or disable code lenses for service names temporarily, look for **apprt-bundles: Toggle service name code lens** in the command palette.
+If you just want to enable or disable code lenses for service names temporarily, look for *> apprt-bundles: Toggle service name code lens* in the command palette.
+
