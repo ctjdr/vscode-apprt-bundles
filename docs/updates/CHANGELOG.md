@@ -6,7 +6,7 @@ nav_order: 1000
 ---
 # Changelog
 
-## 0.3.0  (2021-01-07)
+## 0.3.0  (2021-01-14)
 
 **Enhancements**
 
