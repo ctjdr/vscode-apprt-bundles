@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.3.0  (2021-01-14)
+
+**Enhancements**
+
+- "Open bundle" command: Don't display bundle name \(again\) in details [\#35](https://github.com/ctjdr/vscode-apprt-bundles/issues/35)
+- "Open Bundle" command: Match on bundle parent paths [\#33](https://github.com/ctjdr/vscode-apprt-bundles/issues/33)
+- Make "manifest" reveal type the default [\#32](https://github.com/ctjdr/vscode-apprt-bundles/issues/32)
+- Clean up bundle reveal type settings [\#31](https://github.com/ctjdr/vscode-apprt-bundles/issues/31)
+- Exclude bundles from defined paths from list displayed for "Open bundle" command [\#25](https://github.com/ctjdr/vscode-apprt-bundles/issues/25)
+-  Add comand to "open current README" [\#23](https://github.com/ctjdr/vscode-apprt-bundles/issues/23)
+- Keep a list of recently opened bundles when using the "apprt: Open bundle" command [\#20](https://github.com/ctjdr/vscode-apprt-bundles/issues/20)
+- Add comand to "open current manifest" [\#19](https://github.com/ctjdr/vscode-apprt-bundles/issues/19)
+- Don't suggest deprecated or other unwanted keys when editing manifest.json files [\#16](https://github.com/ctjdr/vscode-apprt-bundles/issues/16)
+- Provide better snippets for most commonly used manifest.json keys [\#15](https://github.com/ctjdr/vscode-apprt-bundles/issues/15)
+- "Goto Definition" for components opens implementing file [\#11](https://github.com/ctjdr/vscode-apprt-bundles/issues/11)
+
+**Bug fixes**
+
+- No help docs on auto-complete [\#17](https://github.com/ctjdr/vscode-apprt-bundles/issues/17)
+
 ## 0.2.0 (2020-11-27)
 
 **Enhancements**
