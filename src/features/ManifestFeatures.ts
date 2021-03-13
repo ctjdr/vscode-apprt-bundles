@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 import { manifestFilesSelector, noManifestFile } from "../extension";
-import { DeprecationQuickFixProvider } from "./DeprecationQuickFixProvider";
+import { DeprecationQuickFixAllProvider, DeprecationQuickFixProvider } from "./DeprecationQuickFixProvider";
 import { SchemaDocumentContentProvider } from "./SchemaDocumentContentProvider";
 
 
@@ -15,6 +15,7 @@ export class ManifestFeatures {
             
     register(): vscode.Disposable[] {
         const quickFixProvider = new DeprecationQuickFixProvider();
+        const quickFixAllProvider = new DeprecationQuickFixAllProvider();
         const disposables = [
             vscode.workspace.registerTextDocumentContentProvider("apprt", this.maniPro),
             vscode.commands.registerCommand("apprtbundles.manifest.toggleDocumentationTooltips", () => {
@@ -26,6 +27,9 @@ export class ManifestFeatures {
                 }
             }),
             vscode.languages.registerCodeActionsProvider(manifestFilesSelector, quickFixProvider, {
+                providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
+            }),
+            vscode.languages.registerCodeActionsProvider(manifestFilesSelector, quickFixAllProvider, {
                 providedCodeActionKinds: [vscode.CodeActionKind.QuickFix],
             })    
         ];

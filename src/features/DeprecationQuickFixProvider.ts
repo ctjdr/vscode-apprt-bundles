@@ -1,10 +1,123 @@
-import { findNodeAtLocation, modify, parseTree } from "jsonc-parser";
+import { findNodeAtLocation, getLocation, JSONPath, Location, parseTree} from "jsonc-parser";
 import * as vscode from "vscode";
 
 
 export {
-    DeprecationQuickFixProvider
+    DeprecationQuickFixProvider,
+    DeprecationQuickFixAllProvider
 };
+
+
+type LocationDiag = {
+    location: Location,
+    diag: vscode.Diagnostic
+};
+
+function rangeOfNode(document: vscode.TextDocument, nodePath: JSONPath): vscode.Range | undefined {
+
+    const jsonDoc = parseTree(document.getText());
+    const propValNode = findNodeAtLocation(jsonDoc, nodePath);
+    if (!propValNode ||propValNode.parent?.type !== "property") {
+        return;
+    }
+    const offset = propValNode.offset;
+    const start = document.positionAt(propValNode.parent.offset);
+    const end = document.positionAt(offset + propValNode.length);
+
+    return new vscode.Range(start, end);
+}
+
+class DeprecationQuickFixAllProvider implements vscode.CodeActionProvider {
+
+    constructor() {
+        vscode.commands.registerCommand("apprtbundles.manifest.quickfixall", async (diagnostics: vscode.Diagnostic[], doc: vscode.TextDocument) => {
+
+            const fixItems = collectFixes(diagnostics, doc);
+
+            fixItems.sort((item1, item2) => {
+                return item1.fix.getFixPath().length - item2.fix.getFixPath().length;
+            }).reverse();
+
+            for (const {fix, diagnostic} of fixItems) {
+                const range  = rangeOfNode(doc, fix.getFixPath());
+                const command = fix.calculateCommand(range);
+                if (command) {
+                    await vscode.commands.executeCommand(command.command, ...command.arguments??[]);
+                }
+                const edit = fix.calculateEdit(range);
+                if (edit) {
+                    await vscode.workspace.applyEdit(edit);
+                }
+            }
+        });
+    }
+
+    provideCodeActions(document: vscode.TextDocument, range: vscode.Range | vscode.Selection, context: vscode.CodeActionContext, token: vscode.CancellationToken): vscode.ProviderResult<(vscode.CodeAction | vscode.Command)[]> {
+
+        const allDiagnostics = vscode.languages.getDiagnostics(document.uri);
+        if (allDiagnostics.length === 0) {
+            return [];
+        }
+
+        const locationDiags: LocationDiag[] = [];
+
+        for (const diagnostic of allDiagnostics) {
+
+            const diagnosticCode = typeof diagnostic.code === "object" ? diagnostic.code.value : diagnostic.code;
+            if (diagnosticCode !== 2) {
+                // Code '2' is what VS Code uses as "ErrorCode" for deprecated JSON schema elements.
+                // See https://github.com/microsoft/vscode-json-languageservice/blob/07fec3faafa3f32915dcd6fcc6999a91ad113f88/src/parser/jsonParser.ts#L546
+                continue;
+            }
+
+            const diagOffset = document.offsetAt(diagnostic.range.start);
+            const nodeLocation = getLocation(document.getText(), diagOffset);
+            locationDiags.push({
+                diag: diagnostic,
+                location: nodeLocation
+            });
+        }
+
+        const action = new vscode.CodeAction("Fix all auto-fixable deprecations", vscode.CodeActionKind.QuickFix);
+        action.command = {
+            command: "apprtbundles.manifest.quickfixall",
+            title: "Fix all",
+            arguments: [
+                allDiagnostics,
+                document
+            ]
+        };
+        return [action];
+    }
+}
+
+
+function collectFixes(diagnostics: readonly vscode.Diagnostic[], doc: vscode.TextDocument): {diagnostic: vscode.Diagnostic, fix: DeprecationFix}[]  {
+
+    if (diagnostics.length === 0) {
+        return [];
+    }
+
+    const items = [];
+    for (const diagnostic of diagnostics) {
+
+        const diagnosticCode = typeof diagnostic.code === "object" ? diagnostic.code.value : diagnostic.code;
+        if (diagnosticCode !== 2) {
+            // Code '2' is what VS Code uses as "ErrorCode" for deprecated JSON schema elements.
+            // See https://github.com/microsoft/vscode-json-languageservice/blob/07fec3faafa3f32915dcd6fcc6999a91ad113f88/src/parser/jsonParser.ts#L546
+            continue;
+        }
+
+        const fix = createFix(diagnostic, doc);
+        if (!fix) {
+            continue;
+        }
+
+        items.push({fix, diagnostic});
+    }
+
+    return items;
+}
 
 class DeprecationQuickFixProvider implements vscode.CodeActionProvider<DeprecationFixCodeAction> {
 
@@ -14,9 +127,11 @@ class DeprecationQuickFixProvider implements vscode.CodeActionProvider<Deprecati
             const range: vscode.Range = opts.range;
             const snippet: string = opts.snippet;
             const editor = await vscode.window.showTextDocument(doc.uri);
-            editor.insertSnippet(new vscode.SnippetString(snippet), range as vscode.Range);
+            const snippetString = new vscode.SnippetString(snippet);
+            editor.insertSnippet(snippetString, range as vscode.Range);
         });
     }
+
 
     provideCodeActions(document: vscode.TextDocument, range: vscode.Range | vscode.Selection, context: vscode.CodeActionContext, token: vscode.CancellationToken): vscode.ProviderResult<(DeprecationFixCodeAction | vscode.Command)[]> {
         console.info(`${context.only?.value} -- #diagnostics: ${context.diagnostics.length} -- Range lines ${range.start.line}, ${range.end.line}`);
@@ -24,56 +139,16 @@ class DeprecationQuickFixProvider implements vscode.CodeActionProvider<Deprecati
         const actions: DeprecationFixCodeAction[] = [];
         const diagnostics = context.diagnostics;
 
-        if (diagnostics.length === 0) {
-            return [];
-        }
-        
-        for (const diagnostic of diagnostics) {
+        const fixByDiag = collectFixes(diagnostics, document);
 
-            const diagnosticCode = typeof diagnostic.code === "object" ? diagnostic.code.value : diagnostic.code;
-            if (diagnosticCode !== 2) {
-                // Code '2' is what VS Code uses as "ErrorCode" for deprecated JSON schema elements.
-                // See https://github.com/microsoft/vscode-json-languageservice/blob/07fec3faafa3f32915dcd6fcc6999a91ad113f88/src/parser/jsonParser.ts#L546
-                return;
-            }
-
-            const deprecation = Deprecation.from(diagnostic.message);
-
-            if (!deprecation) {
-                continue;
-            }
-
-            const fix = this.createFix(deprecation, document, diagnostic.range);
-            if (!fix) {
-                return;
-            }
-            
-            const action = new DeprecationFixCodeAction(fix);
+        for (const {fix, diagnostic} of fixByDiag) {
+            const action = new DeprecationFixCodeAction(fix, diagnostic.range);
             action.diagnostics = [diagnostic];
             actions.push(action);
         }
-        
-        // if (vscode.languages.getDiagnostics(document.uri).length > 1) {
-        //     actions.push(
-        //         new DeprecationFixCodeAction()
-        //         new vscode.CodeAction("Fix all deprecated properties in this file", {
-        //             actions: actions
-        //         })
-        //     );                
-        // }
+
         return actions;
     }
-
-    private createFix(deprecation: Deprecation, doc: vscode.TextDocument, docRange: vscode.Range): DeprecationFix | undefined {
-        if (deprecation.deprecationKind === DeprecationKind.newPropertyName) {
-            return new RenameDeprecationFix(deprecation, doc, docRange);
-        } 
-        else if (deprecation.deprecationKind === DeprecationKind.licenseToArray) {
-            return new LicenseDeprecationFix(deprecation, doc, docRange);
-        }
-        return;
-    }
-
 
     resolveCodeAction(codeAction: DeprecationFixCodeAction, token: vscode.CancellationToken): vscode.ProviderResult<DeprecationFixCodeAction> {
         codeAction.calculateEdit();
@@ -81,18 +156,21 @@ class DeprecationQuickFixProvider implements vscode.CodeActionProvider<Deprecati
     }
 }
 
+
 class DeprecationFixCodeAction extends vscode.CodeAction {
-    
-    constructor(private readonly fix: DeprecationFix) {
-        super(fix.calculateFixMessage(), vscode.CodeActionKind.QuickFix);
-        this.command = fix.getCommand();
+
+    constructor(private readonly fix: DeprecationFix, private readonly range: vscode.Range) {
+        super(fix.calculateMessage(), vscode.CodeActionKind.QuickFix);
+        this.command = fix.calculateCommand(this.range);
         this.isPreferred = true;
     }
-    
+
     calculateEdit() {
-        this.edit = this.fix.calculateEdit();
+        this.edit = this.fix.calculateEdit(this.range);
     }
 }
+
+// ----------------- Info ------------------
 
 enum DeprecationKind {
     newPropertyName = "newPropertyName",
@@ -101,18 +179,16 @@ enum DeprecationKind {
     unknown = "unknown"
 }
 
-const deprecationKindReverseMap: Record<string, DeprecationKind>  = {
-    "1": DeprecationKind.newPropertyName,
-    "2": DeprecationKind.valueToArray,
-    "42": DeprecationKind.licenseToArray
-};
-
 /**
- * Metadata (message and deprecation kind) for a single deprecation warning.
- * @param  {string} userMessage
- * @param  {DeprecationKind[]} privatedeprecationKinds
+ * Info (message and deprecation kind) for a single deprecation warning.
  */
-class Deprecation {
+class DeprecationInfo {
+    
+    private static  deprecationKindReverseMap: Record<string, DeprecationKind>  = {
+        "1": DeprecationKind.newPropertyName,
+        "2": DeprecationKind.valueToArray,
+        "42": DeprecationKind.licenseToArray
+    };
 
     private static messageRegex = /^(.*)\[manifest\((\d+(?:,\d+)*)\)\]$/;
 
@@ -121,42 +197,89 @@ class Deprecation {
         public readonly deprecationKind: DeprecationKind
     ) {}
 
-    static from(message: string): Deprecation | undefined {
+    static from(message: string): DeprecationInfo | undefined {
 
-        const messageRegexResult = Deprecation.messageRegex.exec(message);
-        
+        const messageRegexResult = DeprecationInfo.messageRegex.exec(message);
+
         if (!messageRegexResult) {
             return;
         }
 
         const userMessage = messageRegexResult[1];
         const deprecationCode = messageRegexResult[2];
-        const deprecationKind =  deprecationKindReverseMap[deprecationCode] ?? DeprecationKind.unknown;
+        const deprecationKind =  DeprecationInfo.deprecationKindReverseMap[deprecationCode] ?? DeprecationKind.unknown;
 
-        return new Deprecation(userMessage, deprecationKind);
+        return new DeprecationInfo(userMessage, deprecationKind);
+    }
+}
+
+
+// ----------------- Fixes --------------------
+
+
+abstract class DeprecationFix {
+
+    constructor(protected fixPath: JSONPath) {
+    }
+
+    abstract calculateMessage(): string;
+    abstract calculateCommand(range?: vscode.Range): vscode.Command | undefined;
+    abstract calculateEdit(range?: vscode.Range): vscode.WorkspaceEdit | undefined;
+
+    public getFixPath(): JSONPath {
+        return this.fixPath;
     }
 
 }
 
-interface DeprecationFix {
-    calculateFixMessage(): string;
-    getCommand(): vscode.Command | undefined;
-    calculateEdit(): vscode.WorkspaceEdit;
-    //TODO: canFix(dep, doc range): boolean
+
+function createFix(diagnostic: vscode.Diagnostic, doc: vscode.TextDocument): DeprecationFix | undefined {
+
+    const deprecation = DeprecationInfo.from(diagnostic.message);
+    if (!deprecation) {
+        return;
+    }
+    
+    const diagOffset = doc.offsetAt(diagnostic.range.start);
+    const nodeLocation = getLocation(doc.getText(), diagOffset);
+    // const nodePath = nodeLocation.path;
+
+
+    if (deprecation.deprecationKind === DeprecationKind.newPropertyName) {
+        return new RenameDeprecationFix(deprecation, doc, nodeLocation.path);
+    }
+    else if (deprecation.deprecationKind === DeprecationKind.licenseToArray) {
+        return new LicenseDeprecationFix(doc, nodeLocation.path);
+    }
+
+    return;
 }
 
-class LicenseDeprecationFix implements DeprecationFix {
-    
-    
-    constructor(
-        private deprecation: Deprecation, 
-        private doc: vscode.TextDocument,
-        private range: vscode.Range
-    ) {}
-    
-    getCommand(): vscode.Command | undefined {
 
-        const oldPropNodeText = this.doc.getText(this.range);
+class LicenseDeprecationFix extends DeprecationFix {
+
+    constructor(
+        private doc: vscode.TextDocument,
+        fixPath: JSONPath
+        // ,
+        // private range: vscode.Range
+    ) {
+        super(fixPath);
+    }
+
+    calculateCommand(range: vscode.Range): vscode.Command | undefined {
+
+        if (!range) {
+
+
+
+
+
+
+            return;
+        }
+
+        const oldPropNodeText = this.doc.getText(range);
         const oldPropNode = parseTree(`{${oldPropNodeText}}`);
 
         const propValNode = findNodeAtLocation(oldPropNode, ["Bundle-License"]);
@@ -173,13 +296,13 @@ class LicenseDeprecationFix implements DeprecationFix {
                 {
                     snippet: `"licenses": [\n\t{\n\t\t"type": "${licenseText}",\n\t\t"url": ""\n\t}\n]`,
                     doc: this.doc,
-                    range: this.range
+                    range: range
                 }
             ]
         };
     }
-    
-    calculateFixMessage(): string {
+
+    calculateMessage(): string {
         return "Convert to 'licenses' array";
     }
     calculateEdit(): vscode.WorkspaceEdit {
@@ -188,45 +311,52 @@ class LicenseDeprecationFix implements DeprecationFix {
 
 }
 
-class RenameDeprecationFix implements DeprecationFix {
-    
+class RenameDeprecationFix extends DeprecationFix {
+
     private readonly newPropRegex = /^Use "(.*)"/;
     private newPropName: string;
 
     constructor(
-        private deprecation: Deprecation, 
+        private deprecation: DeprecationInfo,
         private doc: vscode.TextDocument,
-        private range: vscode.Range
+        fixPath: JSONPath
+        // ,
+        // private range: vscode.Range
     ) {
+        super(fixPath);
         const newPropResult = this.newPropRegex.exec(this.deprecation.userMessage);
         if (!newPropResult) {
             throw new Error("Deprecation notice does not specifiy new property name in expected format.");
         }
 
-        this.newPropName = newPropResult[1];    
+        this.newPropName = newPropResult[1];
     }
 
-
-    getCommand(): vscode.Command | undefined {
+    calculateCommand(): vscode.Command | undefined {
         return;
     }
 
-
-    calculateFixMessage(): string {
+    calculateMessage(): string {
         return `Replace by '${this.newPropName}'`;
     }
 
-    calculateEdit(): vscode.WorkspaceEdit {
+    calculateEdit(range?: vscode.Range): vscode.WorkspaceEdit {
+
         const edit = new vscode.WorkspaceEdit();
-        
-        const deprecatedPropText = this.doc.getText(this.range);
+
+        if (!range) {
+            return edit;
+        }
+
+        const deprecatedPropText = this.doc.getText(range);
         const deprecatedPropRes = /^"([^"]+)"/.exec(deprecatedPropText);
         if (!deprecatedPropRes) {
             return edit;
         }
 
-        edit.replace(this.doc.uri, new vscode.Range(this.range.start.translate(0, 1), this.range.start.translate(0, deprecatedPropRes[1].length + 1)), this.newPropName);
+        edit.replace(this.doc.uri, new vscode.Range(range.start.translate(0, 1), range.start.translate(0, deprecatedPropRes[1].length + 1)), this.newPropName);
         return edit;
     }
 
 }
+
