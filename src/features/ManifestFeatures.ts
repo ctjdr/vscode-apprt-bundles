@@ -7,7 +7,6 @@ import { SchemaDocumentContentProvider } from "./SchemaDocumentContentProvider";
 export class ManifestFeatures {
     
     private maniPro: SchemaDocumentContentProvider;
-    private displayHelp = true;
     
     constructor(private extensionCtx: vscode.ExtensionContext) {
         this.maniPro = new SchemaDocumentContentProvider(extensionCtx.extensionPath);            
