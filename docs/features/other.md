@@ -22,7 +22,7 @@ The following glob patterns define paths of bundles that are hidden by default:
 * `**/src/test/**`
 
 
-## Exclude bundle baths
+## Exclude bundle paths
 
 To exclude bundles from *all features* of this extension use the configuration property `apprtbundles.bundles.ignorePaths`.
 If a bundle has a path matching one of the glob patterns defined here, it will be ignored by this extension completely.
