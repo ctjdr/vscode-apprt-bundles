@@ -6,7 +6,7 @@ nav_order: 100
 ---
 
 - [Hide bundle paths](#hide-bundle-paths)
-- [Exclude bundle baths](#exclude-bundle-baths)
+- [Exclude bundle paths](#exclude-bundle-paths)
 
 # Configure bundle path exclusions
 
