@@ -393,7 +393,7 @@
         },
         "Require-Bundle": {
             "type": "array",
-            "deprecationMessage": "Use \"dependencies\" instead. [manifest(1)]",
+            "deprecationMessage": "Use \"dependencies\" instead. [manifest(52)]",
             "markdownDescription": "A map of bundle names to their accepted versions this bundle depends on.\n\nIf this bundle has an implementation class dependency to another bundle (i.e. it needs a class of another bundle), declare this dependency here.\n\nIf a bundle requires another bundle to be installed in the application to work correctly, this requirement should explicitly be expressed here. The runtime ensures that theses bundles are started before this bundle."
         },
         "i18n-extension": {
