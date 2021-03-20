@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { BundleIndex } from "./bundles/BundleIndex";
 import BundleQuickPicker from "./features/BundleQuickPicker";
-import { ManifestSchemaFeatures } from "./features/ManifestSchemaFeatures";
+import { ManifestFeatures } from "./features/ManifestFeatures";
 import { BundleFileOpener } from "./features/BundleFileOpener";
 import { ServiceNameCodeLensProvider } from "./features/ServiceNameCodeLensProvider";
 import { ServiceNameCompletionProvider } from "./features/ServiceNameCompletionProvider";
@@ -24,7 +24,8 @@ export function noManifestFile(doc: vscode.TextDocument): boolean {
 
 export async function activate(context: vscode.ExtensionContext) {
 
-    const manifestSchemaDisposables =  new ManifestSchemaFeatures(context).register();
+    const manifestFeatures = new ManifestFeatures(context);
+    const manifestFeaturesEarlyDisposables =  manifestFeatures.registerEarly();
 
     vscode.commands.registerCommand("apprtbundles.activate", async () => {
         const decision = await vscode.window.showInformationMessage(
@@ -69,7 +70,9 @@ export async function activate(context: vscode.ExtensionContext) {
         
         bundleIndex,
         
-        ...manifestSchemaDisposables,
+        ...manifestFeaturesEarlyDisposables,
+
+        ...manifestFeatures.register(bundleIndex),
 
         ...configuration.register(),
 

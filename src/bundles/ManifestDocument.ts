@@ -146,12 +146,14 @@ export default class ManifestDocument {
     #allServiceNames: Set<string> = new Set();
     #linebreakOffsets: number[];
     readonly name: string;
+    readonly version: string;
 
     private constructor(documentContent: string) {
         this.#linebreakOffsets = ManifestDocument.calcLineBreakOffsets(documentContent);
         const manifestNode = json.parseTree(documentContent);
         this.#components = this.parseComponents(manifestNode);
         this.name = this.parseName(manifestNode) || unknownName().next().value;
+        this.version = this.parseVersion(manifestNode) ?? "";
     }
 
     static fromString(content: string): Promise<ManifestDocument> {
@@ -246,6 +248,10 @@ export default class ManifestDocument {
     private parseName(manifestNode: json.Node): string | undefined {
         const nameNode = json.findNodeAtLocation(manifestNode, ["name"]) || json.findNodeAtLocation(manifestNode, ["Bundle-SymbolicName"]);
         return nameNode?.value?.toString();
+    }
+    private parseVersion(manifestNode: json.Node): string | undefined {
+        const versionNode = json.findNodeAtLocation(manifestNode, ["version"]) || json.findNodeAtLocation(manifestNode, ["Bundle-Version"]);
+        return versionNode?.value?.toString();
     }
 
     private parseComponents(manifestNode: json.Node): ComponentFragment[] {
