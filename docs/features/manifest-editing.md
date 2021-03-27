@@ -40,7 +40,7 @@ Find errors and deprecated keys before your bundle gets loaded!
 
 ## Auto-completion & auto-suggest
 
-Press `Ctrl+Space` to get code-suggest and auto-complete for most of the properties.
+Press <kbd>Ctrl</kbd>+<kbd>Space</kbd> to get code-suggest and auto-complete for most of the properties.
 Creating a new `"component"` with `"references"` will only take a few seconds.
 
 ![Feature Demo](../images/demo.gif)
@@ -54,8 +54,8 @@ Finds all occurences in other manifest.json files.
 
 The search can be triggered by the following commands when your cursor is on a value for `"provides"` or `"providing"`:
 
-* \> _Find all References_ (`Alt-Shift-F12`)
-* \> _Go to References_ (`Shift-F12`)
+* \> _Find all References_ (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F12</kbd>)
+* \> _Go to References_ (<kbd>Shift</kbd>+<kbd>F12</kbd>)
 * \> _Peek References_
 
 ![Feature Demo](../images/feature_servicename_references.gif)

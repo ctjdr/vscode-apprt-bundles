@@ -29,7 +29,7 @@ The property `apprtbundles.bundles.reveal.goal.type` lets you select if
 ## Go to component implementation
 
 In `manifest.json` files, execute the *> Go to Definition* command on the name or `"impl"` property value of a component to open the corresponding implementation file.
-This is equivalent to a `Ctrl-Click` or pressing `F12`.
+This is equivalent to a <kbd>Ctrl</kbd>+<kbd>Click</kbd> or pressing <kbd>F12</kbd>.
 
 !["Go to Definition" for components](../images/feature_component_goto_declaration.gif)
 
