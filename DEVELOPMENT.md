@@ -40,3 +40,19 @@ Run
 $ export MANIFEST_PATH="/home/foo/folder_with_many_manifests"
 $ npm run test-manifest-path
 ```
+
+## Build changelog
+
+Run in project root
+
+```bash
+$ github_changelog_generator --user ctjdr --project vscode-apprt-bundles --token $GITHUB_TOKEN --output docs/updates/CHANGELOG_add.md --future-release 0.4.0 --no-compare-link --since-tag v0.1.0
+```
+
+## Run site
+
+Run in `./docs`
+
+```bash
+$ bundle exec jekyll serve
+```
