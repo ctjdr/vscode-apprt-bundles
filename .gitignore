@@ -5,3 +5,4 @@ node_modules
 /dist
 .jekyll-cache
 /docs/_site
+.vscode/settings.json
