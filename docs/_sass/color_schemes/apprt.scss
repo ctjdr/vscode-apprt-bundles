@@ -27,6 +27,10 @@ p>strong {
     line-height: 30px;
 }
 
+:not(.main-content) > ul {
+    margin-top: 0 !important;
+}
+
 ul>li {
     margin: 0;
 }
