@@ -6,11 +6,16 @@ nav_order: 1000
 ---
 # Changelog
 
-## 0.3.0  (2021-01-14)
+## 0.4.0 (2021-03-20)
+
+**Enhancement:**
+
+- Provide quick fix for deprecated manifest items [\#45](https://github.com/ctjdr/vscode-apprt-bundles/issues/45)
+
+## 0.3.0 (2021-01-14)
 
 **Enhancements**
 
-- "Goto Definition" for components opens implementing file [\#11](https://github.com/ctjdr/vscode-apprt-bundles/issues/11)
 - "Open bundle" command: Don't display bundle name \(again\) in details [\#35](https://github.com/ctjdr/vscode-apprt-bundles/issues/35)
 - "Open Bundle" command: Match on bundle parent paths [\#33](https://github.com/ctjdr/vscode-apprt-bundles/issues/33)
 - Make "manifest" reveal type the default [\#32](https://github.com/ctjdr/vscode-apprt-bundles/issues/32)
@@ -21,9 +26,10 @@ nav_order: 1000
 - Add comand to "open current manifest" [\#19](https://github.com/ctjdr/vscode-apprt-bundles/issues/19)
 - Don't suggest deprecated or other unwanted keys when editing manifest.json files [\#16](https://github.com/ctjdr/vscode-apprt-bundles/issues/16)
 - Provide better snippets for most commonly used manifest.json keys [\#15](https://github.com/ctjdr/vscode-apprt-bundles/issues/15)
-- Tag deprecated keys in manifest.schema.json [\#14](https://github.com/ctjdr/vscode-apprt-bundles/issues/14)
+- "Goto Definition" for components opens implementing file [\#11](https://github.com/ctjdr/vscode-apprt-bundles/issues/11)
 
 **Bug fixes**
+
 
 - Configuration not restored for "Open bundle" command [\#21](https://github.com/ctjdr/vscode-apprt-bundles/issues/21)
 - No help docs on auto-complete [\#17](https://github.com/ctjdr/vscode-apprt-bundles/issues/17)

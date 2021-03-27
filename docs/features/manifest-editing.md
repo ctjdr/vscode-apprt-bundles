@@ -11,6 +11,8 @@ Features provided by the extension that help editing `manifest.json` files are:
 - [Documentation of properties](#documentation-of-properties)
 - [Validation](#validation)
 - [Auto-completion & auto-suggest](#auto-completion--auto-suggest)
+- [Quick fixes](#quick-fixes)
+  - [Fix deprecated properties](#fix-deprecated-properties)
 - [Service names: _provides_ & _providing_](#service-names-provides--providing)
   - [References search](#references-search)
   - [Auto-completion](#auto-completion)
@@ -44,6 +46,16 @@ Press <kbd>Ctrl</kbd>+<kbd>Space</kbd> to get code-suggest and auto-complete for
 Creating a new `"component"` with `"references"` will only take a few seconds.
 
 ![Feature Demo](../images/demo.gif)
+
+## Quick fixes
+
+### Fix deprecated properties
+
+OSGi-like manifest property names like `Bundle-SymbolicName` or `Bundle-Version` are deprecated in favor of npm package.json-style names.
+These deprecated properties get a wavy underline and are reported in the Problems view when this extension is activated.
+
+You can easily fix deprecated properties using the *Quick fix* command (<kbd>Ctrl</kbd>+<kbd>.</kbd>) or clicking the light bulb that appears on the affected line.
+When there are more than one deprections for the current document, you get the offer to *Fix all auto-fixable deprecations* in addition.
 
 ## Service names: _provides_ & _providing_
 
