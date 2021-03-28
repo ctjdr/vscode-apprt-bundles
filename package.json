@@ -2,7 +2,7 @@
     "name": "vscode-apprt-bundles",
     "displayName": "app.rt Bundles",
     "description": "Support working with bundles of the app.rt framework",
-    "version": "0.3.0",
+    "version": "0.4.0",
     "author": {
         "name": "ctjdr"
     },
