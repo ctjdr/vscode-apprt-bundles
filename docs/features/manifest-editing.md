@@ -51,11 +51,13 @@ Creating a new `"component"` with `"references"` will only take a few seconds.
 
 ### Fix deprecated properties
 
-OSGi-like manifest property names like `Bundle-SymbolicName` or `Bundle-Version` are deprecated in favor of npm package.json-style names.
-These deprecated properties get a wavy underline and are reported in the Problems view when this extension is activated.
+OSGi-like manifest property names like `Bundle-SymbolicName` or `Bundle-Version` are deprecated in favor of npm-style names as used in package.json files.
+These deprecated property names get a wavy underline and are reported in the Problems view when this extension is activated.
+
+![Feature Demo](../images/feature_manifest_quickfix_deprecations.png)
 
 You can easily fix deprecated properties using the *Quick fix* command (<kbd>Ctrl</kbd>+<kbd>.</kbd>) or clicking the light bulb that appears on the affected line.
-When there are more than one deprections for the current document, you get the offer to *Fix all auto-fixable deprecations* in addition.
+When there is more than one deprection for the current document, you get the offer to *Fix all auto-fixable deprecations* in addition.
 
 ## Service names: _provides_ & _providing_
 
@@ -66,8 +68,8 @@ Finds all occurences in other manifest.json files.
 
 The search can be triggered by the following commands when your cursor is on a value for `"provides"` or `"providing"`:
 
-* \> _Find all References_ (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F12</kbd>)
-* \> _Go to References_ (<kbd>Shift</kbd>+<kbd>F12</kbd>)
+* \> _Find all References_, <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F12</kbd>
+* \> _Go to References_, <kbd>Shift</kbd>+<kbd>F12</kbd>
 * \> _Peek References_
 
 ![Feature Demo](../images/feature_servicename_references.gif)
