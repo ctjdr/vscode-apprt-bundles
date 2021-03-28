@@ -11,6 +11,8 @@ Features provided by the extension that help editing `manifest.json` files are:
 - [Documentation of properties](#documentation-of-properties)
 - [Validation](#validation)
 - [Auto-completion & auto-suggest](#auto-completion--auto-suggest)
+- [Quick fixes](#quick-fixes)
+  - [Fix deprecated properties](#fix-deprecated-properties)
 - [Service names: _provides_ & _providing_](#service-names-provides--providing)
   - [References search](#references-search)
   - [Auto-completion](#auto-completion)
@@ -40,10 +42,22 @@ Find errors and deprecated keys before your bundle gets loaded!
 
 ## Auto-completion & auto-suggest
 
-Press `Ctrl+Space` to get code-suggest and auto-complete for most of the properties.
+Press <kbd>Ctrl</kbd>+<kbd>Space</kbd> to get code-suggest and auto-complete for most of the properties.
 Creating a new `"component"` with `"references"` will only take a few seconds.
 
 ![Feature Demo](../images/demo.gif)
+
+## Quick fixes
+
+### Fix deprecated properties
+
+OSGi-like manifest property names like `Bundle-SymbolicName` or `Bundle-Version` are deprecated in favor of npm-style names as used in package.json files.
+These deprecated property names get a wavy underline and are reported in the Problems view when this extension is activated.
+
+![Feature Demo](../images/feature_manifest_quickfix_deprecations.png)
+
+You can easily fix deprecated properties using the *Quick fix* command (<kbd>Ctrl</kbd>+<kbd>.</kbd>) or clicking the light bulb that appears on the affected line.
+When there is more than one deprection for the current document, you get the offer to *Fix all auto-fixable deprecations* in addition.
 
 ## Service names: _provides_ & _providing_
 
@@ -54,8 +68,8 @@ Finds all occurences in other manifest.json files.
 
 The search can be triggered by the following commands when your cursor is on a value for `"provides"` or `"providing"`:
 
-* \> _Find all References_ (`Alt-Shift-F12`)
-* \> _Go to References_ (`Shift-F12`)
+* \> _Find all References_, <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>F12</kbd>
+* \> _Go to References_, <kbd>Shift</kbd>+<kbd>F12</kbd>
 * \> _Peek References_
 
 ![Feature Demo](../images/feature_servicename_references.gif)

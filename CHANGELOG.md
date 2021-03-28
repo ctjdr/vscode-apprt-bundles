@@ -1,6 +1,13 @@
 # Changelog
 
-## 0.3.0  (2021-01-14)
+
+## 0.4.0 (2021-03-28)
+
+**Enhancement:**
+
+- Provide quick fix for deprecated manifest items [\#45](https://github.com/ctjdr/vscode-apprt-bundles/issues/45)
+
+## 0.3.0 (2021-01-14)
 
 **Enhancements**
 
@@ -18,6 +25,8 @@
 
 **Bug fixes**
 
+
+- Configuration not restored for "Open bundle" command [\#21](https://github.com/ctjdr/vscode-apprt-bundles/issues/21)
 - No help docs on auto-complete [\#17](https://github.com/ctjdr/vscode-apprt-bundles/issues/17)
 
 ## 0.2.0 (2020-11-27)
