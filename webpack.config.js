@@ -8,7 +8,7 @@
 'use strict';
 
 const path = require('path');
-const SchemaAggregator = require('./src/build/SchemaAggregator');
+const SchemaAggregator = require('./src/support/build/SchemaAggregator');
 
 
 /**@type {import('webpack').Configuration}*/
