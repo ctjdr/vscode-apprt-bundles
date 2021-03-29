@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 import { BundleActionHandler } from "../bundles/BundleActions";
-import { Bundle } from "../bundles/BundleModel";
-import { BundleService } from "../bundles/BundleService";
-import { Hotlist } from "../bundles/Hotlist";
+import { Bundle } from "../api/bundles/BundleModel";
+import { BundleService } from "../api/bundles/BundleService";
+import { Hotlist } from "../api/bundles/Hotlist";
 import  * as glob from "./glob";
 
 /**

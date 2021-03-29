@@ -1,5 +1,5 @@
 import { CancellationToken, DefinitionProvider, Location, Position, TextDocument, workspace } from "vscode";
-import { BundleIndex } from "../bundles/BundleIndex";
+import { BundleIndex } from "../api/bundles/BundleIndex";
 import * as path from "path";
 
 

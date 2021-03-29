@@ -46,7 +46,7 @@ export class BundleIndex implements Disposable {
     }    
     
     static createDefault(): BundleIndex {
-        const workspaceManifestProvider = require("./WorkspaceManifestResolver");
+        const workspaceManifestProvider = require("../../bundles/WorkspaceManifestResolver");
         return new BundleIndex(new workspaceManifestProvider.WorkspaceManifestProvider());
     }
     

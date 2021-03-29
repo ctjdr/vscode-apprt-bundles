@@ -1,5 +1,5 @@
 import { Position, Range } from "vscode";
-import { Section } from "../bundles/ManifestDocument";
+import { Section } from "../api/bundles/ManifestDocument";
 
 export function rangeOfSection(section: Section | undefined): Range {
     if (!section) {

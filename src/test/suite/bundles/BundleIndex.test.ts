@@ -1,7 +1,7 @@
 import { fail } from "assert";
 import { assert } from "chai";
 
-import { BundleIndex, ManifestResolver } from "../../../bundles/BundleIndex";
+import { BundleIndex, ManifestResolver } from "../../../api/bundles/BundleIndex";
 
 const jsonFile = `{
     "name": "abc",

@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { BundleIndex } from "../bundles/BundleIndex";
+import { BundleIndex } from "../api/bundles/BundleIndex";
 import { manifestFilesSelector } from "../extension";
 import { DeprecationFixFactory, DeprecationQuickFixAllProvider, DeprecationQuickFixProvider } from "./DeprecationQuickFixProvider";
 import { SchemaDocumentContentProvider } from "./SchemaDocumentContentProvider";

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { MostRecentHotlist } from "../../../bundles/Hotlist";
+import { MostRecentHotlist } from "../../../api/bundles/Hotlist";
 
 
 suite("BundleHotlist", function () {

@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { BundleIndex } from "./bundles/BundleIndex";
+import { BundleIndex } from "./api/bundles/BundleIndex";
 import BundleQuickPicker from "./features/BundleQuickPicker";
 import { ManifestFeatures } from "./features/ManifestFeatures";
 import { BundleFileOpener } from "./features/BundleFileOpener";
@@ -7,9 +7,9 @@ import { ServiceNameCodeLensProvider } from "./features/ServiceNameCodeLensProvi
 import { ServiceNameCompletionProvider } from "./features/ServiceNameCompletionProvider";
 import { ServiceNameReferenceProvider } from "./features/ServiceNameReferenceProvider";
 import { ComponentDefinitionProvider } from "./features/ComponentDefinitionProvider";
-import { BundleService } from "./bundles/BundleService";
+import { BundleService } from "./api/bundles/BundleService";
 import { BundleActionHandler } from "./bundles/BundleActions";
-import { MostRecentHotlist } from "./bundles/Hotlist";
+import { MostRecentHotlist } from "./api/bundles/Hotlist";
 import { ExtensionConfiguration } from "./Configuration";
 
 export const manifestFilesSelector: vscode.DocumentSelector = {

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import { ValueType } from "../bundles/ManifestDocument";
-import { BundleIndex } from "../bundles/BundleIndex";
+import { ValueType } from "../api/bundles/ManifestDocument";
+import { BundleIndex } from "../api/bundles/BundleIndex";
 import { rangeOfSection } from "./Range";
 
 
