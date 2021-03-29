@@ -3,8 +3,7 @@ import * as vscode from "vscode";
 import { noManifestFile } from "../extension";
 
 
-
-export class ManifestDocWatcher implements vscode.Disposable {
+class ManifestDocWatcher implements vscode.Disposable {
 
     private disposables: vscode.Disposable[] = [];
     private currentFile?: vscode.Uri;
