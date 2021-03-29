@@ -31,7 +31,7 @@ class SchemaAggregator {
                 const bundledSchema = JSON.stringify(jsonSchema);
                 fs.writeFileSync(path.resolve(this.targetSchemaPath, "manifest.schema.short.json"), bundledSchema);
             }, (rejected) => {
-                console.error("Cannot load manfiest.json schema: " + rejected);    
+                console.error("Cannot load manifest.json schema: " + rejected);    
             }
             );
         });
