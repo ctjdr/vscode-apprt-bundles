@@ -151,13 +151,21 @@ export default class ManifestDocument {
     private constructor(documentContent: string) {
         this.#linebreakOffsets = ManifestDocument.calcLineBreakOffsets(documentContent);
         const manifestNode = json.parseTree(documentContent);
+        if (!manifestNode) {
+            throw new Error("Cannot parse document");
+        }
         this.#components = this.parseComponents(manifestNode);
         this.name = this.parseName(manifestNode) || unknownName().next().value;
         this.version = this.parseVersion(manifestNode) ?? "";
     }
 
-    static fromString(content: string): Promise<ManifestDocument> {
-        return Promise.resolve(new ManifestDocument(content));
+    static fromString(content: string): Promise<ManifestDocument | undefined> {
+        try {
+            return Promise.resolve(new ManifestDocument(content));
+        } catch (e) {
+            return Promise.resolve(undefined);
+        }
+
     }
 
     private getLinePos(offset: number): LinePos {

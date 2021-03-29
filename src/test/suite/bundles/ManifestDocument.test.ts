@@ -29,7 +29,7 @@ suite("ManifestDocument", function () {
 
   test("Bundle name detected", async function () {
     const manifest = await ManifestDocument.fromString(jsonFile);
-    assert.equal(manifest.name, "abc");
+    assert.equal(manifest?.name, "abc");
   });
 
   test("Bundle without name gets unknown name", async function () {
@@ -38,13 +38,13 @@ suite("ManifestDocument", function () {
         "version": "1.0"
        }`
     );
-    assert.isTrue(manifest.name.startsWith("unknown-name-"));
+    assert.isTrue(manifest?.name.startsWith("unknown-name-"));
   });
 
   test("All components are detected with correct sections", async function () {
     const manifest = await ManifestDocument.fromString(jsonFile);
-    assert.equal(manifest.getComponents().length, 3);
-    assert.deepEqual(manifest.getComponents()[0].getName(), {
+    assert.equal(manifest?.getComponents().length, 3);
+    assert.deepEqual(manifest?.getComponents()[0].getName(), {
       value: "A",
       key: "name",
       section: new Section(
@@ -53,7 +53,7 @@ suite("ManifestDocument", function () {
       ),
       type: ValueType.unknown
     });
-    assert.deepEqual(manifest.getComponents()[1].getName(), {
+    assert.deepEqual(manifest?.getComponents()[1].getName(), {
       value: "B",
       key: "name",
       section: new Section(
@@ -66,7 +66,7 @@ suite("ManifestDocument", function () {
 
   test("'provides' elements are detected with correct section", async function () {
     const manifest = await ManifestDocument.fromString(jsonFile);
-    assert.deepEqual(manifest.getComponents()[0].provides("A1"), {
+    assert.deepEqual(manifest?.getComponents()[0].provides("A1"), {
       value: "A1",
       key: "provides",
       section: new Section(
@@ -75,7 +75,7 @@ suite("ManifestDocument", function () {
       ),
       type: ValueType.provides
     });
-    assert.deepEqual(manifest.getComponents()[0].provides("A2"), {
+    assert.deepEqual(manifest?.getComponents()[0].provides("A2"), {
       value: "A2",
       key: "provides",
       section: new Section(
@@ -89,11 +89,11 @@ suite("ManifestDocument", function () {
   test("'providing' element is detected with corect section", async function () {
     const manifest = await ManifestDocument.fromString(jsonFile);
     assert.equal(
-      manifest.getComponents()[2].referencesAskProviding("A2").length,
+      manifest?.getComponents()[2].referencesAskProviding("A2").length,
       1
     );
 
-    assert.deepEqual(manifest.getReferencesFor("A2").values().next().value.getProviding(), {
+    assert.deepEqual(manifest?.getReferencesFor("A2").values().next().value.getProviding(), {
       value: "A2",
       key: "providing",
       section: {
@@ -107,25 +107,25 @@ suite("ManifestDocument", function () {
 
   test("All components are returned if requested by correct service name", async function () {
     const manifest = await ManifestDocument.fromString(jsonFile);
-    assert.equal(manifest.getComponentsFor("A1").size, 1);
-    assert.equal(manifest.getComponentsFor("A2").size, 2);
-    assert.equal(manifest.getComponentsFor("A3").size, 0);
+    assert.equal(manifest?.getComponentsFor("A1").size, 1);
+    assert.equal(manifest?.getComponentsFor("A2").size, 2);
+    assert.equal(manifest?.getComponentsFor("A3").size, 0);
   });
 
   test("All references are returned if requested by correct service name", async function () {
     const manifest = await ManifestDocument.fromString(jsonFile);
-    assert.equal(manifest.getReferencesFor("A2").size, 1);
-    assert.equal(manifest.getReferencesFor("A1").size, 0);
+    assert.equal(manifest?.getReferencesFor("A2").size, 1);
+    assert.equal(manifest?.getReferencesFor("A1").size, 0);
   });
 
   test("All 'provides' elements are returned", async function () {
     const manifest = await ManifestDocument.fromString(jsonFile);
-    assert.equal(manifest.getProvidesFor("A2").size, 2);
+    assert.equal(manifest?.getProvidesFor("A2").size, 2);
   });
 
   test("All 'providing' elements are returned", async function () {
     const manifest = await ManifestDocument.fromString(jsonFile);
-    assert.equal(manifest.getProvidingFor("A2").size, 1);
+    assert.equal(manifest?.getProvidingFor("A2").size, 1);
   });
   // test("All 'provides' elements are returned if requested by correct service name", async function () {
   //   const manifest = await ManifestDocument.fromString(jsonFile);
@@ -144,8 +144,8 @@ suite("ManifestDocument", function () {
 
   test("StringFragment found for line number", async function () {
     const manifest = await ManifestDocument.fromString(jsonFile);
-    assert.equal(manifest.getStringFragmentsOnLine(6)?.size, 2);
-    assert.equal(manifest.getStringFragmentsOnLine(17)?.size, 1);
+    assert.equal(manifest?.getStringFragmentsOnLine(6)?.size, 2);
+    assert.equal(manifest?.getStringFragmentsOnLine(17)?.size, 1);
   });
   
   

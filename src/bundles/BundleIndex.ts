@@ -84,7 +84,9 @@ export class BundleIndex implements Disposable {
         const manifestDoc = await ManifestDocument.fromString(doc);
         // TODO: This doesn't clean index servicenames->bundleIds correctly: 
         // What if a bundle does not reference a service name any more? The entry is kept although it should be deleted.
-        this.indexManifestDoc(bundleId.toString(), manifestDoc);
+        if (manifestDoc) {
+            this.indexManifestDoc(bundleId.toString(), manifestDoc);
+        }
     }
     
     public markDirty(bundleId: string):void {

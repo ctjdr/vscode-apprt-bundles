@@ -14,6 +14,9 @@ export {
 function rangeOfNode(document: vscode.TextDocument, nodePath: JSONPath): vscode.Range | undefined {
 
     const jsonDoc = parseTree(document.getText());
+    if (!jsonDoc) {
+        return;
+    }
     const propValNode = findNodeAtLocation(jsonDoc, nodePath);
     if (!propValNode ||propValNode.parent?.type !== "property") {
         return;
@@ -285,7 +288,9 @@ class LicenseDeprecationFix extends DeprecationFix {
 
         const oldPropNodeText = this.doc.getText(range);
         const oldPropNode = parseTree(`{${oldPropNodeText}}`);
-
+        if (!oldPropNode) {
+            return;
+        }
         const propValNode = findNodeAtLocation(oldPropNode, ["Bundle-License"]);
         if (propValNode?.type !== "string") {
             return;
@@ -355,6 +360,10 @@ class RequireBundleDeprecationFix extends DeprecationFix {
 
         const oldPropNodeText = this.doc.getText(range);
         const oldPropNode = parseTree(`{${oldPropNodeText}}`);
+
+        if (!oldPropNode) {
+            return;
+        }
 
         const propValNode = findNodeAtLocation(oldPropNode, ["Require-Bundle"]);
         if (propValNode?.type !== "array") {

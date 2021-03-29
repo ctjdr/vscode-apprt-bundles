@@ -2,6 +2,10 @@ const $RefParser = require("@apidevtools/json-schema-ref-parser");
 const fs = require('fs');
 const path = require('path');
 
+/**
+ * Takes the manifest.json schema and creates a variant of it with all 'markdownDescription' properties stripped off.
+ * This file is registered, when the user selects the "Toggle manifest documentation" option, where no doc hovers are diplayed in a manifest.json file.
+ */
 class SchemaAggregator {
 
 
@@ -19,6 +23,8 @@ class SchemaAggregator {
                 //Remove $schema element. This is a trick to make the json-language-server of vscode invalidate its schema cache.
                 delete jsonSchema["$schema"];
                 fs.writeFileSync(path.resolve(this.targetSchemaPath, "manifest.schema.json"),  JSON.stringify(jsonSchema));
+
+                // recursively remove all 'markdownDescription' elements
                 this.processDescriptions(jsonSchema, (obj) => {
                     delete obj["markdownDescription"];
                 });

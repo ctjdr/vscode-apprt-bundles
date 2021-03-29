@@ -15,6 +15,16 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "type": "npm",
+            "script": "test-compile",
+            "problemMatcher": [
+                "$tsc"
+            ],
+            "group": "build",
+            "label": "npm: test-compile",
+            "detail": "tsc -p ./"
         }
     ]
 }
