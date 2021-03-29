@@ -5,6 +5,10 @@ import { BundleService } from "../bundles/BundleService";
 import { Hotlist } from "../bundles/Hotlist";
 import  * as glob from "./glob";
 
+/**
+ * Registers a command to display a "quick pick list" of all bundles detected in the current workspace.
+ * 
+ */
 export default class BundleQuickPicker {
 
     constructor(

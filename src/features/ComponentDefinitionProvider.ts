@@ -2,6 +2,10 @@ import { CancellationToken, DefinitionProvider, Location, Position, TextDocument
 import { BundleIndex } from "../bundles/BundleIndex";
 import * as path from "path";
 
+
+/**
+ * Implements a `vscode.DefinitionProvider` links a component of a manifest.json file to its implementing file.
+ */
 export class ComponentDefinitionProvider implements DefinitionProvider {
 
     constructor(
