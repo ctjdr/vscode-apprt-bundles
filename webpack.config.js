@@ -8,7 +8,7 @@
 'use strict';
 
 const path = require('path');
-const SchemaAggregator = require('./src/support/build/SchemaAggregator');
+const schemaAggregator = require('./src/support/build/SchemaAggregator');
 
 
 /**@type {import('webpack').Configuration}*/
@@ -22,7 +22,9 @@ const config = {
     filename: 'extension.js',
     libraryTarget: 'commonjs2',
     devtoolModuleFilenameTemplate: '../[resource-path]',
-    clean: true
+    clean: {
+      keep: /schemas\//
+    }
   },
   devtool: 'source-map',
   externals: {
@@ -46,7 +48,13 @@ const config = {
     ]
   },
   plugins: [
-    new SchemaAggregator(__dirname)
+    {
+      apply: function(compiler) { 
+        compiler.hooks.beforeCompile.tap("Startline", () => console.log("Start building..."));
+      }
+    },
+    new schemaAggregator(__dirname)
   ]
 };
+
 module.exports = config;
