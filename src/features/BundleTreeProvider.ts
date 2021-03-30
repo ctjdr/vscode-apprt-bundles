@@ -1,5 +1,5 @@
 import path = require("path");
-import { commands, Event, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem, Uri } from "vscode";
+import { commands, Event, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem } from "vscode";
 import { Bundle } from "../api/bundles/BundleModel";
 import { BundleService } from "../api/bundles/BundleService";
 
