@@ -8,7 +8,7 @@ import { ServiceNameCompletionProvider } from "./features/ServiceNameCompletionP
 import { ServiceNameReferenceProvider } from "./features/ServiceNameReferenceProvider";
 import { ComponentDefinitionProvider } from "./features/ComponentDefinitionProvider";
 import { BundleService } from "./api/bundles/BundleService";
-import { BundleActionHandler } from "./bundles/BundleActions";
+import { BundleActionHandler } from "./features/bundles/BundleActions";
 import { MostRecentHotlist } from "./api/bundles/Hotlist";
 import { ExtensionConfiguration } from "./Configuration";
 import { BundleTreeProvider } from "./features/BundleTreeProvider";
