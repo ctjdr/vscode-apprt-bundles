@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { BundleIndex } from "./api/bundles/BundleIndex";
 import BundleQuickPicker from "./features/BundleQuickPicker";
 import { ManifestFeatures } from "./features/ManifestFeatures";
-import { BundleFileOpener } from "./features/BundleFileOpener";
+import { BundleFileOpener } from "./features/bundles/BundleFileOpener";
 import { ServiceNameCodeLensProvider } from "./features/ServiceNameCodeLensProvider";
 import { ServiceNameCompletionProvider } from "./features/ServiceNameCompletionProvider";
 import { ServiceNameReferenceProvider } from "./features/ServiceNameReferenceProvider";

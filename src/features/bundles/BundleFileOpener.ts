@@ -4,7 +4,7 @@ import * as fs from "fs";
 
 
 /**
- * Registers commands to to instantly open one the follwoing files of the current bundle.
+ * Registers commands to to instantly open one the following files of the current bundle.
  *    
  *   - ` manifest.json`
  *   - `README.md`
