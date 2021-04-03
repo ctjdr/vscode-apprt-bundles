@@ -164,7 +164,8 @@
             "explorer": [
                 {
                     "id": "apprtbundles.tree",
-                    "name": "apprt Bundles"
+                    "name": "apprt Bundles",
+                    "when": "false"
                 }
             ]
         }
