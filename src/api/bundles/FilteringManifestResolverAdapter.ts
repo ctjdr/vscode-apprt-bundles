@@ -21,3 +21,4 @@ export class FilteringManifestResolverAdapter implements ManifestResolver {
     setExclusionGlobs(exclusionGlobs: string[]) {
         this.exclusionGlobs = exclusionGlobs;
     }
+}
