@@ -1,7 +1,7 @@
 import path = require("path");
 import { commands, Event, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem } from "vscode";
-import { Bundle } from "../api/bundles/BundleModel";
-import { BundleService } from "../api/bundles/BundleService";
+import { Bundle } from "api/bundles/BundleModel";
+import { BundleService } from "api/bundles/BundleService";
 
 class BundleTreeItem extends TreeItem {
 

@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
-import { BundleIndex } from "../api/bundles/BundleIndex";
-import { rangeOfSection } from "./Range";
+import { BundleIndex } from "api/bundles/BundleIndex";
+import { rangeOfSection } from "../Range";
 
 export class ServiceNameReferenceProvider implements vscode.ReferenceProvider {
 

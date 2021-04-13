@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
-import { ValueType } from "../api/bundles/ManifestDocument";
-import { BundleIndex } from "../api/bundles/BundleIndex";
-import { rangeOfSection } from "./Range";
+import { BundleIndex } from "api/bundles/BundleIndex";
+import { ValueType } from "api/bundles/ManifestDocument";
+import { rangeOfSection } from "../Range";
 
 
 export class ServiceNameCodeLensProvider implements vscode.CodeLensProvider {

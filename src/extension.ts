@@ -1,27 +1,20 @@
 import * as vscode from "vscode";
-import { BundleIndex } from "./api/bundles/BundleIndex";
-import BundleQuickPicker from "./features/BundleQuickPicker";
-import { ManifestFeatures } from "./features/ManifestFeatures";
-import { BundleFileOpener } from "./features/bundles/BundleFileOpener";
-import { ServiceNameCodeLensProvider } from "./features/ServiceNameCodeLensProvider";
-import { ServiceNameCompletionProvider } from "./features/ServiceNameCompletionProvider";
-import { ServiceNameReferenceProvider } from "./features/ServiceNameReferenceProvider";
-import { ComponentDefinitionProvider } from "./features/ComponentDefinitionProvider";
-import { BundleService } from "./api/bundles/BundleService";
-import { BundleActionHandler } from "./features/bundles/BundleActions";
-import { MostRecentHotlist } from "./api/bundles/Hotlist";
+import { BundleIndex } from "api/bundles/BundleIndex";
+import BundleQuickPicker from "features/bundles/BundleQuickPicker";
+import { ManifestFeatures, manifestFilesSelector, noManifestFile } from "features/manifest/ManifestFeatures";
+import { BundleFileOpener } from "features/bundles/BundleFileOpener";
+import { ServiceNameCodeLensProvider } from "features/manifest/ServiceNameCodeLensProvider";
+import { ServiceNameCompletionProvider } from "features/manifest/ServiceNameCompletionProvider";
+import { ServiceNameReferenceProvider } from "features/manifest/ServiceNameReferenceProvider";
+import { ComponentDefinitionProvider } from "features/manifest/ComponentDefinitionProvider";
+import { BundleService } from "api/bundles/BundleService";
+import { BundleActionHandler } from "features/bundles/BundleActions";
+import { MostRecentHotlist } from "api/bundles/Hotlist";
 import { ExtensionConfiguration } from "./Configuration";
-import { BundleTreeProvider } from "./features/BundleTreeProvider";
+import { BundleTreeProvider } from "features/bundles/BundleTreeProvider";
+import { WorkspaceManifestProvider } from "features/manifest/WorkspaceManifestResolver";
 
-export const manifestFilesSelector: vscode.DocumentSelector = {
-    language: "json",
-    scheme: "file",
-    pattern: "**/manifest.json"
-};
 
-export function noManifestFile(doc: vscode.TextDocument): boolean {
-    return (vscode.languages.match(manifestFilesSelector, doc) === 0);
-}
 
 export async function activate(context: vscode.ExtensionContext) {
 
@@ -45,7 +38,7 @@ export async function activate(context: vscode.ExtensionContext) {
         initIndex(bundleIndex);
     });
 
-    let bundleIndex = BundleIndex.createDefault();
+    let bundleIndex = BundleIndex.create(new WorkspaceManifestProvider());
     bundleIndex.setBundleExclusions(configuration.get<string[]>("apprtbundles.bundles.ignorePaths") ?? []);
     const bundleService = new BundleService(bundleIndex);
     const bundleActionHandler = new BundleActionHandler();

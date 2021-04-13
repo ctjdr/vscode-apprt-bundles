@@ -1,6 +1,6 @@
 import { workspace, Uri } from "vscode";
 import { promises as fs} from "fs";
-import { ManifestResolver } from "../api/bundles/BundleIndex";
+import { ManifestResolver } from "api/bundles/BundleIndex";
 
 export class WorkspaceManifestProvider implements ManifestResolver {
 

@@ -1,11 +1,27 @@
 import * as vscode from "vscode";
-import { BundleIndex } from "../api/bundles/BundleIndex";
-import { manifestFilesSelector } from "../extension";
+import { BundleIndex } from "api/bundles/BundleIndex";
 import { DeprecationFixFactory, DeprecationQuickFixAllProvider, DeprecationQuickFixProvider } from "./DeprecationQuickFixProvider";
 import { SchemaDocumentContentProvider } from "./SchemaDocumentContentProvider";
 
 
-export class ManifestFeatures {
+export {
+    ManifestFeatures,
+    manifestFilesSelector,
+    noManifestFile
+};
+
+const manifestFilesSelector: vscode.DocumentSelector = {
+    language: "json",
+    scheme: "file",
+    pattern: "**/manifest.json"
+};
+
+function noManifestFile(doc: vscode.TextDocument): boolean {
+    return (vscode.languages.match(manifestFilesSelector, doc) === 0);
+}
+
+
+class ManifestFeatures {
     
     private maniPro: SchemaDocumentContentProvider;
     

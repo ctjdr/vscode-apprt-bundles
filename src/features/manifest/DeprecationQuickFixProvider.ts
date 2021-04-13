@@ -1,7 +1,7 @@
 import { findNodeAtLocation, getLocation, getNodeValue, JSONPath, Location, parseTree} from "jsonc-parser";
 import * as vscode from "vscode";
-import { BundleIndex } from "../api/bundles/BundleIndex";
-import ManifestDocument from "../api/bundles/ManifestDocument";
+import { BundleIndex } from "api/bundles/BundleIndex";
+import ManifestDocument from "api/bundles/ManifestDocument";
 
 
 export {
@@ -335,8 +335,6 @@ class LicenseDeprecationFix extends DeprecationFix {
  *   }
  *   ```
  * 
- * @param  {vscode.TextDocument} privatedoc
- * @param  {JSONPath} fixPath
  */
 class RequireBundleDeprecationFix extends DeprecationFix {
 

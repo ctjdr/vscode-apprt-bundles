@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
-import { BundleActionHandler } from "./bundles/BundleActions";
-import { Bundle } from "../api/bundles/BundleModel";
-import { BundleService } from "../api/bundles/BundleService";
-import { Hotlist } from "../api/bundles/Hotlist";
-import  * as glob from "./glob";
+import { BundleActionHandler } from "./BundleActions";
+import { Bundle } from "api/bundles/BundleModel";
+import { BundleService } from "api/bundles/BundleService";
+import { Hotlist } from "api/bundles/Hotlist";
+import  * as glob from "api/glob";
 
 /**
  * Registers a command to display a "quick pick list" of all bundles detected in the current workspace.

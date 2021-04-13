@@ -28,7 +28,7 @@ export class BundleIndex implements Disposable {
     private servicename2uriIdx: MultiValueIndex<string, string> = new MultiValueIndex();
 
     private dirtyIds: Set<string> = new Set();
-    private dirtyRunner?: AsynRunner;
+    private dirtyRunner?: AsyncRunner;
     
     private handleDirtyIds = async () => {        
         if (this.dirtyIds.size === 0 ) {
@@ -45,10 +45,6 @@ export class BundleIndex implements Disposable {
         this.manifestProvider = new FilteringManifestResolverAdapter(manifestProvider);
     }    
     
-    static createDefault(): BundleIndex {
-        const workspaceManifestProvider = require("../../bundles/WorkspaceManifestResolver");
-        return new BundleIndex(new workspaceManifestProvider.WorkspaceManifestProvider());
-    }
     
     static create(manifestProvider: ManifestResolver): BundleIndex {
         return new BundleIndex(manifestProvider);
@@ -63,7 +59,7 @@ export class BundleIndex implements Disposable {
             await this.updateSingle(id);
         }
         
-        this.dirtyRunner = new AsynRunner(this.handleDirtyIds);
+        this.dirtyRunner = new AsyncRunner(this.handleDirtyIds);
         this.dirtyRunner.start();
         return Promise.resolve(ids.length);
         
@@ -189,7 +185,7 @@ export class BundleIndex implements Disposable {
 
 }
 
-class AsynRunner  {
+class AsyncRunner  {
 
     private timer: NodeJS.Timeout | null = null;
 
@@ -213,7 +209,7 @@ class AsynRunner  {
     }
 
     private async runTask(that:any) {
-        if (!(that instanceof AsynRunner)) {
+        if (!(that instanceof AsyncRunner)) {
             return;
         }
        const { suspend } = await that.task();

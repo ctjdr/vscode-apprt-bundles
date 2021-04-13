@@ -19,7 +19,7 @@ export interface Hotlist<T> {
     promote(entry: T): void;
     
     /**
-     * Immediatly bumps an entry to the top position.
+     * Immediately bumps an entry to the top position.
      * If the entry does not exist, yet, it will be added to the list.
      * 
      * @param  {T} entry
