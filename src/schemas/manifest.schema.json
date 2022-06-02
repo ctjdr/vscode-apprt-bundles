@@ -430,11 +430,21 @@
         "layout-templates": {
             "$ref": "layout.schema.json#/definitions/layout-templates"
         },
+
+        "cssThemes": {
+            "$ref": "layout.schema.json#/definitions/cssThemes"
+        },
+        "cssThemesExtension": {
+            "$ref": "layout.schema.json#/definitions/cssThemesExtension"
+        },
+
         "CSS-Themes": {
-            "$ref": "layout.schema.json#/definitions/CSS-Themes"
+            "deprecationMessage": "Use \"cssThemes\" instead. Since version 4.13.2.",
+            "$ref": "layout.schema.json#/definitions/cssThemes"
         },
         "CSS-Themes-Extension": {
-            "$ref": "layout.schema.json#/definitions/CSS-Themes-Extension"
+            "deprecationMessage": "Use \"cssThemesExtension\" instead. Since version 4.13.2.",
+            "$ref": "layout.schema.json#/definitions/cssThemesExtension"
         },
         
         
