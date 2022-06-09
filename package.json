@@ -122,7 +122,6 @@
                 "command": "apprtbundles.bundles.tree.refresh",
                 "title": "Refresh",
                 "icon": "$(check)"
-                
             }
         ],
         "menus": {
