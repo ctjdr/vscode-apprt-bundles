@@ -5,7 +5,7 @@ nav_exclude: false
 nav_order: 1
 ---
 
-Version [0.4.0](updates/v0.4.0.html) was released on Mar, 28th 2021!
+Version [0.4.1](updates/v0.4.1.html) was released on Jun, 9th 2022!
 {: .fs-4 .fw-700}
 
 # Visual Studio Code extension for app.rt bundles
