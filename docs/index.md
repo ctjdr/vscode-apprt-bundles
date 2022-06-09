@@ -5,7 +5,7 @@ nav_exclude: false
 nav_order: 1
 ---
 
-Version [0.4.1](updates/v0.4.1.html) was released on Jun, 9th 2022!
+Version [0.4.2](updates/v0.4.html) was released on Jun, 9th 2022!
 {: .fs-4 .fw-700}
 
 # Visual Studio Code extension for app.rt bundles
@@ -22,7 +22,7 @@ For a comprehensive list of what this tool can do for you, have a look at the [t
    * from the Extension view **directly from inside VS Code**, or
    * [**downloading**](https://github.com/ctjdr/vscode-apprt-bundles/releases) the `vsix` extension file release from this site.
 2. Open a project containing `manifest.json` files.
-3. Take advantage of its [features](../features/manifest-editing.html).
+3. Take advantage of its [features](features/manifest-editing.html).
 
 ## Updates & changes
 

@@ -6,6 +6,12 @@ nav_order: 1000
 ---
 # Changelog
 
+## 0.4.2 (2022-06-09)
+
+**Bug fixes**
+
+- Error "Unable to load schema from 'apprt://.manifest.schema.json'" displayed when editing manifest.json file [\#48](https://github.com/ctjdr/vscode-apprt-bundles/issues/48)
+
 ## 0.4.1 (2022-06-09)
 
 **Enhancements**
