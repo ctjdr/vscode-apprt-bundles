@@ -6,9 +6,15 @@ nav_order: 1000
 ---
 # Changelog
 
+## 0.4.1 (2022-06-09)
+
+**Enhancements**
+
+- Support new manifest.json properties 'cssThemes' and 'cssThemesExtension' [\#47](https://github.com/ctjdr/vscode-apprt-bundles/pull/47) ([jessebluemr](https://github.com/jessebluemr))
+
 ## 0.4.0 (2021-03-28)
 
-**Enhancement:**
+**Enhancements**
 
 - Provide quick fix for deprecated manifest items [\#45](https://github.com/ctjdr/vscode-apprt-bundles/issues/45)
 

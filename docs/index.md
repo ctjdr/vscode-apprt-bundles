@@ -26,10 +26,10 @@ For a comprehensive list of what this tool can do for you, have a look at the [t
 
 ## Updates & changes
 
-* [New in 0.4.0](updates/v0.4.0.html)
-* [New in 0.3.0](updates/v0.3.0.html)
-* [New in 0.2.0](updates/v0.2.0.html)
-* [New in 0.1.0](updates/v0.1.0.html)
+* [New in 0.4](updates/v0.4.html)
+* [New in 0.3](updates/v0.3.html)
+* [New in 0.2](updates/v0.2.html)
+* [New in 0.1](updates/v0.1.html)
 
 Visit the [changelog](updates/CHANGELOG.html) to get all details about changes for a version. 
 
