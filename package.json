@@ -25,6 +25,7 @@
     ],
     "icon": "logo.png",
     "activationEvents": [
+        "onFileSystem:apprt",
         "workspaceContains:**/manifest.json",
         "onCommand:apprtbundles.activate"
     ],
