@@ -6,6 +6,14 @@ nav_order: 1000
 ---
 # Changelog
 
+
+## 0.4.3 (2022-08-10)
+
+**Fixed bugs:**
+
+- Service name completion does not replace existing text correctly since VS Code 1.69 [\#50](https://github.com/ctjdr/vscode-apprt-bundles/issues/50)
+- Peeking component providers and consumers in manifest.json fails since VS Code 1.69 [\#49](https://github.com/ctjdr/vscode-apprt-bundles/issues/49)
+
 ## 0.4.2 (2022-06-09)
 
 **Bug fixes**
