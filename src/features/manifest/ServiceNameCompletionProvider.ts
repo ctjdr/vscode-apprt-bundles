@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import { BundleIndex } from "api/bundles/BundleIndex";
+import { rangeOfSection } from "features/Range";
 
 export class ServiceNameCompletionProvider implements vscode.CompletionItemProvider {
 
@@ -17,16 +18,20 @@ export class ServiceNameCompletionProvider implements vscode.CompletionItemProvi
             
             const cursorCol = position.character;
             
-            const cursorOverFragment = [...fragments].some( fragment => fragment.section.contains(position.line, position.character));
+            const fragmentUnderCursor = [...fragments].find( fragment => fragment.section.contains(position.line, position.character));
             
-            if (!cursorOverFragment) {
+            if (!fragmentUnderCursor) {
                 return Promise.resolve([]);
             }
 
             const serviceNames = this.bundleIndex.getServiceNames();
             const items: vscode.CompletionItem[] = [];
+            const fragmentLine = fragmentUnderCursor.section.start.line;
+            //Narrow range to exclude double quotes of JSON property.
+            const fragmentRange = new vscode.Range(fragmentLine, fragmentUnderCursor.section.start.col + 1, fragmentLine, fragmentUnderCursor.section.end.col - 1);
             for (const serviceName of serviceNames) {
-                const item = new vscode.CompletionItem(`"${serviceName}"`, vscode.CompletionItemKind.Interface);
+                const item = new vscode.CompletionItem(`${serviceName}`, vscode.CompletionItemKind.Interface);
+                item.range = fragmentRange;
                 items.push(item);
             }
             return Promise.resolve(new vscode.CompletionList(items, false));

@@ -81,7 +81,7 @@ export class ServiceNameCodeLensProvider implements vscode.CodeLensProvider {
                 const lens = new vscode.CodeLens(rangeOfSection(section), {
                     command: "moveCursorAndExecuteFind",
                     title,
-                    arguments: [document, new vscode.Position(section.start.line, section.start.col), this.context, mode]
+                    arguments: [document, new vscode.Position(section.start.line, section.start.col + 1), this.context, mode]
                 });
                 lenses.push(lens);
             });
@@ -103,7 +103,7 @@ export class ServiceNameCodeLensProvider implements vscode.CodeLensProvider {
 }
 
 
-async function moveCursorAndExecuteFind(doc: vscode.TextDocument, pos: vscode.Position, context: vscode.ExtensionContext, mode: "provides" | "provding") {
+async function moveCursorAndExecuteFind(doc: vscode.TextDocument, pos: vscode.Position, context: vscode.ExtensionContext, mode: "provides" | "providing") {
     const activeEditor = vscode.window.activeTextEditor;
     if (!activeEditor) {
         return;
