@@ -46,8 +46,10 @@ $ npm run test-manifest-path
 Run in project root
 
 ```bash
-$ github_changelog_generator --user ctjdr --project vscode-apprt-bundles --token $GITHUB_TOKEN --output docs/updates/CHANGELOG_add.md --future-release 0.4.0 --no-compare-link --since-tag v0.1.0
+$ github_changelog_generator --user ctjdr --project vscode-apprt-bundles --token $GITHUB_TOKEN --output --future-release 0.4.0 --no-compare-link --since-tag v0.1.0
 ```
+
+Prints the changelog to STDOUT. Copy the new entry into _both_ CHANGELOG.md files.
 
 ## Run site
 
