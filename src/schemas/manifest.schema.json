@@ -265,7 +265,46 @@
             "examples": [true],
             "markdownDescription": "Disables fetching of any js file during *resolve* phase.\n\nDefaults to `false`."
         },
-
+        "deprecated": {
+            "oneOf": [
+                {
+                    "properties": {
+                        "message": {
+                            "type": "string",
+                            "markdownDescription": "Message that may be displayed to the user by tools evaluating this property."
+                        },
+                        "since": {
+                            "type": "string",
+                            "markdownDescription": "Optional version or date."
+                        }
+                    },
+                    "required": ["message"],
+                    "additionalProperties": false,
+                    "markdownDescription": "Whether a bundle is deprecated.\n\nTools such as the App Editor may display a hint to the user."
+                },
+                {
+                    "type": "boolean",
+                    "markdownDescription": "Whether a bundle is deprecated.\n\nTools such as the App Editor may display a hint to the user. Defaults to `false`."
+                }
+            ],
+            "examples": [
+                {
+                    "message": "This bundle is deprecated. Use _some alternative_ instead.",
+                    "since": "Version 4.14"
+                },
+                true
+            ]
+        },
+        "editor": {
+            "properties": {
+                "suggest": {
+                    "type": "boolean",
+                    "markdownDescription": "Set to `false` to exclude a bundle from the suggestion list during autocompletion."
+                }
+            },
+            "additionalProperties": true,
+            "markdownDescription": "Bundle metadata for the App Editor."
+        },
         "components": {
             "type": "array",
             "items": {
