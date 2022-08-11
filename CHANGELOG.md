@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.4 (2022-08-11)
+
+**Enhancements**
+
+- Support new manifest.json properties `editor` and `deprecated`  [\#51](https://github.com/ctjdr/vscode-apprt-bundles/issues/51)
+
 ## 0.4.3 (2022-08-10)
 
 **Fixed bugs:**
