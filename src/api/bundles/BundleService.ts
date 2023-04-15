@@ -43,12 +43,12 @@ export class BundleService {
         return new BundleDetails();
     }
 
-    private createBundle(uri: string, manifestdoc: ManifestDocument): Bundle {
+    private createBundle(uri: string, manifestDoc: ManifestDocument): Bundle {
         const matcher = BundleService.pathRegex.exec(Uri.parse(uri).path);
         const shortBundlePath = matcher === null ? "" : matcher[2];
         return {
             uri,
-            name: manifestdoc.name,
+            name: manifestDoc.name,
             shortPath: shortBundlePath,
             shortManifestPath: `${shortBundlePath}/manifest.json`
         };

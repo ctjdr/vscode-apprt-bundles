@@ -18,7 +18,7 @@
         "url": "https://github.com/ctjdr/vscode-apprt-bundles/issues"
     },
     "engines": {
-        "vscode": "^1.49.0"
+        "vscode": "^1.70.0"
     },
     "categories": [
         "Other"
@@ -189,7 +189,8 @@
     },
     "dependencies": {
         "jsonc-parser": "^3.0.0",
-        "vscode-uri": "^3.0.2"
+        "vscode-uri": "^3.0.2",
+        "acorn": "^8.8.2"
     },
     "devDependencies": {
         "@apidevtools/json-schema-ref-parser": "^9.0.6",
@@ -198,7 +199,7 @@
         "@types/minimatch": "^3.0.3",
         "@types/mocha": "^8.0.3",
         "@types/node": "^14.0.27",
-        "@types/vscode": "^1.49.0",
+        "@types/vscode": "^1.70.0",
         "@typescript-eslint/eslint-plugin": "^4.19.0",
         "@typescript-eslint/parser": "^4.19.0",
         "rimraf": "^3.0.2",

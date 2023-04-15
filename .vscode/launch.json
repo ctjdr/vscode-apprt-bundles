@@ -31,6 +31,19 @@
 				"${workspaceFolder}/out/test/**/*.js"
 			],
 			"preLaunchTask": "npm: test-compile"
-		}
+		},
+        {
+            "name": "Run Unit Tests",
+            "request": "launch",
+            "runtimeArgs": [
+                "test",
+                "debug"
+            ],
+            "runtimeExecutable": "npm",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node"
+        }
 	]
 }
