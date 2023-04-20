@@ -56,7 +56,7 @@ export class ServiceNameCodeLensProvider implements vscode.CodeLensProvider {
         }
 
         //return lenses only, if document is asserted to be up to date after no more than 2 secs
-        return this.bundleIndex.assertClean(document.uri.toString(), 2000).then(
+        return this.bundleIndex.assertClean(document.uri, 2000).then(
             () => {
                 return this.calcLenses(document);
             }
@@ -91,7 +91,7 @@ export class ServiceNameCodeLensProvider implements vscode.CodeLensProvider {
         return lenses;
     }
     private lensMessage(type: ValueType, value: string) {
-        const serviceIndex = this.bundleIndex.getServiceIndex();
+        const serviceIndex = this.bundleIndex.getServiceNameIndex();
         if (value.trim().length > 0) {
             return type === ValueType.referenceProviding ?
                 // `Peek providers (${this.bundleIndex.findProvidesFor(value).length})` : `Peek consumers (${this.bundleIndex.findProvidingFor(value).length})`;

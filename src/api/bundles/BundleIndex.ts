@@ -1,6 +1,6 @@
 import { URI } from "vscode-uri";
 import ManifestDocument from "./ManifestDocument";
-import ServiceIndex from "./ServiceIndex";
+import ServiceNameIndex from "./ServiceIndex";
 
 export interface FileResolver {
     /**
@@ -22,8 +22,8 @@ type Disposable = {
 
 export class BundleIndex implements Disposable {
 
-    private uriToManifest: Map<string, ManifestDocument> = new Map();
-    private serviceIndexInstance  = new ServiceIndex( (u) => this.findBundleByUri(u) );
+    private manifestUriToManifestDoc: Map<string, ManifestDocument> = new Map();
+    private serviceNameIndex  = new ServiceNameIndex( (u) => this.findBundleByUri(u) );
 
     private dirtyIds: Set<string> = new Set();
     private dirtyRunner?: AsyncRunner;
@@ -39,10 +39,10 @@ export class BundleIndex implements Disposable {
     public async rebuild(): Promise<number> {
         this.cleanCache();
 
-        let ids = await this.fileResolver.getAllUris("**/manifest.json");
+        let manifestUris = await this.fileResolver.getAllUris("**/manifest.json");
 
-        for (const id of ids) {
-            await this.updateSingle(id);
+        for (const manifestUri of manifestUris) {
+            await this.updateSingle(manifestUri);
         }
 
         const handleDirtyIds = async () => {
@@ -59,38 +59,38 @@ export class BundleIndex implements Disposable {
 
         this.dirtyRunner = new AsyncRunner(handleDirtyIds);
         this.dirtyRunner.start();
-        return Promise.resolve(ids.length);
+        return Promise.resolve(manifestUris.length);
 
     }
 
     private cleanCache() {
         this.dirtyIds.clear();
-        this.serviceIndexInstance.clear();
-        this.uriToManifest.clear();
+        this.serviceNameIndex.clearAll();
+        this.manifestUriToManifestDoc.clear();
     }
 
-    private async updateSingle(bundleId: string) {
-        let doc = await this.fileResolver.resolve(bundleId);
+    private async updateSingle(manifestUri: string) {
+        let doc = await this.fileResolver.resolve(manifestUri);
         const manifestDoc = await ManifestDocument.fromString(doc);
         // TODO: This doesn't clean index servicenames->bundleIds correctly: 
         // What if a bundle does not reference a service name any more? The entry is kept although it should be deleted.
         if (manifestDoc) {
-            this.indexDocById(bundleId, manifestDoc);
-            this.serviceIndexInstance.index(bundleId);
+            this.indexDocById(manifestUri, manifestDoc);
+            this.serviceNameIndex.index(manifestUri);
     
         }
     }
 
-    public markDirty(bundleId: string): void {
+    public markDirty(manifestUri: URI): void {
         //Todo: check if bundleId is tracked.
         const preSize = this.dirtyIds.size;
-        this.dirtyIds.add(bundleId);
+        this.dirtyIds.add(manifestUri.toString());
         if (preSize === 0) {
             this.dirtyRunner?.resume();
         }
     }
-    public assertClean(bundleId: string, timeout: number = 2000): Promise<any> {
-        if (this.dirtyIds.size === 0 || !this.dirtyIds.has(bundleId)) {
+    public assertClean(manifestUri: URI, timeout: number = 2000): Promise<any> {
+        if (this.dirtyIds.size === 0 || !this.dirtyIds.has(manifestUri.toString())) {
             return Promise.resolve();
         }
 
@@ -105,15 +105,15 @@ export class BundleIndex implements Disposable {
     }
 
     private async updateDirty(): Promise<void> {
-        for (let id of this.dirtyIds) {
-            this.serviceIndexInstance.cleanupServiceNames(id.toString());
-            await this.updateSingle(id);
+        for (let manifestUri of this.dirtyIds) {
+            this.serviceNameIndex.clearForManifest(manifestUri);
+            await this.updateSingle(manifestUri);
         }
         this.dirtyIds.clear();
     }
 
     public getBundles() {
-        return this.uriToManifest.entries();
+        return this.manifestUriToManifestDoc.entries();
     }
 
     /**
@@ -122,21 +122,21 @@ export class BundleIndex implements Disposable {
      * @returns 
      */
     public findBundleByUri(manifestUri: string): ManifestDocument | undefined {
-        return this.uriToManifest.get(manifestUri);
+        return this.manifestUriToManifestDoc.get(manifestUri);
     }
 
     public findBundle(manifestUri: URI): ManifestDocument | undefined {
-        return this.uriToManifest.get(manifestUri.toString());
+        return this.manifestUriToManifestDoc.get(manifestUri.toString());
     }
 
 
     private indexDocById(bundleId: string, doc: ManifestDocument) {
-        this.uriToManifest.set(bundleId, doc);
+        this.manifestUriToManifestDoc.set(bundleId, doc);
     }
 
 
-    public getServiceIndex() {
-        return this.serviceIndexInstance;
+    public getServiceNameIndex() {
+        return this.serviceNameIndex;
     }
 
     dispose(): void {

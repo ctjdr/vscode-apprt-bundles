@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
-import { BundleIndex } from "api/bundles/BundleIndex";
 import { DeprecationFixFactory, DeprecationQuickFixAllProvider, DeprecationQuickFixProvider } from "./DeprecationQuickFixProvider";
 import { SchemaDocumentContentProvider } from "./SchemaDocumentContentProvider";
 import path = require("path");
+import { BundleService } from "api/bundles/BundleService";
 
 
 export {
@@ -65,8 +65,8 @@ class ManifestFeatures {
         this.maniPro.setHelp(docTooltipsEnabled);       
     }            
             
-    register(bundleIndex: BundleIndex): vscode.Disposable[] {
-        const deprecationFixFactory = new DeprecationFixFactory(bundleIndex);
+    register(bundleService: BundleService): vscode.Disposable[] {
+        const deprecationFixFactory = new DeprecationFixFactory(bundleService);
         const quickFixProvider = new DeprecationQuickFixProvider(deprecationFixFactory);
         const quickFixAllProvider = new DeprecationQuickFixAllProvider(deprecationFixFactory);
 

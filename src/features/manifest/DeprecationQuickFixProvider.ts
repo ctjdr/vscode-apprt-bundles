@@ -1,7 +1,7 @@
-import { findNodeAtLocation, getLocation, getNodeValue, JSONPath, Location, parseTree} from "jsonc-parser";
+import { findNodeAtLocation, getLocation, getNodeValue, JSONPath, parseTree} from "jsonc-parser";
 import * as vscode from "vscode";
-import { BundleIndex } from "api/bundles/BundleIndex";
 import ManifestDocument from "api/bundles/ManifestDocument";
+import { BundleService } from "api/bundles/BundleService";
 
 
 export {
@@ -91,7 +91,7 @@ class DeprecationQuickFixAllProvider implements vscode.CodeActionProvider {
 class DeprecationFixFactory {
 
 
-    constructor(private bundleIndex: BundleIndex) {
+    constructor(private bundleService: BundleService) {
 
     }
 
@@ -131,10 +131,7 @@ class DeprecationFixFactory {
         
         const diagOffset = doc.offsetAt(diagnostic.range.start);
         const nodeLocation = getLocation(doc.getText(), diagOffset);
-        // const nodePath = nodeLocation.path;
-    
-    
-    
+
         switch (deprecation.deprecationKind) {
             case DeprecationKind.newPropertyName:
                 return new RenameDeprecationFix(deprecation, doc, nodeLocation.path);
@@ -143,7 +140,7 @@ class DeprecationFixFactory {
                 return new LicenseDeprecationFix(doc, nodeLocation.path);
     
             case DeprecationKind.requireBundleArrayToMap:
-                return new RequireBundleDeprecationFix(doc, nodeLocation.path, this.bundleIndex.findBundleByUri(doc.uri.toString()));
+                return new RequireBundleDeprecationFix(doc, nodeLocation.path, this.bundleService.getManifest(doc.uri));
         
             default:
                 return;
@@ -151,9 +148,6 @@ class DeprecationFixFactory {
     }
     
 }
-
-
-
 
 
 class DeprecationQuickFixProvider implements vscode.CodeActionProvider<DeprecationFixCodeAction> {

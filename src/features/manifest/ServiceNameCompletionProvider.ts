@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 import { BundleIndex } from "api/bundles/BundleIndex";
-import { rangeOfSection } from "features/Range";
 
 export class ServiceNameCompletionProvider implements vscode.CompletionItemProvider {
 
@@ -24,7 +23,7 @@ export class ServiceNameCompletionProvider implements vscode.CompletionItemProvi
                 return Promise.resolve([]);
             }
 
-            const serviceIndex = this.bundleIndex.getServiceIndex();
+            const serviceIndex = this.bundleIndex.getServiceNameIndex();
             const serviceNames = serviceIndex.getServiceNames();
             // const serviceNames = this.bundleIndex.getServiceNames();
             const items: vscode.CompletionItem[] = [];

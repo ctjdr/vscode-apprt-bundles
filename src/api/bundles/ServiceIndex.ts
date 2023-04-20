@@ -1,24 +1,24 @@
 import ManifestDocument, { StringFragment } from "./ManifestDocument";
 import MultiValueIndex from "./MultiValueIndex";
 
-export default class ServiceIndex {
+export default class ServiceNameIndex {
 
-    private servicenameToBundleIds: MultiValueIndex<string, string> = new MultiValueIndex();
+    private servicenameToManifestUris: MultiValueIndex<string, string> = new MultiValueIndex();
 
-    constructor(private manifestProvider: (bundleId: string) => ManifestDocument | undefined) {
+    constructor(private manifestProvider: (manifestUri: string) => ManifestDocument | undefined) {
     }
 
     public findBundleIdsByServiceName(serviceName: string): Set<string> {
-        return this.servicenameToBundleIds.getValues(serviceName);
+        return this.servicenameToManifestUris.getValues(serviceName);
     }
 
     public getServiceNames(): IterableIterator<string> {
-        return this.servicenameToBundleIds.getKeys();
+        return this.servicenameToManifestUris.getKeys();
     }
 
     public findProvidesFor(servicename: string): StringFragment[] {
         const providesItems: StringFragment[] = [];
-        const manifestCandidateUris = this.servicenameToBundleIds.getValues(servicename);
+        const manifestCandidateUris = this.servicenameToManifestUris.getValues(servicename);
         for (let manifestUri of manifestCandidateUris) {
             const manifest = this.manifestProvider(manifestUri);
             if (!manifest) {
@@ -31,32 +31,32 @@ export default class ServiceIndex {
 
     public findProvidingFor(servicename: string): StringFragment[] {
         const providingItems: StringFragment[] = [];
-        const bundleUris = this.servicenameToBundleIds.getValues(servicename);
-        for (let bundleUri of bundleUris) {
-            const manifest = this.manifestProvider(bundleUri);
-            if (!manifest) {
+        const manifestUris = this.servicenameToManifestUris.getValues(servicename);
+        for (let manifestUri of manifestUris) {
+            const manifestDoc = this.manifestProvider(manifestUri);
+            if (!manifestDoc) {
                 continue;
             }
-            providingItems.push(...manifest.getProvidingFor(servicename));
+            providingItems.push(...manifestDoc.getProvidingFor(servicename));
         }
         return providingItems;
     }
 
-    public clear() {
-        this.servicenameToBundleIds.clear();
+    public clearAll() {
+        this.servicenameToManifestUris.clear();
     }
 
-    public cleanupServiceNames(bundleId: string) {
-        this.servicenameToBundleIds.invalidateValue(bundleId);
+    public clearForManifest(manifestUri: string) {
+        this.servicenameToManifestUris.invalidateValue(manifestUri);
     }
 
-    public index(bundleId: string) {
-        const doc = this.manifestProvider(bundleId);
+    public index(manifestUri: string) {
+        const doc = this.manifestProvider(manifestUri);
         if (!doc) {
             return;
         }
         doc.getServiceNames().forEach(serviceName => {
-            this.servicenameToBundleIds.index(serviceName, bundleId);
+            this.servicenameToManifestUris.index(serviceName, manifestUri);
         });
     }
 

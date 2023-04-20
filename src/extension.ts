@@ -60,7 +60,7 @@ export async function activate(context: vscode.ExtensionContext) {
         if (noManifestFile(evt.document)) {
             return;
         }
-        bundleIndex.markDirty(evt.document.uri.toString());
+        bundleIndex.markDirty(evt.document.uri);
     }
     ));
     
@@ -75,7 +75,7 @@ export async function activate(context: vscode.ExtensionContext) {
         
         ...manifestFeaturesEarlyDisposables,
 
-        ...manifestFeatures.register(bundleIndex),
+        ...manifestFeatures.register(bundleService),
 
         ...configuration.register(),
 

@@ -28,7 +28,7 @@ export class ServiceNameReferenceProvider implements vscode.ReferenceProvider {
         const quotedLookupRef = document.getText(document.getWordRangeAtPosition(position, /[a-zA-Z._\-\"\']+/));
         const lookupRef = quotedLookupRef.substring(1, quotedLookupRef.length - 1);
 
-        const serviceIndex = this.bundleIndex.getServiceIndex();
+        const serviceIndex = this.bundleIndex.getServiceNameIndex();
         const bundlesIds = serviceIndex.findBundleIdsByServiceName(lookupRef);
 
         const locations:vscode.Location[] = [];
