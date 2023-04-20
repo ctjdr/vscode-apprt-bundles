@@ -9,7 +9,7 @@ class BundleTreeItem extends TreeItem {
         bundle: Bundle
     ) {
         super(bundle.name);
-        this.description = bundle.shortPath;
+        this.description = bundle.folder;
         this.iconPath = new ThemeIcon("package");
     }
 

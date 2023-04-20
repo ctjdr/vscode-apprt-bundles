@@ -91,9 +91,11 @@ export class ServiceNameCodeLensProvider implements vscode.CodeLensProvider {
         return lenses;
     }
     private lensMessage(type: ValueType, value: string) {
+        const serviceIndex = this.bundleIndex.getServiceIndex();
         if (value.trim().length > 0) {
             return type === ValueType.referenceProviding ?
-                `Peek providers (${this.bundleIndex.findProvidesFor(value).length})` : `Peek consumers (${this.bundleIndex.findProvidingFor(value).length})`;
+                // `Peek providers (${this.bundleIndex.findProvidesFor(value).length})` : `Peek consumers (${this.bundleIndex.findProvidingFor(value).length})`;
+                `Peek providers (${serviceIndex.findProvidesFor(value).length})` : `Peek consumers (${serviceIndex.findProvidingFor(value).length})`;
         } else {
             return type === ValueType.referenceProviding ?
                 "Peek providers (0)" : "Peek consumers (0)";

@@ -12,7 +12,8 @@ import { BundleActionHandler } from "features/bundles/BundleActions";
 import { MostRecentHotlist } from "api/bundles/Hotlist";
 import { ExtensionConfiguration } from "./Configuration";
 import { BundleTreeProvider } from "features/bundles/BundleTreeProvider";
-import { WorkspaceManifestProvider } from "features/manifest/WorkspaceManifestResolver";
+import { WorkspaceFileResolver } from "features/manifest/WorkspaceFileResolver";
+import { FilteringFileResolverAdapter } from "api/bundles/FilteringFileResolverAdapter";
 
 
 
@@ -20,6 +21,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     const manifestFeatures = new ManifestFeatures(context);
     const manifestFeaturesEarlyDisposables =  manifestFeatures.registerEarly();
+    const bundleFilesResolver = new FilteringFileResolverAdapter(new WorkspaceFileResolver());
 
     vscode.commands.registerCommand("apprtbundles.activate", async () => {
         const decision = await vscode.window.showInformationMessage(
@@ -34,13 +36,13 @@ export async function activate(context: vscode.ExtensionContext) {
     const configuration = new ExtensionConfiguration();
     configuration.onConfigKeyChange("apprtbundles.bundles.ignorePaths", (change) => {
         const ignorePaths = change.value as string[];
-        bundleIndex.setBundleExclusions(ignorePaths);
+        bundleFilesResolver.setExclusionGlobs(ignorePaths);
         initIndex(bundleIndex);
     });
 
-    let bundleIndex = BundleIndex.create(new WorkspaceManifestProvider());
-    bundleIndex.setBundleExclusions(configuration.get<string[]>("apprtbundles.bundles.ignorePaths") ?? []);
-    const bundleService = new BundleService(bundleIndex);
+    let bundleIndex = BundleIndex.create(bundleFilesResolver);
+    bundleFilesResolver.setExclusionGlobs(configuration.get<string[]>("apprtbundles.bundles.ignorePaths") ?? []);
+    const bundleService = new BundleService(bundleIndex, bundleFilesResolver);
     const bundleActionHandler = new BundleActionHandler();
     const bundleHotlist  = new MostRecentHotlist<string>(20);
 
@@ -93,7 +95,7 @@ export async function activate(context: vscode.ExtensionContext) {
             manifestFilesSelector, new ServiceNameCodeLensProvider(context, bundleIndex)),
 
         vscode.languages.registerDefinitionProvider(
-            manifestFilesSelector, new ComponentDefinitionProvider(bundleIndex)),
+            manifestFilesSelector, new ComponentDefinitionProvider(bundleService)),
 
         bundleActionHandler.onRevealBundle( bundleUri => bundleHotlist.promote(bundleUri))
 

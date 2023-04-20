@@ -1,12 +1,12 @@
-import { FilteringManifestResolverAdapter } from "./FilteringManifestResolverAdapter";
-import ManifestDocument, { StringFragment } from "./ManifestDocument";
-import MultiValueIndex from "./MultiValueIndex";
+import { URI } from "vscode-uri";
+import ManifestDocument from "./ManifestDocument";
+import ServiceIndex from "./ServiceIndex";
 
-export interface ManifestResolver {
+export interface FileResolver {
     /**
      * @returns a list of URIs pointing to manifest.json documents.
      */
-    getAllUris(): Promise<string[]>;
+    getAllUris(filesGlob?: string): Promise<string[]>;
 
     /**
      * 
@@ -21,71 +21,67 @@ type Disposable = {
 
 
 export class BundleIndex implements Disposable {
-    
-    private manifestProvider: FilteringManifestResolverAdapter;
-    
-    private uri2manifestIdx: Map<string, ManifestDocument> = new Map();
-    private servicename2uriIdx: MultiValueIndex<string, string> = new MultiValueIndex();
+
+    private uriToManifest: Map<string, ManifestDocument> = new Map();
+    private serviceIndexInstance  = new ServiceIndex( (u) => this.findBundleByUri(u) );
 
     private dirtyIds: Set<string> = new Set();
     private dirtyRunner?: AsyncRunner;
-    
-    private handleDirtyIds = async () => {        
-        if (this.dirtyIds.size === 0 ) {
-            //no new dirty IDs, task can be suspended
-            return {suspend: true};
-        }
-        console.info(`dirt: ${this.dirtyIds.size} docs dirty. Cleaning docs. ${new Date().toISOString()}`);
-        await this.updateDirty();
-        return {
-            suspend: false
-        };
-    };
-    private constructor(manifestProvider: ManifestResolver) {
-        this.manifestProvider = new FilteringManifestResolverAdapter(manifestProvider);
-    }    
-    
-    
-    static create(manifestProvider: ManifestResolver): BundleIndex {
-        return new BundleIndex(manifestProvider);
+
+    private constructor(private fileResolver: FileResolver) {
     }
-    
+
+
+    public static create(fileResolver: FileResolver): BundleIndex {
+        return new BundleIndex(fileResolver);
+    }
+
     public async rebuild(): Promise<number> {
         this.cleanCache();
-        
-        let ids = await this.manifestProvider.getAllUris();
-        
+
+        let ids = await this.fileResolver.getAllUris("**/manifest.json");
+
         for (const id of ids) {
             await this.updateSingle(id);
         }
-        
-        this.dirtyRunner = new AsyncRunner(this.handleDirtyIds);
+
+        const handleDirtyIds = async () => {
+            if (this.dirtyIds.size === 0) {
+                //no new dirty IDs, task can be suspended
+                return { suspend: true };
+            }
+            console.info(`dirt: ${this.dirtyIds.size} docs dirty. Cleaning docs. ${new Date().toISOString()}`);
+            await this.updateDirty();
+            return {
+                suspend: false
+            };
+        };
+
+        this.dirtyRunner = new AsyncRunner(handleDirtyIds);
         this.dirtyRunner.start();
         return Promise.resolve(ids.length);
-        
+
     }
 
     private cleanCache() {
         this.dirtyIds.clear();
-        this.servicename2uriIdx.clear();
-        this.uri2manifestIdx.clear();
+        this.serviceIndexInstance.clear();
+        this.uriToManifest.clear();
     }
 
-    public setBundleExclusions(exclusionGlobs: string[]) {
-        this.manifestProvider.setExclusionGlobs(exclusionGlobs);
-    }
-    
     private async updateSingle(bundleId: string) {
-        let doc = await this.manifestProvider.resolve(bundleId.toString());
+        let doc = await this.fileResolver.resolve(bundleId);
         const manifestDoc = await ManifestDocument.fromString(doc);
         // TODO: This doesn't clean index servicenames->bundleIds correctly: 
         // What if a bundle does not reference a service name any more? The entry is kept although it should be deleted.
         if (manifestDoc) {
-            this.indexManifestDoc(bundleId.toString(), manifestDoc);
+            this.indexDocById(bundleId, manifestDoc);
+            this.serviceIndexInstance.index(bundleId);
+    
         }
     }
-    
-    public markDirty(bundleId: string):void {
+
+    public markDirty(bundleId: string): void {
         //Todo: check if bundleId is tracked.
         const preSize = this.dirtyIds.size;
         this.dirtyIds.add(bundleId);
@@ -110,71 +106,37 @@ export class BundleIndex implements Disposable {
 
     private async updateDirty(): Promise<void> {
         for (let id of this.dirtyIds) {
-            this.cleanupServiceNames(id.toString());
+            this.serviceIndexInstance.cleanupServiceNames(id.toString());
             await this.updateSingle(id);
         }
         this.dirtyIds.clear();
     }
 
     public getBundles() {
-        return this.uri2manifestIdx.entries();
+        return this.uriToManifest.entries();
     }
 
-    public findBundleIdsByServiceName(serviceName: string): Set<string> {
-        return this.servicename2uriIdx.getValues(serviceName);
+    /**
+     * @deprecated use  {@link findBundle} instead
+     * @param manifestUri
+     * @returns 
+     */
+    public findBundleByUri(manifestUri: string): ManifestDocument | undefined {
+        return this.uriToManifest.get(manifestUri);
     }
 
-    public findBundleByUri(uri: string): ManifestDocument | undefined {
-        return this.uri2manifestIdx.get(uri);
+    public findBundle(manifestUri: URI): ManifestDocument | undefined {
+        return this.uriToManifest.get(manifestUri.toString());
     }
 
-    public getServiceNames(): IterableIterator<string>{
-        return this.servicename2uriIdx.getKeys();
-    }
 
-    public findProvidesFor(servicename: string) {
-        const providesItems: StringFragment[] = [];
-        const manifestCandidateUris = this.servicename2uriIdx.getValues(servicename);
-        for (let manifestUri of manifestCandidateUris) {
-            const manifest = this.uri2manifestIdx.get(manifestUri);
-            if (!manifest) {
-                continue;
-            }
-            providesItems.push(...manifest.getProvidesFor(servicename));
-        }
-        return providesItems;
-    }
-    
-    public findProvidingFor(servicename: string) {
-        const providingItems: StringFragment[] = [];
-        const manifestCandidateUris = this.servicename2uriIdx.getValues(servicename);
-        for (let manifestUri of manifestCandidateUris) {
-            const manifest = this.uri2manifestIdx.get(manifestUri);
-            if (!manifest) {
-                continue;
-            }
-            providingItems.push(...manifest.getProvidingFor(servicename));
-        }
-        return providingItems;
-    }
-
-    private cleanupServiceNames(bundleId: string) {
-        this.servicename2uriIdx.invalidateValue(bundleId);
-    }
-
-    private indexManifestDoc(bundleId: string, doc: ManifestDocument):void {
-        this.indexDocById(bundleId, doc);
-        this.indexIdByServiceName(bundleId, doc);
-    }
-    
     private indexDocById(bundleId: string, doc: ManifestDocument) {
-        this.uri2manifestIdx.set(bundleId, doc);
+        this.uriToManifest.set(bundleId, doc);
     }
 
-    private indexIdByServiceName(bundleId: string, doc: ManifestDocument) {
-        doc.getServiceNames().forEach(serviceName => {
-            this.servicename2uriIdx.index(serviceName, bundleId);
-        });
+
+    public getServiceIndex() {
+        return this.serviceIndexInstance;
     }
 
     dispose(): void {
@@ -185,22 +147,22 @@ export class BundleIndex implements Disposable {
 
 }
 
-class AsyncRunner  {
+class AsyncRunner {
 
     private timer: NodeJS.Timeout | null = null;
 
-    constructor(private task: () => Promise<{suspend: boolean}>, private delay = 2000) {
+    constructor(private task: () => Promise<{ suspend: boolean }>, private delay = 2000) {
     }
-    
+
     start() {
         if (this.timer !== null) {
             //is already running
             return;
-        }        
+        }
         this.timer = setTimeout(this.runTask, 0, this);
     }
 
-    async forceRun():Promise<void> {
+    async forceRun(): Promise<void> {
         return this.runTask(this);
     }
 
@@ -208,19 +170,19 @@ class AsyncRunner  {
         this.start();
     }
 
-    private async runTask(that:any) {
+    private async runTask(that: any) {
         if (!(that instanceof AsyncRunner)) {
             return;
         }
-       const { suspend } = await that.task();
-       if (suspend) {
-           if (that.timer !== null) {
-               clearTimeout(that.timer);
-               that.timer = null;
-           }
-           return;
+        const { suspend } = await that.task();
+        if (suspend) {
+            if (that.timer !== null) {
+                clearTimeout(that.timer);
+                that.timer = null;
+            }
+            return;
         }
-        
+
         that.timer = setTimeout(that.runTask, that.delay, that);
     }
 

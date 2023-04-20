@@ -50,7 +50,7 @@ export default class BundleQuickPicker {
         if (pickItems.length > 5) {
             //Add hotlist bundles to the top
             for (const bundleUri of this.hotlist.getTop(5).reverse()) {
-                const bundle = this.bundleService.getBundle(bundleUri);
+                const bundle = this.bundleService.getBundle(vscode.Uri.parse(bundleUri));
                 if (!bundle) {
                     continue;
                 }
@@ -69,7 +69,7 @@ export default class BundleQuickPicker {
     private createPickItem(bundle: Bundle, labelPrefix: string = "") {
         return {
             label: `${labelPrefix}${bundle.name}`,
-            description: bundle.shortPath,
+            description: bundle.folder,
             bundleUri: bundle.uri
         };
     }

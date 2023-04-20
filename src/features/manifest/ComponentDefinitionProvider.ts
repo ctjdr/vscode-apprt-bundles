@@ -1,8 +1,6 @@
-import { CancellationToken, DefinitionLink, DefinitionProvider, Location, Position, Range, TextDocument, Uri, workspace } from "vscode";
-import * as path from "path";
-import { BundleIndex } from "api/bundles/BundleIndex";
-import { LayerFile } from "api/bundles/LayerFile";
+import { CancellationToken, DefinitionLink, DefinitionProvider, Position, Range, TextDocument, workspace } from "vscode";
 import { rangeOfSection } from "features/Range";
+import { BundleService } from "api/bundles/BundleService";
 
 
 /**
@@ -11,20 +9,18 @@ import { rangeOfSection } from "features/Range";
 export class ComponentDefinitionProvider implements DefinitionProvider {
 
     constructor(
-        private bundleIndex: BundleIndex
+        private bundleService: BundleService
     ) { }
 
     async provideDefinition(doc: TextDocument, pos: Position, token: CancellationToken) {
 
-        const manifestDoc = this.bundleIndex.findBundleByUri(doc.uri.toString());
+        const manifestDoc = this.bundleService.getManifest(doc.uri);
         if (!manifestDoc) {
             return undefined;
         }
 
+        const layerFile = await this.bundleService.getLayerFile(doc.uri);
 
-        const bundlePath = path.resolve(doc.uri.fsPath, "..");
-        const relativeBundlePath = workspace.asRelativePath(bundlePath);
-        const layerFile = await this.getLayerFile(relativeBundlePath);
         if (!layerFile) {
             return undefined;
         }
@@ -85,15 +81,4 @@ export class ComponentDefinitionProvider implements DefinitionProvider {
 
         return undefined;
     }
-    
-    private async getLayerFile(relativeBundlePath: string): Promise<LayerFile | undefined>   {
-        const moduleFiles = await workspace.findFiles(relativeBundlePath + "/" + "module.{js,ts}");
-        if (moduleFiles.length === 0) {
-            return undefined;
-        }
-        const moduleFilePath = moduleFiles[0];
-
-        return LayerFile.parseFile(moduleFilePath);
-    }
-
 }

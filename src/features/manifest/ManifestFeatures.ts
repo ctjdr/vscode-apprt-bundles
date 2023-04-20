@@ -2,12 +2,14 @@ import * as vscode from "vscode";
 import { BundleIndex } from "api/bundles/BundleIndex";
 import { DeprecationFixFactory, DeprecationQuickFixAllProvider, DeprecationQuickFixProvider } from "./DeprecationQuickFixProvider";
 import { SchemaDocumentContentProvider } from "./SchemaDocumentContentProvider";
+import path = require("path");
 
 
 export {
     ManifestFeatures,
     manifestFilesSelector,
-    noManifestFile
+    noManifestFile,
+    workspaceRelativeParentFolder
 };
 
 const manifestFilesSelector: vscode.DocumentSelector = {
@@ -20,6 +22,15 @@ function noManifestFile(doc: vscode.TextDocument): boolean {
     return (vscode.languages.match(manifestFilesSelector, doc) === 0);
 }
 
+/**
+ * 
+ * @param uri a URI.
+ * @return the folder containing the given resource (be it a file or a folder), relative to the workspace.
+ */
+function workspaceRelativeParentFolder(uri: vscode.Uri): string {
+    const bundlePath = path.resolve(uri.fsPath, "..");
+    return vscode.workspace.asRelativePath(bundlePath);
+}
 
 class ManifestFeatures {
     

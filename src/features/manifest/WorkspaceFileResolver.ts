@@ -1,15 +1,15 @@
 import { workspace, Uri } from "vscode";
-import { promises as fs} from "fs";
-import { ManifestResolver } from "api/bundles/BundleIndex";
+import { promises as fs } from "fs";
+import { FileResolver } from "api/bundles/BundleIndex";
 
-export class WorkspaceManifestProvider implements ManifestResolver {
+export class WorkspaceFileResolver implements FileResolver {
 
 
-    async getAllUris(): Promise<string[]> {
-        return (await workspace.findFiles("**/manifest.json")).map(uri => uri.toString());
+    async getAllUris(filesGlob: string): Promise<string[]> {
+        return (await workspace.findFiles(filesGlob)).map(uri => uri.toString());
 
     }
-    
+
     async resolve(uri: string): Promise<string> {
         const openDocs = workspace.textDocuments;
         for (let doc of openDocs) {
@@ -18,6 +18,8 @@ export class WorkspaceManifestProvider implements ManifestResolver {
             }
         }
         const vscodeUri = Uri.parse(uri);
+
+        //TODO, Remove await, or what?!?
         return await fs.readFile(vscodeUri.fsPath, "utf-8");
     }
 }

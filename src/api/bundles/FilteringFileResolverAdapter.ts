@@ -1,17 +1,17 @@
 import { allNotMatching } from "../glob";
 import { URI } from "vscode-uri";
-import { ManifestResolver } from "./BundleIndex";
+import { FileResolver } from "./BundleIndex";
 
 
-export class FilteringManifestResolverAdapter implements ManifestResolver {
+export class FilteringFileResolverAdapter implements FileResolver {
 
     constructor(
-        private delegate: ManifestResolver,
+        private delegate: FileResolver,
         private exclusionGlobs: string[] = [])
     {}
 
-    async getAllUris(): Promise<string[]> {
-        return allNotMatching(this.exclusionGlobs, await this.delegate.getAllUris(), (uri) => URI.parse(uri).fsPath);
+    async getAllUris(filesGlob?: string): Promise<string[]> {
+        return allNotMatching(this.exclusionGlobs, await this.delegate.getAllUris(filesGlob), (uri) => URI.parse(uri).fsPath);
     }
 
     resolve(uri: string): Promise<string> {

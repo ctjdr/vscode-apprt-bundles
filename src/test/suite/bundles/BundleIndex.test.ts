@@ -1,7 +1,7 @@
 import { fail } from "assert";
 import { assert } from "chai";
 
-import { BundleIndex, ManifestResolver } from "../../../api/bundles/BundleIndex";
+import { BundleIndex, FileResolver } from "../../../api/bundles/BundleIndex";
 
 const jsonFile = `{
     "name": "abc",
@@ -27,78 +27,38 @@ const jsonFile = `{
     ]
 }`;
 
-suite("Manifest Index", function () {
-  test("Bundle IDs found by service name", async function () {
+suite("Bundle Index", function () {
+    test("Bundle docs found by bundle ID", async function () {
 
-    let provider: ManifestResolver = {
-        getAllUris: () =>  Promise.resolve(["a", "b"]),
-        resolve: (id) => id === "a" ? Promise.resolve(jsonFile): Promise.resolve("")
-    };
+        let resolver: FileResolver = {
+            getAllUris: () => Promise.resolve(["a", "b"]),
+            resolve: (id) => id === "a" ? Promise.resolve(jsonFile) : Promise.resolve("")
+        };
 
-     let index = BundleIndex.create(provider);
-     
-     await index.rebuild();
-     assert.isTrue(index.findBundleIdsByServiceName("A1").has("a"));
-  });
+        let index = BundleIndex.create(resolver);
 
-  test("Bundle docs found by bundle ID", async function () {
+        await index.rebuild();
 
-    let provider: ManifestResolver = {
-        getAllUris: () =>  Promise.resolve(["a", "b"]),
-        resolve: (id) => id === "a" ? Promise.resolve(jsonFile): Promise.resolve("")
-    };
+        assert.equal(index.findBundleByUri("a")?.name, "abc");
+    });
 
-     let index = BundleIndex.create(provider);
-     
-     await index.rebuild();
-     assert.equal(index.findBundleByUri("a")?.name, "abc");
-  });
+    test("line breaks", function () {
+        const numLinesExpected = 6;
+        const text = "0123\n456\r\n789\n\n\n";
 
-  test("'provides' by service name found", async function () {
+        const lbOffsets: number[] = [];
 
-    let provider: ManifestResolver = {
-        getAllUris: () =>  Promise.resolve(["a", "b"]),
-        resolve: (id) => id === "a" ? Promise.resolve(jsonFile): Promise.resolve("")
-    };
-
-     let index = BundleIndex.create(provider);
-     
-     await index.rebuild();
-     assert.equal(index.findProvidesFor("A1").length, 1);
-     assert.equal(index.findProvidesFor("xyz").length, 0);
-  });
-  
-  test("'providing' by service name found", async function () {
-
-    let provider: ManifestResolver = {
-        getAllUris: () =>  Promise.resolve(["a", "b"]),
-        resolve: (id) => id === "a" ? Promise.resolve(jsonFile): Promise.resolve("")
-    };
-
-     let index = BundleIndex.create(provider);
-     
-     await index.rebuild();
-     assert.equal(index.findProvidingFor("A2").length, 1);
-     assert.equal(index.findProvidingFor("xyz").length, 0);
-  });
-
-  test("line breaks", function() {
-    const numLinesExpected = 6;
-    const text = "0123\n456\r\n789\n\n\n";
-
-    const lbOffsets:number[] = [];
-
-    let nextLb = 0;
-    while (nextLb !== -1) {
-        let lbOffset = text.indexOf("\n", nextLb);
-        if (lbOffset !== -1) {
-            lbOffsets.push(lbOffset);
-            nextLb = lbOffset + 1;
-        } else {
-            nextLb = lbOffset;
+        let nextLb = 0;
+        while (nextLb !== -1) {
+            let lbOffset = text.indexOf("\n", nextLb);
+            if (lbOffset !== -1) {
+                lbOffsets.push(lbOffset);
+                nextLb = lbOffset + 1;
+            } else {
+                nextLb = lbOffset;
+            }
+            // Math.min(text.indexOf("\r\n", nextLb), text.indexOf("\n", nextLb));
         }
-        // Math.min(text.indexOf("\r\n", nextLb), text.indexOf("\n", nextLb));
-    }
-    console.log(lbOffsets);
-  });
+        console.log(lbOffsets);
+    });
 });

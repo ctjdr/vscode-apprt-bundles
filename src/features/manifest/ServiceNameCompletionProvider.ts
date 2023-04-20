@@ -24,7 +24,9 @@ export class ServiceNameCompletionProvider implements vscode.CompletionItemProvi
                 return Promise.resolve([]);
             }
 
-            const serviceNames = this.bundleIndex.getServiceNames();
+            const serviceIndex = this.bundleIndex.getServiceIndex();
+            const serviceNames = serviceIndex.getServiceNames();
+            // const serviceNames = this.bundleIndex.getServiceNames();
             const items: vscode.CompletionItem[] = [];
             const fragmentLine = fragmentUnderCursor.section.start.line;
             //Narrow range to exclude double quotes of JSON property.

@@ -1,13 +1,13 @@
-import { ManifestResolver } from "../../../api/bundles/BundleIndex";
+import { FileResolver } from "../../../api/bundles/BundleIndex";
 import { expect } from "chai";
-import { FilteringManifestResolverAdapter } from "../../../api/bundles/FilteringManifestResolverAdapter";
+import { FilteringFileResolverAdapter } from "../../../api/bundles/FilteringFileResolverAdapter";
 
-class StaticResolver implements ManifestResolver {
+class StaticResolver implements FileResolver {
 
     constructor(private uriToContent: Record<string, string>) {
     }
 
-    getAllUris() {
+    getAllUris(filesGlob?: string) {
         const uris: string[] = [];
         for (const key in this.uriToContent) {
             uris.push(key);
@@ -28,7 +28,7 @@ suite("FilteringManifestResolverAdapter", function () {
         "file:///home/foo/manifest.json": "manifest1"
     });
 
-    const uris = await new FilteringManifestResolverAdapter(staticResolver).getAllUris();
+    const uris = await new FilteringFileResolverAdapter(staticResolver).getAllUris();
 
     expect(uris.length).to.equal(1);
   });
@@ -40,7 +40,7 @@ suite("FilteringManifestResolverAdapter", function () {
           "file:///home/bar/manifest.json": "manifest2"
         });
         
-        const uris = await new FilteringManifestResolverAdapter(staticResolver, ["**/baz/**"]).getAllUris();
+        const uris = await new FilteringFileResolverAdapter(staticResolver, ["**/baz/**"]).getAllUris();
         
         expect(uris.length).to.equal(2);
     });
@@ -52,7 +52,7 @@ suite("FilteringManifestResolverAdapter", function () {
             "file:///home/bar/manifest.json": "manifest2"
         });
 
-    const uris = await new FilteringManifestResolverAdapter(staticResolver, ["**/home/**"]).getAllUris();
+    const uris = await new FilteringFileResolverAdapter(staticResolver, ["**/home/**"]).getAllUris();
 
     expect(uris.length).to.equal(0);
   });
@@ -64,7 +64,7 @@ suite("FilteringManifestResolverAdapter", function () {
         "file:///home/bar/manifest.json": "manifest2"
     });
 
-    const uris = await new FilteringManifestResolverAdapter(staticResolver, ["**/bar/**"]).getAllUris();
+    const uris = await new FilteringFileResolverAdapter(staticResolver, ["**/bar/**"]).getAllUris();
 
     expect(uris.length).to.equal(1);
   });
