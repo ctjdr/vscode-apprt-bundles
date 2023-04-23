@@ -1,5 +1,5 @@
 import path = require("path");
-import { commands, Event, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem } from "vscode";
+import { commands, Event, ProviderResult, ThemeIcon, TreeDataProvider, TreeItem, EventEmitter } from "vscode";
 import { Bundle } from "api/bundles/BundleModel";
 import { BundleService } from "api/bundles/BundleService";
 
@@ -27,7 +27,8 @@ export class BundleTreeProvider implements TreeDataProvider<BundleTreeItem> {
 
     }
 
-    onDidChangeTreeData?: Event<void | BundleTreeItem | null | undefined> | undefined;
+    private changeEmitter = new EventEmitter<void>();
+    onDidChangeTreeData? = this.changeEmitter.event;
     
     getChildren(element?: BundleTreeItem): ProviderResult<BundleTreeItem[]> {
         if (!element) {
@@ -39,6 +40,10 @@ export class BundleTreeProvider implements TreeDataProvider<BundleTreeItem> {
         return Promise.resolve([]);
     }
     
+    update() {
+        this.changeEmitter.fire();
+    }
+
     private createItems() {
         return this.bundleService.getBundles().map( bundle => new BundleTreeItem(bundle));
     }

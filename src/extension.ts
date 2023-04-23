@@ -14,6 +14,7 @@ import { ExtensionConfiguration } from "./Configuration";
 import { BundleTreeProvider } from "features/bundles/BundleTreeProvider";
 import { WorkspaceFileResolver } from "features/manifest/WorkspaceFileResolver";
 import { FilteringFileResolverAdapter } from "api/bundles/FilteringFileResolverAdapter";
+import ServiceNameIndex from "api/bundles/ServiceIndex";
 
 
 
@@ -34,27 +35,43 @@ export async function activate(context: vscode.ExtensionContext) {
     });
 
     const configuration = new ExtensionConfiguration();
-    configuration.onConfigKeyChange("apprtbundles.bundles.ignorePaths", (change) => {
-        const ignorePaths = change.value as string[];
-        bundleFilesResolver.setExclusionGlobs(ignorePaths);
-        initIndex(bundleIndex);
-    });
+    
+    const bundleIndex = BundleIndex.create(bundleFilesResolver);
+    
 
-    let bundleIndex = BundleIndex.create(bundleFilesResolver);
+    //TODO Use this ServiceNameIndex instance one to pass around.
+    const serviceNameIndex = new ServiceNameIndex(bundleIndex);
+
+    bundleIndex.onManifestIndexed((manifestUri) => {
+        serviceNameIndex.clearForManifest(manifestUri);
+        serviceNameIndex.index(manifestUri);
+    });
+    bundleIndex.onManifestInvalidatedAll(() => {
+        serviceNameIndex.clearAll();
+    });
+    
     bundleFilesResolver.setExclusionGlobs(configuration.get<string[]>("apprtbundles.bundles.ignorePaths") ?? []);
     const bundleService = new BundleService(bundleIndex, bundleFilesResolver);
     const bundleActionHandler = new BundleActionHandler();
     const bundleHotlist  = new MostRecentHotlist<string>(20);
-
+    const bundleTreeProvider = new BundleTreeProvider(bundleService);
+    
+    bundleIndex.onIndexRebuilt( () => {
+        bundleTreeProvider.update();
+    });
     const indexBundles  = async () => {
         const message = await bundleIndex.rebuild();
         vscode.window.setStatusBarMessage(`Finished indexing ${message} bundles.`, 4000);
-        context.subscriptions.push(
-            vscode.window.registerTreeDataProvider("apprtbundles.tree", new BundleTreeProvider(bundleService))
-        );
     };
     vscode.window.setStatusBarMessage("Indexing bundles... ", indexBundles());
-    
+
+    configuration.onConfigKeyChange("apprtbundles.bundles.ignorePaths", (change) => {
+        const ignorePaths = change.value as string[];
+        bundleFilesResolver.setExclusionGlobs(ignorePaths);
+        vscode.window.setStatusBarMessage("Indexing bundles... ", indexBundles());
+    });
+
+
     context.subscriptions.push(vscode.workspace.onDidChangeTextDocument((evt) =>
     {
         if (noManifestFile(evt.document)) {
@@ -67,39 +84,25 @@ export async function activate(context: vscode.ExtensionContext) {
     
     vscode.commands.executeCommand('setContext', 'vscode-apprt-bundles:showCommands', true);
 
-
-
     context.subscriptions.push(
         
         bundleIndex,
-        
         ...manifestFeaturesEarlyDisposables,
-
         ...manifestFeatures.register(bundleService),
-
         ...configuration.register(),
-
         ...bundleActionHandler.register(),
-        
         ...new BundleQuickPicker(bundleService, bundleActionHandler, bundleHotlist).register(),
-
         ...new BundleFileOpener().register(),
-
         vscode.languages.registerReferenceProvider(
-            manifestFilesSelector, new ServiceNameReferenceProvider(bundleIndex, context)),            
-            
+            manifestFilesSelector, new ServiceNameReferenceProvider(bundleService, serviceNameIndex, context)),            
         vscode.languages.registerCompletionItemProvider(
-            manifestFilesSelector, new ServiceNameCompletionProvider(bundleIndex), "\"", ":"),
-
+            manifestFilesSelector, new ServiceNameCompletionProvider(bundleService, serviceNameIndex), "\"", ":"),
         vscode.languages.registerCodeLensProvider(
-            manifestFilesSelector, new ServiceNameCodeLensProvider(context, bundleIndex)),
-
+            manifestFilesSelector, new ServiceNameCodeLensProvider(context, bundleService, serviceNameIndex)),
         vscode.languages.registerDefinitionProvider(
             manifestFilesSelector, new ComponentDefinitionProvider(bundleService)),
-
-        bundleActionHandler.onRevealBundle( bundleUri => bundleHotlist.promote(bundleUri))
-
-
+        bundleActionHandler.onRevealBundle( bundleUri => bundleHotlist.promote(bundleUri)),
+        vscode.window.registerTreeDataProvider("apprtbundles.tree", bundleTreeProvider)
     );
 
     return Promise.resolve();

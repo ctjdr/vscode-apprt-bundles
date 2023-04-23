@@ -1,4 +1,4 @@
-import { FileResolver } from "../../../api/bundles/BundleIndex";
+import { FileResolver } from "api/bundles/FileResolver";
 import { expect } from "chai";
 import { FilteringFileResolverAdapter } from "../../../api/bundles/FilteringFileResolverAdapter";
 

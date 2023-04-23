@@ -1,6 +1,6 @@
 import { allNotMatching } from "../glob";
 import { URI } from "vscode-uri";
-import { FileResolver } from "./BundleIndex";
+import { FileResolver } from "./FileResolver";
 
 
 export class FilteringFileResolverAdapter implements FileResolver {

@@ -1,15 +1,17 @@
 import * as vscode from "vscode";
 import { BundleIndex } from "api/bundles/BundleIndex";
+import ServiceNameIndex from "api/bundles/ServiceIndex";
+import { BundleService } from "api/bundles/BundleService";
 
 export class ServiceNameCompletionProvider implements vscode.CompletionItemProvider {
 
-    constructor(private bundleIndex: BundleIndex) {
+    constructor(private bundleService: BundleService, private serviceNameIndex: ServiceNameIndex) {
     }
 
     provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList<vscode.CompletionItem>> {
         
         return (async () => {
-            const manifestDoc = this.bundleIndex.findBundleByUri(document.uri.toString());
+            const manifestDoc = this.bundleService.getManifest(document.uri);
             const fragments = manifestDoc?.getStringFragmentsOnLine(position.line);
             if (!fragments || fragments?.size === 0) {
                 return Promise.resolve([]);
@@ -23,7 +25,8 @@ export class ServiceNameCompletionProvider implements vscode.CompletionItemProvi
                 return Promise.resolve([]);
             }
 
-            const serviceIndex = this.bundleIndex.getServiceNameIndex();
+            // const serviceIndex = this.bundleIndex.getServiceNameIndex();
+            const serviceIndex = this.serviceNameIndex;
             const serviceNames = serviceIndex.getServiceNames();
             // const serviceNames = this.bundleIndex.getServiceNames();
             const items: vscode.CompletionItem[] = [];

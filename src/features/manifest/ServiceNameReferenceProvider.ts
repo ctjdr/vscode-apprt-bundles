@@ -1,10 +1,12 @@
 import * as vscode from "vscode";
-import { BundleIndex } from "api/bundles/BundleIndex";
 import { rangeOfSection } from "../Range";
+import ServiceNameIndex from "api/bundles/ServiceIndex";
+import { BundleService } from "api/bundles/BundleService";
+import { URI } from "vscode-uri";
 
 export class ServiceNameReferenceProvider implements vscode.ReferenceProvider {
 
-    constructor(private bundleIndex: BundleIndex, private context: vscode.ExtensionContext) {
+    constructor(private bundleService: BundleService, private serviceNameIndex: ServiceNameIndex, private context: vscode.ExtensionContext) {
     }
 
     public provideReferences(
@@ -28,7 +30,8 @@ export class ServiceNameReferenceProvider implements vscode.ReferenceProvider {
         const quotedLookupRef = document.getText(document.getWordRangeAtPosition(position, /[a-zA-Z._\-\"\']+/));
         const lookupRef = quotedLookupRef.substring(1, quotedLookupRef.length - 1);
 
-        const serviceIndex = this.bundleIndex.getServiceNameIndex();
+        // const serviceIndex = this.bundleIndex.getServiceNameIndex();
+        const serviceIndex = this.serviceNameIndex;
         const bundlesIds = serviceIndex.findBundleIdsByServiceName(lookupRef);
 
         const locations:vscode.Location[] = [];
@@ -36,12 +39,12 @@ export class ServiceNameReferenceProvider implements vscode.ReferenceProvider {
 
         bundlesIds.forEach(id => {
             //Lookup manifest doc
-            const bundleDoc = this.bundleIndex.findBundleByUri(id);
-            if (!bundleDoc) {
+            const manifestDoc = this.bundleService.getManifest(URI.parse(id));
+            if (!manifestDoc) {
                 return;
             }
-            const allProvides = bundleDoc.getComponentsFor(lookupRef);
-            const allProviding = bundleDoc.getReferencesFor(lookupRef);
+            const allProvides = manifestDoc.getComponentsFor(lookupRef);
+            const allProviding = manifestDoc.getReferencesFor(lookupRef);
 
             const uri = vscode.Uri.parse(id);
 

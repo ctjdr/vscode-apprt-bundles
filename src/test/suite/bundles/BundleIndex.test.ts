@@ -1,7 +1,9 @@
 import { fail } from "assert";
 import { assert } from "chai";
 
-import { BundleIndex, FileResolver } from "../../../api/bundles/BundleIndex";
+import { BundleIndex } from "../../../api/bundles/BundleIndex";
+import { FileResolver } from "api/bundles/FileResolver";
+import { URI } from "vscode-uri";
 
 const jsonFile = `{
     "name": "abc",
@@ -31,15 +33,15 @@ suite("Bundle Index", function () {
     test("Bundle docs found by bundle ID", async function () {
 
         let resolver: FileResolver = {
-            getAllUris: () => Promise.resolve(["a", "b"]),
-            resolve: (id) => id === "a" ? Promise.resolve(jsonFile) : Promise.resolve("")
+            getAllUris: () => Promise.resolve(["file:///a", "file:///b"]),
+            resolve: (id) => id === "file:///a" ? Promise.resolve(jsonFile) : Promise.resolve("")
         };
 
         let index = BundleIndex.create(resolver);
 
         await index.rebuild();
 
-        assert.equal(index.findBundleByUri("a")?.name, "abc");
+        assert.equal(index.provideManifest("file:///a")?.name, "abc");
     });
 
     test("line breaks", function () {

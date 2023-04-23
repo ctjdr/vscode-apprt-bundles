@@ -1,11 +1,12 @@
-import ManifestDocument, { StringFragment } from "./ManifestDocument";
+import { StringFragment } from "./ManifestDocument";
+import ManifestProvider from "./ManifestProvider";
 import MultiValueIndex from "./MultiValueIndex";
 
 export default class ServiceNameIndex {
 
     private servicenameToManifestUris: MultiValueIndex<string, string> = new MultiValueIndex();
 
-    constructor(private manifestProvider: (manifestUri: string) => ManifestDocument | undefined) {
+    constructor(private manifestProvider: ManifestProvider) {
     }
 
     public findBundleIdsByServiceName(serviceName: string): Set<string> {
@@ -20,7 +21,7 @@ export default class ServiceNameIndex {
         const providesItems: StringFragment[] = [];
         const manifestCandidateUris = this.servicenameToManifestUris.getValues(servicename);
         for (let manifestUri of manifestCandidateUris) {
-            const manifest = this.manifestProvider(manifestUri);
+            const manifest = this.manifestProvider.provideManifest(manifestUri);
             if (!manifest) {
                 continue;
             }
@@ -33,13 +34,17 @@ export default class ServiceNameIndex {
         const providingItems: StringFragment[] = [];
         const manifestUris = this.servicenameToManifestUris.getValues(servicename);
         for (let manifestUri of manifestUris) {
-            const manifestDoc = this.manifestProvider(manifestUri);
+            const manifestDoc = this.manifestProvider.provideManifest(manifestUri);
             if (!manifestDoc) {
                 continue;
             }
             providingItems.push(...manifestDoc.getProvidingFor(servicename));
         }
         return providingItems;
+    }
+
+    public rebuild() {
+
     }
 
     public clearAll() {
@@ -51,7 +56,7 @@ export default class ServiceNameIndex {
     }
 
     public index(manifestUri: string) {
-        const doc = this.manifestProvider(manifestUri);
+        const doc = this.manifestProvider.provideManifest(manifestUri);
         if (!doc) {
             return;
         }

@@ -1,4 +1,3 @@
-import { fail } from "assert";
 import { assert } from "chai";
 
 import ServiceNameIndex from "../../../api/bundles/ServiceIndex";
@@ -28,11 +27,19 @@ const jsonFile = `{
     ]
 }`;
 
+const manifestProviderFor = (doc?: ManifestDocument) => {
+    return {
+        provideManifest(v: string) { 
+            return v === "abc" ? doc : undefined;
+        }
+    };
+};
+
 suite("Service Index", function () {
     test("Bundle IDs found by service name", async function () {
 
         const doc = await ManifestDocument.fromString(jsonFile);
-        const serviceIndex = new ServiceNameIndex((v) => v === "abc" ? doc : undefined);
+        const serviceIndex = new ServiceNameIndex(manifestProviderFor(doc));
         serviceIndex.index("abc");
         assert.isTrue(serviceIndex.findBundleIdsByServiceName("A1").has("abc"));
     });
@@ -40,7 +47,7 @@ suite("Service Index", function () {
     test("'provides' by service name found", async function () {
 
         const doc = await ManifestDocument.fromString(jsonFile);
-        const serviceIndex = new ServiceNameIndex((v) => v === "abc" ? doc : undefined);
+        const serviceIndex = new ServiceNameIndex(manifestProviderFor(doc));
         serviceIndex.index("abc");
 
         assert.equal(serviceIndex.findProvidesFor("A1").length, 1);
@@ -50,9 +57,8 @@ suite("Service Index", function () {
     test("'providing' by service name found", async function () {
 
         const doc = await ManifestDocument.fromString(jsonFile);
-        const serviceIndex = new ServiceNameIndex((v) => v === "abc" ? doc : undefined);
+        const serviceIndex = new ServiceNameIndex(manifestProviderFor(doc));
         serviceIndex.index("abc");
-
 
         assert.equal(serviceIndex.findProvidingFor("A2").length, 1);
         assert.equal(serviceIndex.findProvidingFor("xyz").length, 0);

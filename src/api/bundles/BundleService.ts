@@ -1,5 +1,6 @@
 import { URI } from "vscode-uri";
-import { BundleIndex, FileResolver } from "./BundleIndex";
+import { BundleIndex } from "./BundleIndex";
+import { FileResolver } from "./FileResolver";
 import ManifestDocument from "./ManifestDocument";
 import { Bundle } from "./BundleModel";
 import { LayerFile } from "./LayerFile";
@@ -31,7 +32,7 @@ export class BundleService {
         const sorted = options?.sorted ?? true;
 
         let bundles = [];
-        for (let [bundleUri, manifestDoc] of this.bundleIndex.getBundles()) {
+        for (let [bundleUri, manifestDoc] of this.bundleIndex.getAllManifests()) {
             bundles.push(this.createBundle(URI.parse(bundleUri), manifestDoc));
         }
 
@@ -47,7 +48,7 @@ export class BundleService {
      * @returns bundle metadata of the the bundle at the given manifest location or `undefined` if the bundle is not known to this service.
      */
     getBundle(manifestUri: URI): Bundle | undefined {
-        const manifestDoc = this.bundleIndex.findBundle(manifestUri);
+        const manifestDoc = this.bundleIndex.provideManifest(manifestUri.toString());
         if (!manifestDoc) {
             return undefined;
         }
@@ -59,7 +60,16 @@ export class BundleService {
      * @returns bundle manifest document at the given manifest location or `undefined` if the bundle is not known to this service.
      */
     getManifest(manifestUri: URI): ManifestDocument | undefined {
-        return this.bundleIndex.findBundle(manifestUri);
+        return this.bundleIndex.provideManifest(manifestUri.toString());
+    }
+
+    /**
+     * @param manifestUri a URI pointing to a bundle manifest file like `file:///home/foo/bar-bundle/manifest.json`.
+     * @returns bundle manifest document at the given manifest location or `undefined` if the bundle is not known to this service.
+     */
+    async getManifestAsync(manifestUri: URI): Promise<ManifestDocument | undefined> {
+        await this.bundleIndex.assertClean(manifestUri, 2000);
+        return this.bundleIndex.provideManifest(manifestUri.toString());
     }
 
     /**
