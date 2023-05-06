@@ -168,7 +168,13 @@
                     "when": "false"
                 }
             ]
-        }
+        },
+        "keybindings":[
+            {
+                "command": "apprtbundles.bundles.reveal",
+                "key": "ctrl+[minus]"
+            }
+        ]
     },
     "scripts": {
         "clean": "rimraf ./dist/* ./out/*",
