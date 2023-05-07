@@ -23,7 +23,7 @@ export default class MultiValueIndex<K, V> {
     }
     /**
      * Signal that "value" needs to be removed from all buckets.
-     * Remove the index, if the buckets is empty afterwards
+     * Remove the index, if a bucket is empty afterwards
      * @param value
      */
     invalidateValue(value: V): void {
