@@ -51,6 +51,10 @@ export class ServiceNameCodeLensProvider implements vscode.CodeLensProvider {
         this.codeLensToggleState = codelensConfig.get<boolean>("enabled") ?? false;
     }
 
+    public updateLenses() {
+        this.changeEmitter.fire();
+    }
+
     async provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): Promise<vscode.CodeLens[]> {
 
         if (!this.codeLensToggleState) {

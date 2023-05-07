@@ -53,9 +53,11 @@ export async function activate(context: vscode.ExtensionContext) {
     const bundleActionHandler = new BundleActionHandler();
     const bundleHotlist  = new MostRecentHotlist<string>(20);
     const bundleTreeProvider = new BundleTreeProvider(bundleService);
+    const componentImplCodeLensProvider = new ComponentImplCodeLensProvider(context, bundleService, serviceNameIndex);
     
     manifestProvider.onIndexRebuilt( () => {
         bundleTreeProvider.update();
+        componentImplCodeLensProvider.updateLenses();
     });
     const indexBundles  = async () => {
         const message = await manifestProvider.rebuild();
@@ -98,7 +100,7 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.languages.registerCodeLensProvider(
             manifestFilesSelector, new ServiceNameCodeLensProvider(context, bundleService, serviceNameIndex)),
         vscode.languages.registerCodeLensProvider(
-            manifestFilesSelector, new ComponentImplCodeLensProvider(context, bundleService, serviceNameIndex)),
+            manifestFilesSelector, componentImplCodeLensProvider),
         vscode.languages.registerDefinitionProvider(
             manifestFilesSelector, new ComponentDefinitionProvider(bundleService)),
         bundleActionHandler.onRevealBundle( bundleUri => bundleHotlist.promote(bundleUri)),

@@ -32,12 +32,18 @@ export class ComponentImplCodeLensProvider implements vscode.CodeLensProvider {
         this.updateConfig();
     }
 
+    public updateLenses() {
+        this.changeEmitter.fire();
+    }
+
     private updateConfig() {
         // const codelensConfig = vscode.workspace.getConfiguration("apprtbundles.manifest.serviceNameCodeLens");
         // this.codeLensToggleState = codelensConfig.get<boolean>("enabled") ?? false;
     }
 
     async provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): Promise<vscode.CodeLens[]> {
+
+
 
         if (!this.codeLensToggleState) {
             return Promise.resolve([]);
@@ -74,16 +80,42 @@ export class ComponentImplCodeLensProvider implements vscode.CodeLensProvider {
 
             const layerClass = layerFile.findSource(componentImplFragment?.value.replace(/^.\//, "") || componentNameFragment.value);
             if (!layerClass) {
-                return [];
+                continue;
             }
             const namePosition = layerFileDoc.positionAt(layerClass.nameRange.start);
 
+
+            
+            let targetUri;
+            let targetRange; 
+            let jsTsSupportReady = true;
+            
+            //The "vscode.typescript-language-features" extension might not be active until the first editor with a .js or .ts file that is opened.
+            // It definitely gets activated when we trigger the "vscode.executeDefinitionProvider" command on a .js or .ts file that is not opened.
+            // This is not ideal, as this might delay code lens generation.
+
+            if (!vscode.extensions.getExtension("vscode.typescript-language-features")?.isActive) {
+                jsTsSupportReady = false;
+                vscode.extensions.getExtension("vscode.typescript-language-features")?.activate();
+            }
+
+            if (jsTsSupportReady) {
+                const items: vscode.LocationLink[] = await vscode.commands.executeCommand("vscode.executeDefinitionProvider", layerFile.uri, namePosition);
+                if (items.length === 0) {
+                    continue;
+                }
+                targetUri = items[0].targetUri;
+                targetRange = new vscode.Range(items[0].targetRange.start, items[0].targetRange.start);
+            } 
+
+
+
             const nameRange = rangeOfSection(section);
+            
             const lens = new vscode.CodeLens(nameRange, {
-                // command: "vscode.executeDefinitionProvider",
                 command: "gotoComponentImpl",
-                title: "Go to implementation",
-                arguments: [layerFile.uri, namePosition]
+                title: jsTsSupportReady ? "Go to implementation" : "Go to implementation (searching...)",
+                arguments: [targetUri, targetRange]
             });
             lenses.push(lens);
 
@@ -93,22 +125,18 @@ export class ComponentImplCodeLensProvider implements vscode.CodeLensProvider {
         console.debug(`Component Impl CodeLens generation took ${t1 - t0} ms`);
         return lenses;
     }
-    // resolveCodeLens(codeLens: vscode.CodeLens, token: vscode.CancellationToken): vscode.ProviderResult<vscode.CodeLens> {
-    //     return undefined;
-    // }
+    resolveCodeLens(codeLens: vscode.CodeLens, token: vscode.CancellationToken): vscode.ProviderResult<vscode.CodeLens> {
+        return undefined;
+    }
 }
 
 
-async function gotoComponentImpl(layerDocUri: vscode.Uri, pos: vscode.Position) {
-
-    const items: vscode.LocationLink[] = await vscode.commands.executeCommand("vscode.executeDefinitionProvider", layerDocUri, pos);
-
-    if (items.length === 0) {
+async function gotoComponentImpl(targetUri: vscode.Uri | undefined, targetRange: vscode.Range) {
+    if (!targetUri) {
         return;
     }
-
-    await vscode.window.showTextDocument(items[0].targetUri, {
-        selection: new vscode.Range(items[0].targetRange.start, items[0].targetRange.start)
+    vscode.window.showTextDocument(targetUri, {
+        selection: targetRange
     });
 }
 
