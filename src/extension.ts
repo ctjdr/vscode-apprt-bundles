@@ -15,6 +15,7 @@ import { BundleTreeProvider } from "features/bundles/BundleTreeProvider";
 import { WorkspaceFileResolver } from "features/manifest/WorkspaceFileResolver";
 import { FilteringFileResolverAdapter } from "api/bundles/FilteringFileResolverAdapter";
 import ServiceNameIndex from "api/bundles/ServiceIndex";
+import { ComponentImplCodeLensProvider } from "features/manifest/ComponentImplCodeLensProvider";
 
 
 
@@ -22,7 +23,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     const manifestFeatures = new ManifestFeatures(context);
     const manifestFeaturesEarlyDisposables =  manifestFeatures.registerEarly();
-    const bundleFilesResolver = new FilteringFileResolverAdapter(new WorkspaceFileResolver());
+    const fileResolver = new FilteringFileResolverAdapter(new WorkspaceFileResolver());
 
     vscode.commands.registerCommand("apprtbundles.activate", async () => {
         const decision = await vscode.window.showInformationMessage(
@@ -36,38 +37,35 @@ export async function activate(context: vscode.ExtensionContext) {
 
     const configuration = new ExtensionConfiguration();
     
-    const bundleIndex = BundleIndex.create(bundleFilesResolver);
-    
+    const manifestProvider = BundleIndex.create(fileResolver);
+    const serviceNameIndex = new ServiceNameIndex(manifestProvider);
 
-    //TODO Use this ServiceNameIndex instance one to pass around.
-    const serviceNameIndex = new ServiceNameIndex(bundleIndex);
-
-    bundleIndex.onManifestIndexed((manifestUri) => {
+    manifestProvider.onManifestIndexed((manifestUri) => {
         serviceNameIndex.clearForManifest(manifestUri);
         serviceNameIndex.index(manifestUri);
     });
-    bundleIndex.onManifestInvalidatedAll(() => {
+    manifestProvider.onManifestInvalidatedAll(() => {
         serviceNameIndex.clearAll();
     });
     
-    bundleFilesResolver.setExclusionGlobs(configuration.get<string[]>("apprtbundles.bundles.ignorePaths") ?? []);
-    const bundleService = new BundleService(bundleIndex, bundleFilesResolver);
+    fileResolver.setExclusionGlobs(configuration.get<string[]>("apprtbundles.bundles.ignorePaths") ?? []);
+    const bundleService = new BundleService(manifestProvider, fileResolver);
     const bundleActionHandler = new BundleActionHandler();
     const bundleHotlist  = new MostRecentHotlist<string>(20);
     const bundleTreeProvider = new BundleTreeProvider(bundleService);
     
-    bundleIndex.onIndexRebuilt( () => {
+    manifestProvider.onIndexRebuilt( () => {
         bundleTreeProvider.update();
     });
     const indexBundles  = async () => {
-        const message = await bundleIndex.rebuild();
+        const message = await manifestProvider.rebuild();
         vscode.window.setStatusBarMessage(`Finished indexing ${message} bundles.`, 4000);
     };
     vscode.window.setStatusBarMessage("Indexing bundles... ", indexBundles());
 
     configuration.onConfigKeyChange("apprtbundles.bundles.ignorePaths", (change) => {
         const ignorePaths = change.value as string[];
-        bundleFilesResolver.setExclusionGlobs(ignorePaths);
+        fileResolver.setExclusionGlobs(ignorePaths);
         vscode.window.setStatusBarMessage("Indexing bundles... ", indexBundles());
     });
 
@@ -77,7 +75,7 @@ export async function activate(context: vscode.ExtensionContext) {
         if (noManifestFile(evt.document)) {
             return;
         }
-        bundleIndex.markDirty(evt.document.uri);
+        manifestProvider.markDirty(evt.document.uri);
     }
     ));
     
@@ -86,7 +84,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(
         
-        bundleIndex,
+        manifestProvider,
         ...manifestFeaturesEarlyDisposables,
         ...manifestFeatures.register(bundleService),
         ...configuration.register(),
@@ -99,6 +97,8 @@ export async function activate(context: vscode.ExtensionContext) {
             manifestFilesSelector, new ServiceNameCompletionProvider(bundleService, serviceNameIndex), "\"", ":"),
         vscode.languages.registerCodeLensProvider(
             manifestFilesSelector, new ServiceNameCodeLensProvider(context, bundleService, serviceNameIndex)),
+        vscode.languages.registerCodeLensProvider(
+            manifestFilesSelector, new ComponentImplCodeLensProvider(context, bundleService, serviceNameIndex)),
         vscode.languages.registerDefinitionProvider(
             manifestFilesSelector, new ComponentDefinitionProvider(bundleService)),
         bundleActionHandler.onRevealBundle( bundleUri => bundleHotlist.promote(bundleUri)),
