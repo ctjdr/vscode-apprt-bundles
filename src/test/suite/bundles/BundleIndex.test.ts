@@ -3,7 +3,6 @@ import { assert } from "chai";
 
 import { BundleIndex } from "../../../api/bundles/BundleIndex";
 import { FileResolver } from "api/bundles/FileResolver";
-import { URI } from "vscode-uri";
 
 const jsonFile = `{
     "name": "abc",
