@@ -1,7 +1,6 @@
 import * as vscode from "vscode";
 import ManifestDocument from "api/bundles/ManifestDocument";
 import { rangeOfSection } from "../Range";
-import ServiceNameIndex from "api/bundles/ServiceIndex";
 import { BundleService } from "api/bundles/BundleService";
 import { TextDocument, workspace } from "vscode";
 
@@ -12,48 +11,38 @@ export class ComponentImplCodeLensProvider implements vscode.CodeLensProvider {
     public readonly onDidChangeCodeLenses = this.changeEmitter.event;
 
     private codeLensToggleState = true;
+    private codeLensesInitialized = false;
 
-    constructor(private context: vscode.ExtensionContext, private bundleService: BundleService, private serviceNameIndex: ServiceNameIndex) {
+    constructor(private context: vscode.ExtensionContext, private bundleService: BundleService) {
 
-        context.subscriptions.push(
-            vscode.commands.registerCommand("gotoComponentImpl", gotoComponentImpl),
-        //     vscode.workspace.onDidChangeConfiguration(configEvt => {
-        //         if (configEvt.affectsConfiguration("apprtbundles.manifest.serviceNameCodeLens.enabled")) {
-        //             this.changeEmitter.fire();
-        //             this.updateConfig();
-        //         }
-        //     }),
-        //     vscode.commands.registerCommand("apprtbundles.manifest.toggleServiceNameCodeLens", () => {
-        //         this.codeLensToggleState = !this.codeLensToggleState;
-        //         this.changeEmitter.fire();
-        //     })
+        this.context.subscriptions.push(
+            vscode.commands.registerCommand("gotoComponentImpl", gotoComponentImpl)
         );
-
-        this.updateConfig();
     }
 
     public updateLenses() {
+        if (!this.codeLensesInitialized) {
+            //Don't fire update if code lenses have never been calculated, yet
+            console.debug(`Component Impl CodeLens: Ignoring update request`);
+            return;
+        }
+        console.debug(`Component Impl CodeLens: Firing update`);
         this.changeEmitter.fire();
     }
 
-    private updateConfig() {
-        // const codelensConfig = vscode.workspace.getConfiguration("apprtbundles.manifest.serviceNameCodeLens");
-        // this.codeLensToggleState = codelensConfig.get<boolean>("enabled") ?? false;
-    }
-
     async provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): Promise<vscode.CodeLens[]> {
-
-
-
         if (!this.codeLensToggleState) {
             return Promise.resolve([]);
         }
-
+        
         //return lenses only, if document is asserted to be up to date after no more than 2 secs
         const manifestDoc = await this.bundleService.getManifestAsync(document.uri);
         if (!manifestDoc) {
+            console.debug(`Component Impl CodeLens generation skipped, document not up to date`);
             return Promise.resolve([]);
         }
+        console.debug(`Component Impl CodeLens asked to generate lenses`);
+        this.codeLensesInitialized = true;
         return this.calcLenses(manifestDoc, document);
     }
 
@@ -96,7 +85,8 @@ export class ComponentImplCodeLensProvider implements vscode.CodeLensProvider {
 
             if (!vscode.extensions.getExtension("vscode.typescript-language-features")?.isActive) {
                 jsTsSupportReady = false;
-                vscode.extensions.getExtension("vscode.typescript-language-features")?.activate();
+                console.debug("Activating TS language features");
+                vscode.extensions.getExtension("vscode.typescript-language-features")?.activate().then(() => this.updateLenses());
             }
 
             if (jsTsSupportReady) {
@@ -112,9 +102,10 @@ export class ComponentImplCodeLensProvider implements vscode.CodeLensProvider {
 
             const nameRange = rangeOfSection(section);
             
+            //TODO: Add "tooltip" to command (Could be the file name that will be visited on click)
             const lens = new vscode.CodeLens(nameRange, {
                 command: "gotoComponentImpl",
-                title: jsTsSupportReady ? "Go to implementation" : "Go to implementation (searching...)",
+                title: jsTsSupportReady ? "Go to implementation" : "Searching implementation ...",
                 arguments: [targetUri, targetRange]
             });
             lenses.push(lens);
@@ -122,11 +113,8 @@ export class ComponentImplCodeLensProvider implements vscode.CodeLensProvider {
         }
 
         const t1 = new Date().getTime();
-        console.debug(`Component Impl CodeLens generation took ${t1 - t0} ms`);
+        console.debug(`Component Impl CodeLens generation took ${t1 - t0} ms (TS support: ${"nn"})`);
         return lenses;
-    }
-    resolveCodeLens(codeLens: vscode.CodeLens, token: vscode.CancellationToken): vscode.ProviderResult<vscode.CodeLens> {
-        return undefined;
     }
 }
 

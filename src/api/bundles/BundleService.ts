@@ -23,6 +23,10 @@ export class BundleService {
         private fileResolver: FileResolver
     ) {}
 
+    async assertClean(manifestUri: URI) {
+        return this.bundleIndex.assertClean(manifestUri, 2000);
+    }
+
     /**
      * @param options 
      * @returns all bundles known by this bundle service.

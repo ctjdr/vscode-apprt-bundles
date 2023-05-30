@@ -20,13 +20,21 @@ export class WorkspaceFileResolver implements FileResolver {
     async resolve(uri: string): Promise<string> {
         const openDocs = workspace.textDocuments;
         for (let doc of openDocs) {
-            if (doc.isDirty && doc.uri.toString() === uri) {
-                return doc.getText();
+            if (doc.uri.toString() === uri) {
+                    console.debug("Resolver: Reading from WORKSPACE: " + uri);
+                    return doc.getText();
+                // if (doc.isDirty) {
+                //     console.debug("Resolver: Reading from WORKSPACE: " + uri);
+                //     return doc.getText();
+                // } else {
+                //     console.debug("Resolver: Not reading from WORKSPACE, file not dirty: " + uri);
+                //     break;
+                // }
             }
         }
         const vscodeUri = Uri.parse(uri);
-
-        //TODO, Remove await, or what?!?
-        return await fs.readFile(vscodeUri.fsPath, "utf-8");
+        
+        console.debug("Resolver: Reading from FILE: " + uri);
+        return fs.readFile(vscodeUri.fsPath, "utf-8");
     }
 }

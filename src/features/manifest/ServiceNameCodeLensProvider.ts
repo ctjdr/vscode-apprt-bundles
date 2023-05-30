@@ -69,7 +69,6 @@ export class ServiceNameCodeLensProvider implements vscode.CodeLensProvider {
         return this.calcLenses(manifestDoc, document);
     }
 
-    // private async calcLenses(document: vscode.TextDocument): Promise<vscode.CodeLens[]> {
     private async calcLenses(manifestDoc: ManifestDocument, document: TextDocument): Promise<vscode.CodeLens[]> {
         const lenses: vscode.CodeLens[] = [];
         const linesWithFragments = manifestDoc.getStringFragmentLines();

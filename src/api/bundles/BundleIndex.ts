@@ -80,7 +80,7 @@ export class BundleIndex implements Disposable, ManifestProvider {
         return this.manifestUriToManifestDoc.get(manifestUri);
     }
 
-    public markDirty(manifestUri: URI): void {
+    public async markDirty(manifestUri: URI): Promise<void> {
         //Todo: check if bundleId is tracked.
         const preSize = this.dirtyIds.size;
         this.dirtyIds.add(manifestUri.toString());
@@ -97,7 +97,10 @@ export class BundleIndex implements Disposable, ManifestProvider {
             [
                 this.dirtyRunner?.forceRun(),
                 new Promise((resolve, reject) => {
-                    setTimeout(() => reject(), timeout);
+                    setTimeout(() => {
+                        console.debug("Dirt race timed out");
+                        reject();
+                    }, timeout);
                 })
             ]
         );
@@ -156,7 +159,8 @@ class AsyncRunner {
     }
 
     async forceRun(): Promise<void> {
-        return this.runTask(this);
+        console.debug("BundleIndex: Forced run.");
+        return this.runTask(this).then(() => console.debug("BundleIndex: Forced run ready."));
     }
 
     resume() {
