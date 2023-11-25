@@ -102,10 +102,9 @@ class ApprtBundlesExtension {
     
     
     public async activate() {
-        //Trigger bundle index
-        //TODO
-        vscode.window.setStatusBarMessage("Indexing bundles... ", this.indexBundles());
 
+        //Trigger bundle index
+        await this.rebuildBundleIndex();
 
         //Register providers and such
         this.register();
@@ -172,21 +171,28 @@ class ApprtBundlesExtension {
 
     private hookToManifestProvider() {
         //HOOK ManifestProvider with ServiceNameIndex
-        this.manifestProvider.onManifestIndexed((manifestUri) => {
+        this.manifestProvider.onDidIndexManifest((manifestUri) => {
             this.serviceNameIndex.clearForManifest(manifestUri);
             this.serviceNameIndex.index(manifestUri);
         });
 
         //HOOK: ManifestProvider with ServiceNameIndex
-        this.manifestProvider.onManifestInvalidatedAll(() => {
+        this.manifestProvider.onDidInvalidateIndex(() => {
             this.serviceNameIndex.clearAll();
         });
 
         //HOOK: ManifestProvider with BundleTreeProvider and ComponentImplCodeLensProvider
-        this.manifestProvider.onIndexRebuilt(() => {
+        this.manifestProvider.onDidRebuildIndex(() => {
             this.bundleTreeProvider.update();
             this.componentImplCodeLensProvider.updateLenses();
         });
+
+        this.manifestProvider.onWillRebuildIndex((trackerPromise) => {
+            vscode.window.setStatusBarMessage("Indexing bundles... ", trackerPromise); 
+        });
+
+        // vscode.window.setStatusBarMessage("Indexing bundles... ", this.indexBundles());
+
 
     }
 
@@ -195,7 +201,7 @@ class ApprtBundlesExtension {
         this.configuration.onConfigKeyChange("apprtbundles.bundles.ignorePaths", (change) => {
             const ignorePaths = change.value as string[];
             this.fileResolver.setExclusionGlobs(ignorePaths);
-            vscode.window.setStatusBarMessage("Indexing bundles... ", this.indexBundles());
+            vscode.window.setStatusBarMessage("Indexing bundles... ", this.rebuildBundleIndex());
         });
     }
 
@@ -215,7 +221,7 @@ class ApprtBundlesExtension {
         this.bundleActionHandler.onRevealBundle(bundleUri => this.bundleHotlist.promote(bundleUri));
     }
 
-    private async indexBundles() {
+    private async rebuildBundleIndex() {
         const message = await this.manifestProvider.rebuild();
         vscode.window.setStatusBarMessage(`Finished indexing ${message} bundles.`, 4000);
     };

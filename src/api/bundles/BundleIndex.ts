@@ -9,9 +9,10 @@ type Disposable = {
 };
 
 enum Events {
-    manifestIndexed = "manifestIndexed",
-    manifestInvalidatedAll = "manifestInvalidatedAll",
-    indexRebuilt = "indexRebuilt"
+    didIndexManifest = "didIndexManifest",
+    didInvalidateIndex = "didInvalidateIndex",
+    willRebuildIndex = "willRebuildIndex",
+    didRebuildIndex = "didRebuildIndex"
 };
 
 
@@ -27,16 +28,20 @@ export class BundleIndex implements Disposable, ManifestProvider {
     private constructor(private fileResolver: FileResolver) {
     }
 
-    public onManifestIndexed(listener: (uri: string) => void) {
-        this.manifestEvents.on(Events.manifestIndexed, listener);
+    public onDidIndexManifest(listener: (uri: string) => void) {
+        this.manifestEvents.on(Events.didIndexManifest, listener);
     }
 
-    public onManifestInvalidatedAll(listener: () => void) {
-        this.manifestEvents.on(Events.manifestInvalidatedAll, listener);
+    public onDidInvalidateIndex(listener: () => void) {
+        this.manifestEvents.on(Events.didInvalidateIndex, listener);
     }
 
-    public onIndexRebuilt(listener: () => void) {
-        this.manifestEvents.on(Events.indexRebuilt, listener);
+    public onDidRebuildIndex(listener: () => void) {
+        this.manifestEvents.on(Events.didRebuildIndex, listener);
+    }
+
+    public onWillRebuildIndex(listener: (tracker: Promise<number> ) => void) {
+        this.manifestEvents.on(Events.willRebuildIndex, listener);
     }
 
     public static create(fileResolver: FileResolver): BundleIndex {
@@ -44,7 +49,18 @@ export class BundleIndex implements Disposable, ManifestProvider {
     }
 
     public async rebuild(): Promise<number> {
+        // const indexResolver = (count: number | PromiseLike<number>) => count;
+        
+        // const foo = new Promise<number>(indexResolver);
+        const rebuildPromise = this.doRebuild();
+        this.manifestEvents.emit(Events.willRebuildIndex, rebuildPromise);
+        return rebuildPromise;
+
+    }
+
+    private async doRebuild() {
         this.cleanIndex();
+        // this.manifestEvents.emit(Events.willRebuildIndex);
 
         let manifestUris = await this.fileResolver.getAllUris("**/manifest.json");
 
@@ -52,7 +68,7 @@ export class BundleIndex implements Disposable, ManifestProvider {
             await this.updateSingle(manifestUri);
         }
 
-        this.manifestEvents.emit(Events.indexRebuilt);
+        this.manifestEvents.emit(Events.didRebuildIndex);
 
         const handleDirtyIds = async () => {
             if (this.dirtyIds.size === 0) {
@@ -69,7 +85,6 @@ export class BundleIndex implements Disposable, ManifestProvider {
         this.dirtyRunner = new AsyncRunner(handleDirtyIds);
         this.dirtyRunner.start();
         return Promise.resolve(manifestUris.length);
-
     }
 
     public getAllManifests() {
@@ -109,7 +124,7 @@ export class BundleIndex implements Disposable, ManifestProvider {
     private cleanIndex() {
         this.dirtyIds.clear();
         this.manifestUriToManifestDoc.clear();
-        this.manifestEvents.emit(Events.manifestInvalidatedAll);
+        this.manifestEvents.emit(Events.didInvalidateIndex);
     }
 
     private async updateSingle(manifestUri: string) {
@@ -119,7 +134,7 @@ export class BundleIndex implements Disposable, ManifestProvider {
         // What if a bundle does not reference a service name any more? The entry is kept although it should be deleted.
         if (manifestDoc) {
             this.indexDocById(manifestUri, manifestDoc);
-            this.manifestEvents.emit(Events.manifestIndexed, manifestUri);
+            this.manifestEvents.emit(Events.didIndexManifest, manifestUri);
 
         }
     }

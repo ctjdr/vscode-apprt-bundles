@@ -1,8 +1,6 @@
 import * as vscode from "vscode";
 import { ApprtBundlesExtension } from "./ApprtBundlesExtension";
 
-
-
 export async function activate(context: vscode.ExtensionContext) {
 
     const apprtBundlesExtension = new ApprtBundlesExtension(context);
@@ -17,14 +15,10 @@ export async function activate(context: vscode.ExtensionContext) {
         }
     });
 
-
     await apprtBundlesExtension.activate();
- 
-
 
     //Enable commands in command palette
     vscode.commands.executeCommand('setContext', 'vscode-apprt-bundles:showCommands', true);
-
 
     return;
 }
