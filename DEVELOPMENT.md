@@ -1,5 +1,15 @@
 # Developing the app.rt bundles extension
 
+## Setting up the right Node version
+
+Before starting to develop, debug, and build the extension, run
+
+```bash
+nvm alias default 16
+```
+
+This will make sure, that newly created terminals to build or run the extension will use the correct Node version (16 at the time of this writing)
+
 ## Test and debug extension
 
 1. Open this project in VS Code
