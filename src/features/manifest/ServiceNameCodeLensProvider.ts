@@ -66,6 +66,10 @@ export class ServiceNameCodeLensProvider implements vscode.CodeLensProvider {
         if (!manifestDoc) {
             return Promise.resolve([]);
         }
+
+        console.debug(`${new Date().toLocaleString()} -  Service Name CodeLens asked to generate lenses`);
+
+
         return this.calcLenses(manifestDoc, document);
     }
 
@@ -88,7 +92,7 @@ export class ServiceNameCodeLensProvider implements vscode.CodeLensProvider {
             });
         });
         const t1 = new Date().getTime();
-        console.debug(`CodeLens generation took ${t1 - t0} ms`);
+        console.debug(`Service Name CodeLens generation took ${t1 - t0} ms`);
         return lenses;
     }
     private lensMessage(type: ValueType, value: string) {

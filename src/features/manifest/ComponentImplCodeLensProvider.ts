@@ -5,6 +5,9 @@ import { BundleService } from "api/bundles/BundleService";
 import { TextDocument, workspace } from "vscode";
 
 
+/**
+ * Provides a code lens above a component name to jump to the implementation module directly.
+ */
 export class ComponentImplCodeLensProvider implements vscode.CodeLensProvider {
 
     private changeEmitter = new vscode.EventEmitter<void>();
@@ -31,6 +34,7 @@ export class ComponentImplCodeLensProvider implements vscode.CodeLensProvider {
     }
 
     async provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): Promise<vscode.CodeLens[]> {
+        
         if (!this.codeLensToggleState) {
             return Promise.resolve([]);
         }
@@ -41,7 +45,8 @@ export class ComponentImplCodeLensProvider implements vscode.CodeLensProvider {
             console.debug(`Component Impl CodeLens generation skipped, document not up to date`);
             return Promise.resolve([]);
         }
-        console.debug(`Component Impl CodeLens asked to generate lenses`);
+        console.debug(`${new Date().toLocaleString()} -  Component Impl CodeLens asked to generate lenses for ${document.uri}`);
+
         this.codeLensesInitialized = true;
         return this.calcLenses(manifestDoc, document);
     }
@@ -79,7 +84,7 @@ export class ComponentImplCodeLensProvider implements vscode.CodeLensProvider {
             let targetRange; 
             let jsTsSupportReady = true;
             
-            //The "vscode.typescript-language-features" extension might not be active until the first editor with a .js or .ts file that is opened.
+            //The "vscode.typescript-language-features" extension might not be active until the first editor with a .js or .ts file is opened.
             // It definitely gets activated when we trigger the "vscode.executeDefinitionProvider" command on a .js or .ts file that is not opened.
             // This is not ideal, as this might delay code lens generation.
 

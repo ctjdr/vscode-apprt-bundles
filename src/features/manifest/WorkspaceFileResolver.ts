@@ -1,4 +1,4 @@
-import { workspace, Uri } from "vscode";
+import { workspace, Uri, TextDocument } from "vscode";
 import { promises as fs } from "fs";
 import { FileResolver } from "api/bundles/FileResolver";
 
@@ -21,7 +21,7 @@ export class WorkspaceFileResolver implements FileResolver {
         const openDocs = workspace.textDocuments;
         for (let doc of openDocs) {
             if (doc.uri.toString() === uri) {
-                    console.debug("Resolver: Reading from WORKSPACE: " + uri);
+                    console.debug("WorkspaceFileResolver: Reading from workspace: " + uri);
                     return doc.getText();
                 // if (doc.isDirty) {
                 //     console.debug("Resolver: Reading from WORKSPACE: " + uri);
@@ -34,7 +34,7 @@ export class WorkspaceFileResolver implements FileResolver {
         }
         const vscodeUri = Uri.parse(uri);
         
-        console.debug("Resolver: Reading from FILE: " + uri);
+        console.debug("WorkspaceFileResolver - Reading from file: " + uri);
         return fs.readFile(vscodeUri.fsPath, "utf-8");
     }
 }
