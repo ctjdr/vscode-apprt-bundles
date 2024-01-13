@@ -16,7 +16,8 @@ Features provided by the extension that help you work with bundles:
 ## Quick-open bundle
 Sometimes it takes more time than you expect to locate the bundle inside the file tree of VS Code. This is where *Quick-open bundle* comes to a rescue:
 
-Execute *> apprt-bundles: Open bundle* from the command palette, enter some parts of the bundle name, and the bundle folder will be highlighted in the file tree.
+Press <kbd>Ctrl</kbd>+<kbd>ß</kbd> (as in "**ß**undle"), enter some parts of the bundle name, and the bundle folder will be highlighted in the file tree.
+You may alternatively execute *> apprt-bundles: Open bundle* from the command palette.
 
 ![Enter bundle name in command palette](../images/feature_bundle_open02.png)
 
