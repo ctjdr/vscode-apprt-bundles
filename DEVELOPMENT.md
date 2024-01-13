@@ -1,14 +1,33 @@
 # Developing the app.rt bundles extension
 
+- [Setting up the right Node version](#setting-up-the-right-node-version)
+   - [Node versions used by VS Code](#node-versions-used-by-vs-code)
+- [Test and debug extension](#test-and-debug-extension)
+- [Build extension](#build-extension)
+- [Run tests](#run-tests)
+- [Validate manifest.json files in folder tree](#validate-manifestjson-files-in-folder-tree)
+- [Build changelog](#build-changelog)
+- [Run site](#run-site)
+
+
 ## Setting up the right Node version
 
 Before starting to develop, debug, and build the extension, run
 
 ```bash
-nvm alias default 16
+nvm alias default 18
 ```
 
-This will make sure, that newly created terminals to build or run the extension will use the correct Node version (16 at the time of this writing)
+This will make sure, that newly created terminals to build or run the extension will use the correct Node version (18 at the time of this writing).
+
+### Node versions used by VS Code
+
+|VS Code version | Node  version | Month of VS Code Release |
+|----|-----|---|
+| 1.82 | 18.15.0 | 2023 Aug |
+| 1.78 | 16.17.1 | 2023 Apr |
+| 1.71 | 16.14.2 | 2022 Aug |
+| 1.66 | 16.13.0 | 2022 Mar |
 
 ## Test and debug extension
 
