@@ -10,7 +10,8 @@ nav_order: 20
 Features provided by the extension that help you work with bundles:
 
 - [Quick-open bundle](#quick-open-bundle)
-- [Go to component implementation](#go-to-component-implementation)
+- [Go to component implementation code lens](#go-to-component-implementation-code-lens)
+- [Go to component definition (module file)](#go-to-component-definition-module-file)
 - [Jump to manifest.json or README.md](#jump-to-manifestjson-or-readmemd)
 
 ## Quick-open bundle
@@ -27,16 +28,19 @@ The property `apprtbundles.bundles.reveal.goal.type` lets you select if
 * the bundle folder is highlighted and expanded, or
 * the manifest.json file of the bundle folder is highlighted, which obviously requires to expand the folder. :smirk:
 
-## Go to component implementation
+## Go to component implementation code lens
 
-In `manifest.json` files, execute the *> Go to Definition* command on the name or `"impl"` property value of a component to open the corresponding implementation file.
-This is equivalent to a <kbd>Ctrl</kbd>+<kbd>Click</kbd> or pressing <kbd>F12</kbd>.
+In a bundle manifest, click the *> Go to implementation* code lens above the `name` property of a component to open the corresponding implementation file.
 
-!["Go to Definition" for components](../images/feature_component_goto_declaration.gif)
+![&quot;Go to implementation&quot; for components](../images/feature_component_goto_implementation.gif)
 
-This works for components where the `"name"` or `"impl"` property matches the file name of a `.js` or `.ts` file inside the bundle folder.
-But sometimes the component is mapped to another source file in the `module.js`.
-In that case executing the command has no effect.
+## Go to component definition (module file)
+
+In a bundle manifest, <kbd>Ctrl</kbd>+<kbd>Click</kbd> the `name` or `impl` property value of a component to open the `module.js` or `.ts` file, where it is imported or exported.
+
+This is equivalent to pressing <kbd>F12</kbd> or executing the *> Go to Definition* command.
+
+![&quot;Go to Definition&quot; for components](../images/feature_component_goto_definition.gif)
 
 ## Jump to manifest.json or README.md
 
