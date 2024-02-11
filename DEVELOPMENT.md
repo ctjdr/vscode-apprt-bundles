@@ -75,7 +75,7 @@ $ npm run test-manifest-path
 Run in project root
 
 ```bash
-$ github_changelog_generator --user ctjdr --project vscode-apprt-bundles --token $GITHUB_TOKEN --output "" --future-release 0.4.0 --no-compare-link --since-tag v0.1.0
+$ github_changelog_generator --user ctjdr --project vscode-apprt-bundles --token $GITHUB_TOKEN --output CHANGELOG.md  --future-release v0.5.0 --no-compare-link --since-tag v0.0.5 --no-http-cache --enhancement-label "**Enhancements**" --bugs-label "**Bug fixes**" --include-labels enhancement,bug --no-pr-wo-labels
 ```
 
 Prints the changelog to STDOUT. Copy the new entry into _both_ CHANGELOG.md files.
