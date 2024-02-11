@@ -169,7 +169,7 @@
                 }
             ]
         },
-        "keybindings":[
+        "keybindings": [
             {
                 "command": "apprtbundles.bundles.reveal",
                 "key": "ctrl+[minus]"
