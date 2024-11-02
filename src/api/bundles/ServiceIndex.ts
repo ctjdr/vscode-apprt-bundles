@@ -43,9 +43,7 @@ export default class ServiceNameIndex {
         return providingItems;
     }
 
-    public rebuild() {
-
-    }
+    public rebuild() {}
 
     public clearAll() {
         this.servicenameToManifestUris.clear();

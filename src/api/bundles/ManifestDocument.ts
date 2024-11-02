@@ -1,7 +1,6 @@
 import * as json from 'jsonc-parser';
 import MultiValueIndex from './MultiValueIndex';
 
-
 export enum ValueType {
     "provides", 
     "referenceProviding",
@@ -16,9 +15,7 @@ export class StringFragment implements Fragment {
         readonly key: string,
         readonly value: string,
         readonly section: Section,
-        readonly type: ValueType) {
-            
-        }
+        readonly type: ValueType) {}
 }
 
 /**
@@ -82,7 +79,6 @@ export class ReferenceFragment implements Fragment {
     }
 
 }
-
 
 export class ComponentFragment implements Fragment {
 
@@ -257,6 +253,7 @@ export default class ManifestDocument {
         const nameNode = json.findNodeAtLocation(manifestNode, ["name"]) || json.findNodeAtLocation(manifestNode, ["Bundle-SymbolicName"]);
         return nameNode?.value?.toString();
     }
+
     private parseVersion(manifestNode: json.Node): string | undefined {
         const versionNode = json.findNodeAtLocation(manifestNode, ["version"]) || json.findNodeAtLocation(manifestNode, ["Bundle-Version"]);
         return versionNode?.value?.toString();
@@ -351,5 +348,3 @@ export default class ManifestDocument {
     }
     
 }
-
-

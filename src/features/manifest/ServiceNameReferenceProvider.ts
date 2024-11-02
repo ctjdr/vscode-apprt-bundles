@@ -22,17 +22,12 @@ export class ServiceNameReferenceProvider implements vscode.ReferenceProvider {
         });
     }
 
-
     private async getLocations(document: vscode.TextDocument, position: vscode.Position) {
-
-        // await this.bundleIndex.updateDirty();
 
         const quotedLookupRef = document.getText(document.getWordRangeAtPosition(position, /[a-zA-Z0-9._\-\"\']+/));
         const lookupRef = quotedLookupRef.substring(1, quotedLookupRef.length - 1);
 
-        // const serviceIndex = this.bundleIndex.getServiceNameIndex();
-        const serviceIndex = this.serviceNameIndex;
-        const bundlesIds = serviceIndex.findBundleIdsByServiceName(lookupRef);
+        const bundlesIds = this.serviceNameIndex.findBundleIdsByServiceName(lookupRef);
 
         const locations:vscode.Location[] = [];
         const mode = this.context.workspaceState.get("findReference", { mode: "all" }).mode;
@@ -47,7 +42,6 @@ export class ServiceNameReferenceProvider implements vscode.ReferenceProvider {
             const allProviding = manifestDoc.getReferencesFor(lookupRef);
 
             const uri = vscode.Uri.parse(id);
-
 
             if (mode === "all" || mode === "provides") {
                 allProvides.forEach(component => {
