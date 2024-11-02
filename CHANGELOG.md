@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.5.1](https://github.com/ctjdr/vscode-apprt-bundles/tree/v0.5.1) (2024-11-02)
+
+**Bug fixes**
+
+- Peek providers/consumers doesn't work for service names containing a number [\#56](https://github.com/ctjdr/vscode-apprt-bundles/issues/56)
+
 ## [v0.5.0](https://github.com/ctjdr/vscode-apprt-bundles/tree/v0.5.0) (2024-02-11)
 
 **Enhancements**

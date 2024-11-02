@@ -6,6 +6,20 @@ nav_order: 1000
 ---
 # Changelog
 
+## 0.5.1 (2024-11-02)
+
+**Bug fixes**
+
+- Peek providers/consumers doesn't work for service names containing a number [\#56](https://github.com/ctjdr/vscode-apprt-bundles/issues/56)
+
+## 0.5.0 (2024-02-11)
+
+**Enhancements**
+
+- Add default key binding for "Open bundle" command [\#54](https://github.com/ctjdr/vscode-apprt-bundles/issues/54)
+- Allow to jump from component declaration to implementation instantly [\#53](https://github.com/ctjdr/vscode-apprt-bundles/issues/53)
+- Make "Go to Definition" go to module.js/.ts file. [\#52](https://github.com/ctjdr/vscode-apprt-bundles/issues/52)
+
 ## 0.4.4 (2022-08-11)
 
 **Enhancements**
